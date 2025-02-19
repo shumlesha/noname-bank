@@ -1,0 +1,15 @@
+spring:
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/core-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/core-service
+    username: postgres
+    password: postgres
+
+core:
+  blocking:
+    enabled: false
+    kafka-properties:
+      blocking-topic:
+        name: "BLOCKING"
+      bootstrap-servers: http://localhost:29092
