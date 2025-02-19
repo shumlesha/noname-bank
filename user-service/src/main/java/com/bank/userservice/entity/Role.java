@@ -31,7 +31,4 @@ public class Role {
     @Column
     @Check(name = "description_check", constraints = "description ~ '^[a-zA-ZА-Яа-я\\s]*$'")
     private String description;
-
-    @Column(nullable = false)
-    private boolean banned = false;
 }
