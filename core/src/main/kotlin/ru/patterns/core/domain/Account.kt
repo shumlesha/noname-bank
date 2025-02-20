@@ -31,5 +31,9 @@ data class Account(
     /**
      * Баланс счета
      */
-    val balance: BigDecimal
+    val balance: BigDecimal,
+    /**
+     * Является ли счет кредитным
+     */
+    val isCredit: Boolean
 )

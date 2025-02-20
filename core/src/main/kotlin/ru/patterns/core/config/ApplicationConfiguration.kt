@@ -6,5 +6,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConditionalOnProperty("core.enabled", matchIfMissing = true)
-@ComponentScan(basePackages = ["ru.patterns.core.database"])
+@ComponentScan(
+    basePackages = [
+        "ru.patterns.core.service"
+    ]
+)
 class ApplicationConfiguration

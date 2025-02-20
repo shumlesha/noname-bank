@@ -4,9 +4,10 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/core-service
     username: postgres
-    password: postgres
+    password: gbhfns
 
 core:
+  enabled: false
   blocking:
     enabled: false
     kafka-properties:
