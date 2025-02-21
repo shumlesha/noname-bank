@@ -1,4 +1,4 @@
-package ru.patterns.credit.entity;
+package ru.patterns.credit.domain.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.patterns.credit.model.enums.CreditStatus;
 
 import java.math.BigDecimal;
 import java.util.UUID;

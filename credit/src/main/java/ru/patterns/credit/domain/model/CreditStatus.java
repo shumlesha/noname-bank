@@ -1,4 +1,4 @@
-package ru.patterns.credit.model.enums;
+package ru.patterns.credit.domain.model;
 
 public enum CreditStatus {
     ACTIVE,

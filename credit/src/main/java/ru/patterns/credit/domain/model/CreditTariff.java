@@ -1,4 +1,4 @@
-package ru.patterns.credit.entity;
+package ru.patterns.credit.domain.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
