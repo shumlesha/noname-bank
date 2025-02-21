@@ -39,6 +39,32 @@ spring:
     default-schema: public
     enabled: true
 
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    consumer:
+      group-id: ${spring.application.name}-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      compression-type: snappy
+      batch-size: 16384
+
+
+
+kafka:
+  topics:
+    user-created:
+      name: user-created
+      type: CONSUME
+    user-blocked:
+      name: user-blocked
+      type: PRODUCE
+
 server:
   port: 8081
   servlet:
