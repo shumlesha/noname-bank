@@ -1,8 +1,6 @@
-package ru.patterns.core.domain
+package ru.patterns.corequery.domain
 
-import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.UUID
 
 /**
  * Счет клиента

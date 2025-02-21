@@ -1,4 +1,4 @@
-package ru.patterns.core.domain
+package ru.patterns.corequery.domain
 
 import java.time.LocalDateTime
 import java.util.UUID

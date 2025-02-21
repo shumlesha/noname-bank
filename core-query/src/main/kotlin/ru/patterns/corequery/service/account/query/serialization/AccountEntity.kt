@@ -1,4 +1,4 @@
-package ru.patterns.core.service.account.entity
+package ru.patterns.corequery.service.account.query.serialization
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -20,7 +20,7 @@ class AccountEntity(
     @Column("number")
     val number: String,
     @Column("balance")
-    val balance: BigDecimal = BigDecimal.ZERO,
+    val balance: BigDecimal,
     @Column("is_credit")
     val isCredit: Boolean
 )
