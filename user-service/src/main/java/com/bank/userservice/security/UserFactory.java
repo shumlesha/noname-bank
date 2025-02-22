@@ -9,6 +9,8 @@ import java.util.Set;
 
 @UtilityClass
 public class UserFactory {
+    private static final String ROLE_PREFIX = "ROLE_";
+
     public CurrentUser create(User user) {
         return new CurrentUser(
                 user.getId(),
@@ -21,6 +23,7 @@ public class UserFactory {
     private static List<SimpleGrantedAuthority> mapToGrantedAuthorities(Set<Role> roles) {
         return roles.stream()
                 .map(Role::getName)
+                .map(ROLE_PREFIX::concat)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }
