@@ -1,4 +1,4 @@
-package ru.patterns.core.service.transaction
+package ru.patterns.core.service.transaction.repository
 
 import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.stereotype.Repository

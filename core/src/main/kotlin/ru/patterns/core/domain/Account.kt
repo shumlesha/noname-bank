@@ -1,8 +1,6 @@
 package ru.patterns.core.domain
 
-import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.UUID
 
 /**
  * Счет клиента
@@ -20,6 +18,10 @@ data class Account(
      * Дата и время блокировки счета. Равен 'null', если счет не заблокирован
      */
     val blockedTimestamp: LocalDateTime?,
+    /**
+     * Дата и время закрытия счета. Равен 'null', если счет открыт
+     */
+    val closedTimestamp: LocalDateTime?,
     /**
      * Идентификатор клиента
      */

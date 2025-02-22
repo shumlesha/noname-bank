@@ -15,6 +15,8 @@ class AccountEntity(
     val creationTimestamp: LocalDateTime = LocalDateTime.now(),
     @Column("blocked_timestamp")
     val blockedTimestamp: LocalDateTime? = null,
+    @Column("closed_timestamp")
+    val closedTimestamp: LocalDateTime? = null,
     @Column("client_id")
     val clientId: UUID,
     @Column("number")

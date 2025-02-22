@@ -8,26 +8,37 @@ import reactor.core.publisher.Mono
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
+import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.domain.Account
+import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
 import ru.patterns.core.service.account.command.serialization.Factory
 import ru.patterns.core.service.account.entity.AccountEntity
-import ru.patterns.core.service.account.repository.AccountRepository
+import ru.patterns.core.service.account.repository.AccountR2dbcRepository
 import kotlin.random.Random
 
 interface AccountCommandService {
     fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult>
+    fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountCommand>
 
     sealed interface CreateAccountResult {
         data object Success : CreateAccountResult
         data class Error(val cause: Throwable) : CreateAccountResult
     }
+
+    sealed interface CloseAccountResult {
+        data object Success : CloseAccountResult
+        sealed interface Error : CloseAccountResult {
+            data class ErrorFromRepository() : Error
+            data class UnexpectedError(val cause: Throwable) : Error
+        }
+    }
 }
 
 @Service
 class AccountCommandServiceImpl(
-    private val accountRepository: AccountRepository,
+    private val accountR2dbcRepository: AccountR2dbcRepository,
     private val kafkaSender: KafkaSender<String, String>,
     private val objectMapper: ObjectMapper
 ) : AccountCommandService {
@@ -40,7 +51,7 @@ class AccountCommandServiceImpl(
                 isCredit = createAccountCommand.isCredit
             )
         )
-            .flatMap { accountEntity -> accountRepository.save(accountEntity) }
+            .flatMap { accountEntity -> accountR2dbcRepository.save(accountEntity) }
             .doOnSuccess { accountEntity ->
                 sendEventToKafkaAsync(accountEntity)
             }
@@ -49,10 +60,17 @@ class AccountCommandServiceImpl(
                 CreateAccountResult.Error(error).toMono()
             }
 
+    @Transactional
+    override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountCommand> =
+        TODO()
+
+    private fun isClosed(accountEntity: AccountEntity): Boolean =
+        accountEntity.closedTimestamp != null
+
     private fun SenderRecord(value: Account) =
         SenderRecord.create<String?, String, String?>(
             ProducerRecord(
-                "CREATE_ACCOUNT_TOPIC",
+                "ACCOUNT_CHANGE_TOPIC",
                 objectMapper.writeValueAsString(value)
             ),
             null

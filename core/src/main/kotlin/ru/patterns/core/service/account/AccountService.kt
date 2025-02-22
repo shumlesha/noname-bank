@@ -13,6 +13,15 @@ interface AccountService {
         data object Success : CreateAccountResponse
         data class Error(val cause: Throwable) : CreateAccountResponse
     }
+
+    sealed interface CloseAccountResponse {
+        data object Success : CloseAccountResponse
+        sealed interface Error : CloseAccountResponse {
+            data class ErrorFromCommandService(val error: AccountCommandService.CloseAccountResult.Error) : Error
+            data object AccountAlreadyClosed : Error
+            data class Unexpected(val cause: Throwable) : Error
+        }
+    }
 }
 
 @Service
