@@ -52,4 +52,11 @@ public class User {
 
     @Column(nullable = false)
     private boolean banned = false;
+
+    public void ban() {
+        if (this.isBanned()) {
+            throw new IllegalArgumentException("User is already banned");
+        }
+        this.banned = true;
+    }
 }
