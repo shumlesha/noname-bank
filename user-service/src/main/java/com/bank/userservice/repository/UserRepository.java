@@ -10,9 +10,9 @@ import java.util.UUID;
 import static org.hibernate.jpa.HibernateHints.HINT_READ_ONLY;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
-    boolean existsByEmail(String email);
+    boolean existsByEmailIgnoreCase(String email);
 
     @QueryHints(@QueryHint(name = HINT_READ_ONLY, value = "true"))
-    @Query("SELECT u FROM User u WHERE u.email = :email")
+    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     Optional<User> findByEmailReadOnly(String email);
 }

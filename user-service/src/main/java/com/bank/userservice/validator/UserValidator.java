@@ -12,7 +12,7 @@ public class UserValidator {
     private final UserRepository userRepository;
 
     public void checkUserAlreadyExists(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new IllegalArgumentException("User with this email already exists");
         }
     }
