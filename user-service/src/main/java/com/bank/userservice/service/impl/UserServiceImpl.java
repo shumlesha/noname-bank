@@ -45,4 +45,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailReadOnly(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto getUserById(UUID id) {
+        return userMapper.toDto(userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+    }
 }

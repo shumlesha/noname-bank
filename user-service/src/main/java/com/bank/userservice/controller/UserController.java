@@ -9,6 +9,7 @@ import com.bank.userservice.util.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,18 @@ public class UserController {
                 ResponseBuilder.success(
                         "User has %s been banned successfully".formatted(bannedUser.getEmail()),
                         bannedUser
+                )
+        );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<DefaultResponse<UserDto>> getMe(@AuthenticationPrincipal CurrentUser currentUser) {
+        UserDto user = userService.getUserById(currentUser.getId());
+
+        return ResponseEntity.ok(
+                ResponseBuilder.success(
+                        "User details fetched successfully",
+                        user
                 )
         );
     }

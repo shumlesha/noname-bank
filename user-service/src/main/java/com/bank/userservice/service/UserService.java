@@ -11,4 +11,6 @@ public interface UserService {
     UserDto banUser(UUID userId, UUID currentUserId);
 
     User getByEmail(String email);
+
+    UserDto getUserById(UUID id);
 }
