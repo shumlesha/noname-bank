@@ -1,10 +1,7 @@
 spring:
   application:
     name: credit-service
-  server:
-    port: 8085
   jpa:
-    #show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -30,6 +27,8 @@ spring:
           initial-interval: 1000ms
           multiplier: 2
           max-attempts: 5
+server:
+  port: 8085
 eureka:
   client:
     service-url:
