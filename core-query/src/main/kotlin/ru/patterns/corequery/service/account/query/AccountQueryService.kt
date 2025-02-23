@@ -19,17 +19,14 @@ interface AccountQueryService {
     sealed interface FindByIdResponse {
         data class Success(val account: Account) : FindByIdResponse
         sealed interface Error : FindByIdResponse {
-            data class ErrorFromRepository(val error: AccountRepository.FindAccountResult.Error) : Error
+            data object NotFound : Error
             data class UnexpectedError(val cause: Throwable) : Error
         }
     }
 
     sealed interface FindAllResponse {
         data class Success(val accounts: List<Account>) : FindAllResponse
-        sealed interface Error : FindAllResponse {
-            data class ErrorFromRepository(val error: AccountRepository.FindAllAccountResult.Error) : Error
-            data class UnexpectedError(val cause: Throwable) : Error
-        }
+        data class Error(val cause: Throwable) : FindAllResponse
     }
 }
 
@@ -51,11 +48,14 @@ class AccountQueryServiceImpl(
             }
             .map { findResult ->
                 when (findResult) {
-                    is AccountRepository.FindAccountResult.Success -> FindByIdResponse.Success(findResult.account)
+                    is AccountRepository.FindAccountResult.Success ->
+                        FindByIdResponse.Success(findResult.account)
 
-                    is AccountRepository.FindAccountResult.Error -> FindByIdResponse.Error.ErrorFromRepository(
-                        findResult
-                    )
+                    is AccountRepository.FindAccountResult.Error.Unexpected ->
+                        FindByIdResponse.Error.UnexpectedError(findResult.cause)
+
+                    is AccountRepository.FindAccountResult.Error.AccountNotFound ->
+                        FindByIdResponse.Error.NotFound
                 }
             }
             .onErrorResume { error -> FindByIdResponse.Error.UnexpectedError(error).toMono() }
@@ -76,8 +76,8 @@ class AccountQueryServiceImpl(
                         FindAllResponse.Success(findAllResult.accounts)
 
                     is AccountRepository.FindAllAccountResult.Error ->
-                        FindAllResponse.Error.ErrorFromRepository(findAllResult)
+                        FindAllResponse.Error(findAllResult.cause)
                 }
             }
-            .onErrorResume { error -> FindAllResponse.Error.UnexpectedError(error).toMono() }
+            .onErrorResume { error -> FindAllResponse.Error(error).toMono() }
 }

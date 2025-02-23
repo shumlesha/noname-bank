@@ -53,6 +53,7 @@ class AccountRepositoryImpl(
 
     override fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult> =
         repository.findAllByClientId(clientId.value)
+            .collectList()
             .map { accountEntities -> accountEntities.map(Factory::Account) }
             .map<FindAllAccountResult>(FindAllAccountResult::Success)
             .onErrorResume { error ->

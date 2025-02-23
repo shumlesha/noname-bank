@@ -4,13 +4,14 @@ import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.patterns.corequery.service.account.query.serialization.AccountEntity
 import java.util.UUID
 
 @Repository
 interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
-    fun findAllByClientId(clientId: UUID): Mono<List<AccountEntity>>
+    fun findAllByClientId(clientId: UUID): Flux<AccountEntity>
     fun findByClientIdAndId(clientId: UUID, accountId: UUID): Mono<AccountEntity>
 
     @Modifying
