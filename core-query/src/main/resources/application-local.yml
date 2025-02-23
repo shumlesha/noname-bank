@@ -1,0 +1,20 @@
+spring:
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/core-service-query
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/core-service-query
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: localhost:29094
+query:
+  kafka:
+    listener:
+      enabled: true
+    account-topic:
+      name: "ACCOUNT"
+    transaction-topic:
+      name: "TRANSACTION"
+
+server:
+  port: 8081

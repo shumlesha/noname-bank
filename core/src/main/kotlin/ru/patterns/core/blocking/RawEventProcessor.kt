@@ -1,4 +1,4 @@
 package ru.patterns.core.blocking
 
-class RawMessageProcessor {
+class RawEventProcessor {
 }
