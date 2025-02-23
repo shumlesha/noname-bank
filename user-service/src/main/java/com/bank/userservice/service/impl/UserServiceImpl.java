@@ -1,6 +1,8 @@
 package com.bank.userservice.service.impl;
 
+import com.bank.userservice.aspect.PublishBanEvent;
 import com.bank.userservice.dto.event.payload.UserCreatePayload;
+import com.bank.userservice.dto.user.BanUserRequest;
 import com.bank.userservice.dto.user.UserDto;
 import com.bank.userservice.entity.User;
 import com.bank.userservice.mapper.UserMapper;
@@ -30,14 +32,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PublishBanEvent(topics = {"user_ban"})
     @Transactional
-    public UserDto banUser(UUID userId, UUID currentUserId) {
+    public UserDto banUser(UUID userId, BanUserRequest banUserRequest, UUID currentUserId) {
         User user = userValidator.validateBan(userId, currentUserId);
 
         user.ban();
 
         return userMapper.toDto(userRepository.save(user));
     }
+
 
     @Override
     @Transactional(readOnly = true)

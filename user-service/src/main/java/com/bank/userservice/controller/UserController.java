@@ -2,6 +2,7 @@ package com.bank.userservice.controller;
 
 
 import com.bank.userservice.dto.api.DefaultResponse;
+import com.bank.userservice.dto.user.BanUserRequest;
 import com.bank.userservice.dto.user.UserDto;
 import com.bank.userservice.security.CurrentUser;
 import com.bank.userservice.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
@@ -25,8 +27,9 @@ public class UserController {
 
     @PostMapping("/ban/{userId}")
     public ResponseEntity<DefaultResponse<UserDto>> banUser(@PathVariable UUID userId,
+                                                            @RequestBody BanUserRequest banUserRequest,
                                                             @AuthenticationPrincipal CurrentUser currentUser) {
-        UserDto bannedUser = userService.banUser(userId, currentUser.getId());
+        UserDto bannedUser = userService.banUser(userId, banUserRequest, currentUser.getId());
 
         return ResponseEntity.ok(
                 ResponseBuilder.success(
