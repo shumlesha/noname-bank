@@ -22,12 +22,12 @@ interface AccountCommandService {
     fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult>
 
     sealed interface CreateAccountResult {
-        data object Success : CreateAccountResult
+        data class Success(val account: Account) : CreateAccountResult
         data class Error(val cause: Throwable) : CreateAccountResult
     }
 
     sealed interface CloseAccountResult {
-        data object Success : CloseAccountResult
+        data class Success(val account: Account) : CloseAccountResult
         sealed interface Error : CloseAccountResult {
             data class FindErrorFromRepository(val error: AccountRepository.FindAccountResult.Error) : Error
             data class SaveErrorFromRepository(val error: AccountRepository.SaveAccountResult.Error) : Error
@@ -106,12 +106,12 @@ class AccountCommandServiceImpl(
     private fun processSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CreateAccountResult> =
         Mono.just(saveResult.account)
             .doOnNext { account -> sendEventToKafkaAsync(account) }
-            .map { CreateAccountResult.Success }
+            .map(CreateAccountResult::Success)
 
     private fun processCloseSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CloseAccountResult> =
         Mono.just(saveResult.account)
             .doOnNext { account -> sendEventToKafkaAsync(account) }
-            .map { CloseAccountResult.Success }
+            .map (CloseAccountResult::Success)
 
     private fun Mono<AccountRepository.SaveAccountResult>.handleSaveResult() =
         this

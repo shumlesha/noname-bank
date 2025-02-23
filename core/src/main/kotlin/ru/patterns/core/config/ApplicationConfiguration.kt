@@ -1,5 +1,10 @@
 package ru.patterns.core.config
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -7,6 +12,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.kafka.support.serializer.JsonSerializer
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderOptions
@@ -21,6 +27,14 @@ import reactor.kafka.sender.SenderOptions
     ]
 )
 class ApplicationConfiguration {
+    @Bean
+    @Primary
+    fun objectMapper(): ObjectMapper =
+        jacksonObjectMapper()
+            .registerModule(JavaTimeModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+
     @Configuration
     class CommandKafkaConfiguration(
         val springKafkaProperties: KafkaProperties
