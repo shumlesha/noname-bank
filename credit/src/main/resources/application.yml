@@ -27,6 +27,18 @@ spring:
           initial-interval: 1000ms
           multiplier: 2
           max-attempts: 5
+    exchange: "credit-exchange"
+    queues:
+      creditCreateRequest: "credit.create.request"
+      creditCreateResponse: "credit.create.response"
+      paymentRequest: "credit.payment.request"
+      paymentResponse: "credit.payment.response"
+    routing-keys:
+      creditCreateRequest: "credit.create.request"
+      creditCreateResponse: "credit.create.response"
+      paymentRequest: "credit.payment.request"
+      paymentResponse: "credit.payment.response"
+
 server:
   port: 8085
 eureka:

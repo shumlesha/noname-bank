@@ -1,4 +1,4 @@
-package ru.patterns.credit.configuration;
+package ru.patterns.credit.configuration.api;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

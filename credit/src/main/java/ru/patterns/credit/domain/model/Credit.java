@@ -29,6 +29,8 @@ public class Credit {
 
     private UUID clientId;
 
+    private UUID accountId;
+
     private BigDecimal amount;
 
     private BigDecimal paidAmount = BigDecimal.ZERO;
