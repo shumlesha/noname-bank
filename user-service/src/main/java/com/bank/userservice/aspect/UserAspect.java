@@ -18,6 +18,8 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class UserAspect {
+    private static final String USER_BAN_EVENT_TYPE = "USER_BAN";
+
     private final SenderService<EventMessage<?>> senderService;
 
     @AfterReturning(pointcut = "@annotation(publishBanEvent)", returning = "result")
@@ -40,7 +42,7 @@ public class UserAspect {
             BanUserRequest banUserRequest = (BanUserRequest) args[1];
 
             UserBanPayload payload = new UserBanPayload(user.getId(), currentUserId, banUserRequest.getReason());
-            return new EventMessage<>("USER_BAN", Instant.now(), payload);
+            return new EventMessage<>(USER_BAN_EVENT_TYPE, Instant.now(), payload);
         }
         return null;
     }

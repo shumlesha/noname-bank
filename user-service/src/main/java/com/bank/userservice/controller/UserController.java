@@ -7,6 +7,7 @@ import com.bank.userservice.dto.user.UserDto;
 import com.bank.userservice.security.CurrentUser;
 import com.bank.userservice.service.UserService;
 import com.bank.userservice.util.ResponseBuilder;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,7 @@ public class UserController {
 
 
     @PostMapping("/ban/{userId}")
+    @Operation(summary = "Ban a user", description = "Ban a user by providing the user id and the ban reason")
     public ResponseEntity<DefaultResponse<UserDto>> banUser(@PathVariable UUID userId,
                                                             @RequestBody BanUserRequest banUserRequest,
                                                             @AuthenticationPrincipal CurrentUser currentUser) {
@@ -39,7 +41,9 @@ public class UserController {
         );
     }
 
+
     @GetMapping("/me")
+    @Operation(summary = "Get user details", description = "Get the details of the currently logged in user")
     public ResponseEntity<DefaultResponse<UserDto>> getMe(@AuthenticationPrincipal CurrentUser currentUser) {
         UserDto user = userService.getUserById(currentUser.getId());
 

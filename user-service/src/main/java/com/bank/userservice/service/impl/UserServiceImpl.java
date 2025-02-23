@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PublishBanEvent(topics = {"user_ban"})
+    @PublishBanEvent(topics = {"user_blocked"})
     @Transactional
     public UserDto banUser(UUID userId, BanUserRequest banUserRequest, UUID currentUserId) {
         User user = userValidator.validateBan(userId, currentUserId);
