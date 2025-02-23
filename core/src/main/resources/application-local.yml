@@ -14,5 +14,5 @@ core:
     enabled: false
     kafka-properties:
       blocking-topic:
-        name: "BLOCKING"
+        name: "user_blocked"
       bootstrap-servers: http://localhost:29092

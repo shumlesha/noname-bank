@@ -26,6 +26,8 @@ data class BlockingProperties(
      * @property blockingTopic топик для потока блокировки
      */
     data class KafkaProperties(
+        val minBackoffDelayMs: Long = 20,
+        val groupId: String = "default",
         val bootstrapServers: String,
         val blockingTopic: TopicConfig,
     ) {
