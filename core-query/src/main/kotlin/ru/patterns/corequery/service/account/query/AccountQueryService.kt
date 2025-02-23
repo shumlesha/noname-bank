@@ -4,27 +4,32 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.corequery.domain.Account
-import ru.patterns.corequery.domain.AccountId
-import ru.patterns.corequery.domain.ClientId
+import ru.patterns.core.domain.Account
+import ru.patterns.core.domain.AccountIdentification
+import ru.patterns.core.domain.ClientId
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindAllResponse
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindByIdResponse
 import ru.patterns.corequery.service.account.query.repository.AccountRepository
-import ru.patterns.corequery.service.account.query.serialization.Factory
 
 
 interface AccountQueryService {
-    fun findById(accountId: AccountId): Mono<FindByIdResponse>
+    fun findById(accountIdentification: AccountIdentification): Mono<FindByIdResponse>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse>
 
     sealed interface FindByIdResponse {
         data class Success(val account: Account) : FindByIdResponse
-        data class Error(val cause: Throwable) : FindByIdResponse
+        sealed interface Error : FindByIdResponse {
+            data class ErrorFromRepository(val error: AccountRepository.FindAccountResult.Error) : Error
+            data class UnexpectedError(val cause: Throwable) : Error
+        }
     }
 
     sealed interface FindAllResponse {
         data class Success(val accounts: List<Account>) : FindAllResponse
-        data class Error(val cause: Throwable) : FindAllResponse
+        sealed interface Error : FindAllResponse {
+            data class ErrorFromRepository(val error: AccountRepository.FindAllAccountResult.Error) : Error
+            data class UnexpectedError(val cause: Throwable) : Error
+        }
     }
 }
 
@@ -34,22 +39,29 @@ class AccountQueryServiceImpl(
 ) : AccountQueryService {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    override fun findById(accountId: AccountId): Mono<FindByIdResponse> =
-        accountRepository.findById(accountId.value)
-            .doOnSuccess { log.debug("Получен счет по id: {}", accountId) }
+    override fun findById(accountIdentification: AccountIdentification): Mono<FindByIdResponse> =
+        accountRepository.findById(accountIdentification)
+            .doOnSuccess { log.debug("Получен счет по id: {}", accountIdentification) }
             .doOnError { error ->
                 log.error(
                     "При получении счета по id: {} произошла ошибка",
-                    accountId,
+                    accountIdentification,
                     error
                 )
             }
-            .map(Factory::Account)
-            .map<FindByIdResponse>(FindByIdResponse::Success)
-            .onErrorResume { FindByIdResponse.Error(it).toMono() }
+            .map { findResult ->
+                when (findResult) {
+                    is AccountRepository.FindAccountResult.Success -> FindByIdResponse.Success(findResult.account)
+
+                    is AccountRepository.FindAccountResult.Error -> FindByIdResponse.Error.ErrorFromRepository(
+                        findResult
+                    )
+                }
+            }
+            .onErrorResume { error -> FindByIdResponse.Error.UnexpectedError(error).toMono() }
 
     override fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse> =
-        accountRepository.findAllByClientId(clientId.value)
+        accountRepository.findAllByClientId(clientId)
             .doOnSuccess { log.debug("Получены счета клиента с id: {}", clientId) }
             .doOnError { error ->
                 log.error(
@@ -58,7 +70,14 @@ class AccountQueryServiceImpl(
                     error
                 )
             }
-            .map { accounts -> accounts.map(Factory::Account) }
-            .map<FindAllResponse>(FindAllResponse::Success)
-            .onErrorResume { FindAllResponse.Error(it).toMono() }
+            .map { findAllResult ->
+                when (findAllResult) {
+                    is AccountRepository.FindAllAccountResult.Success ->
+                        FindAllResponse.Success(findAllResult.accounts)
+
+                    is AccountRepository.FindAllAccountResult.Error ->
+                        FindAllResponse.Error.ErrorFromRepository(findAllResult)
+                }
+            }
+            .onErrorResume { error -> FindAllResponse.Error.UnexpectedError(error).toMono() }
 }

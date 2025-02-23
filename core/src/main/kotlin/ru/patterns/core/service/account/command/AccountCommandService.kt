@@ -11,16 +11,15 @@ import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.domain.Account
+import ru.patterns.core.domain.AccountIdentification
 import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
-import ru.patterns.core.service.account.command.serialization.Factory
-import ru.patterns.core.service.account.entity.AccountEntity
-import ru.patterns.core.service.account.repository.AccountR2dbcRepository
-import kotlin.random.Random
+import ru.patterns.core.service.account.repository.AccountRepository
+import java.time.LocalDateTime
 
 interface AccountCommandService {
     fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult>
-    fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountCommand>
+    fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult>
 
     sealed interface CreateAccountResult {
         data object Success : CreateAccountResult
@@ -30,7 +29,10 @@ interface AccountCommandService {
     sealed interface CloseAccountResult {
         data object Success : CloseAccountResult
         sealed interface Error : CloseAccountResult {
-            data class ErrorFromRepository() : Error
+            data class FindErrorFromRepository(val error: AccountRepository.FindAccountResult.Error) : Error
+            data class SaveErrorFromRepository(val error: AccountRepository.SaveAccountResult.Error) : Error
+            data object AccountNotExists : Error
+            data class AccountAlreadyClosed(val account: Account) : Error
             data class UnexpectedError(val cause: Throwable) : Error
         }
     }
@@ -38,62 +40,98 @@ interface AccountCommandService {
 
 @Service
 class AccountCommandServiceImpl(
-    private val accountR2dbcRepository: AccountR2dbcRepository,
+    private val accountRepository: AccountRepository,
     private val kafkaSender: KafkaSender<String, String>,
     private val objectMapper: ObjectMapper
 ) : AccountCommandService {
     @Transactional
     override fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult> =
-        Mono.just(
-            AccountEntity(
-                clientId = createAccountCommand.clientId,
-                number = generate16DigitNumber(),
-                isCredit = createAccountCommand.isCredit
-            )
-        )
-            .flatMap { accountEntity -> accountR2dbcRepository.save(accountEntity) }
-            .doOnSuccess { accountEntity ->
-                sendEventToKafkaAsync(accountEntity)
+        accountRepository.save(createAccountCommand)
+            .flatMap { saveResult ->
+                when (saveResult) {
+                    is AccountRepository.SaveAccountResult.Success -> processSuccessSaveResult(saveResult)
+                    is AccountRepository.SaveAccountResult.Error -> CreateAccountResult.Error(saveResult.cause).toMono()
+                }
             }
-            .map<CreateAccountResult> { CreateAccountResult.Success }
-            .onErrorResume { error ->
-                CreateAccountResult.Error(error).toMono()
-            }
+            .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
+
 
     @Transactional
-    override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountCommand> =
-        TODO()
+    override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult> =
+        accountRepository.findById(
+            accountIdentification = AccountIdentification(
+                clientId = closeAccountCommand.clientId,
+                accountId = closeAccountCommand.accountId
+            )
+        )
+            .flatMap { findResult ->
+                when (findResult) {
+                    is AccountRepository.FindAccountResult.Success -> closeAccountIfNeed(findResult.account)
 
-    private fun isClosed(accountEntity: AccountEntity): Boolean =
-        accountEntity.closedTimestamp != null
+                    is AccountRepository.FindAccountResult.Error.Unexpected ->
+                        CloseAccountResult.Error.FindErrorFromRepository(findResult).toMono()
+
+                    is AccountRepository.FindAccountResult.Error.AccountNotFound ->
+                        CloseAccountResult.Error.AccountNotExists.toMono()
+                }
+            }
+            .onErrorResume { error -> CloseAccountResult.Error.UnexpectedError(error).toMono() }
+
+    private fun closeAccountIfNeed(account: Account): Mono<CloseAccountResult> =
+        Mono.fromCallable { isClosed(account) }
+            .flatMap { isClosed ->
+                when (isClosed) {
+                    true -> CloseAccountResult.Error.AccountAlreadyClosed(account).toMono()
+                    false -> closeAccount(account)
+                }
+            }
+
+    private fun closeAccount(account: Account): Mono<CloseAccountResult> =
+        Mono.fromCallable { createAccountWithClosedTimestamp(account) }
+            .flatMap { accountWithClosedTimestamp -> accountRepository.save(accountWithClosedTimestamp) }
+            .flatMap { saveResult ->
+                when (saveResult) {
+                    is AccountRepository.SaveAccountResult.Success ->
+                        processCloseSuccessSaveResult(saveResult)
+
+                    is AccountRepository.SaveAccountResult.Error ->
+                        CloseAccountResult.Error.SaveErrorFromRepository(saveResult).toMono()
+                }
+            }
+            .onErrorResume { error -> CloseAccountResult.Error.UnexpectedError(error).toMono() }
+
+    private fun createAccountWithClosedTimestamp(account: Account): Account =
+        account.copy(closedTimestamp = LocalDateTime.now())
+
+    private fun processSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CreateAccountResult> =
+        Mono.just(saveResult.account)
+            .doOnNext { account -> sendEventToKafkaAsync(account) }
+            .map { CreateAccountResult.Success }
+
+    private fun processCloseSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CloseAccountResult> =
+        Mono.just(saveResult.account)
+            .doOnNext { account -> sendEventToKafkaAsync(account) }
+            .map { CloseAccountResult.Success }
+
+    private fun Mono<AccountRepository.SaveAccountResult>.handleSaveResult() =
+        this
+
+
+    private fun isClosed(account: Account): Boolean =
+        account.closedTimestamp != null
 
     private fun SenderRecord(value: Account) =
         SenderRecord.create<String?, String, String?>(
             ProducerRecord(
-                "ACCOUNT_CHANGE_TOPIC",
+                "ACCOUNT",
                 objectMapper.writeValueAsString(value)
             ),
             null
         )
 
-    private fun sendEventToKafkaAsync(accountEntity: AccountEntity) {
-        val account = Factory.Account(accountEntity)
-
+    private fun sendEventToKafkaAsync(account: Account) {
         val senderRecord = SenderRecord(account).toMono()
 
         kafkaSender.send(senderRecord).subscribe()
-    }
-
-    private fun generate16DigitNumber(): String {
-        val random = Random(System.currentTimeMillis())
-        val number = StringBuilder()
-
-        number.append(random.nextInt(1, 10))
-
-        for (i in 1 until 16) {
-            number.append(random.nextInt(0, 10))
-        }
-
-        return number.toString()
     }
 }

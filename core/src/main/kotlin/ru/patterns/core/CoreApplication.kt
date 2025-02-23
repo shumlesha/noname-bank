@@ -10,7 +10,7 @@ import ru.patterns.core.config.ApplicationConfiguration
 @SpringBootApplication(scanBasePackageClasses = [ApplicationConfiguration::class])
 @EnableR2dbcRepositories
 @EnableWebFlux
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 class CoreApplication
 
 fun main(args: Array<String>) {

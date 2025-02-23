@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Table("accounts")
-class AccountEntity(
+data class AccountEntity(
     @Id
     val id: UUID? = null,
     @Column("creation_timestamp")

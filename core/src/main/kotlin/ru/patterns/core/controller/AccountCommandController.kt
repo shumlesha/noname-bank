@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.service.account.command.AccountCommandService
@@ -20,4 +21,12 @@ class AccountCommandController(
     @PostMapping("/close")
     fun close(@RequestBody closeAccountCommand: CloseAccountCommand) =
         accountCommandService.closeAccount(closeAccountCommand)
+            .map { closeResult ->
+                when (closeResult) {
+                    is AccountCommandService.CloseAccountResult.Success -> "Счет закрыт"
+                    is AccountCommandService.CloseAccountResult.Error.AccountAlreadyClosed -> "Счет уже был закрыт"
+                    is AccountCommandService.CloseAccountResult.Error.AccountNotExists -> "Счет не существует"
+                    else -> "Хз"
+                }
+            }
 }

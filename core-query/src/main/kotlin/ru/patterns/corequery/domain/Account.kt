@@ -1,4 +1,4 @@
-package ru.patterns.corequery.domain
+package ru.patterns.core.domain
 
 import java.time.LocalDateTime
 
@@ -18,6 +18,10 @@ data class Account(
      * Дата и время блокировки счета. Равен 'null', если счет не заблокирован
      */
     val blockedTimestamp: LocalDateTime?,
+    /**
+     * Дата и время закрытия счета. Равен 'null', если счет открыт
+     */
+    val closedTimestamp: LocalDateTime?,
     /**
      * Идентификатор клиента
      */
