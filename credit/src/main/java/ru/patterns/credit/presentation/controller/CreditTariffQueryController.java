@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.query.GetAllCreditTariffsQuery;
 import ru.patterns.credit.application.query.GetCreditTariffByIdQuery;
-import ru.patterns.credit.infrastructure.handler.CreditTariffQueryHandler;
+import ru.patterns.credit.infrastructure.handler.query.CreditTariffQueryHandler;
 import ru.patterns.credit.shared.dto.CreditTariffDto;
 
 import java.util.List;

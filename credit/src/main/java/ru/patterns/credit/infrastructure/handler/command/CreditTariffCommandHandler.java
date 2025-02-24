@@ -1,4 +1,4 @@
-package ru.patterns.credit.infrastructure.handler;
+package ru.patterns.credit.infrastructure.handler.command;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

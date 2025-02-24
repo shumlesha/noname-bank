@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.command.CreateCreditTariffCommand;
 import ru.patterns.credit.application.command.DeleteCreditTariffCommand;
 import ru.patterns.credit.application.command.UpdateCreditTariffCommand;
-import ru.patterns.credit.infrastructure.handler.CreditTariffCommandHandler;
+import ru.patterns.credit.infrastructure.handler.command.CreditTariffCommandHandler;
 
 import java.util.UUID;
 

@@ -1,3 +1,6 @@
 package ru.patterns.credit.application.command;
 
-public record PayCreditCommand() { }
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public record PayCreditCommand(UUID creditId, BigDecimal amount) { }

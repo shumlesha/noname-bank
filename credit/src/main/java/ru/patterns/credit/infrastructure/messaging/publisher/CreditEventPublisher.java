@@ -3,9 +3,9 @@ package ru.patterns.credit.infrastructure.messaging.publisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import ru.patterns.credit.application.command.PayCreditCommand;
 import ru.patterns.credit.configuration.mq.RabbitMQProperties;
 import ru.patterns.credit.shared.request.CreateCreditAccountRequest;
+import ru.patterns.credit.shared.request.PayCreditRequest;
 import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
 
 @Service
@@ -17,18 +17,18 @@ public class CreditEventPublisher {
     public CreateCreditAccountResponse publishCreditCreation(CreateCreditAccountRequest request) {
         var routingKey = properties.getRoutingKeys().get("creditCreateRequest");
         if (routingKey == null) {
-            throw new IllegalStateException("Routing key for credit creation not found");
+            throw new IllegalStateException("Routing key для создания кредита не найден");
         }
 
         return (CreateCreditAccountResponse) rabbitTemplate.convertSendAndReceive(properties.getExchange(), routingKey, request);
     }
 
-    public void publishPaymentRequest(PayCreditCommand command) {
+    public void publishPaymentRequest(PayCreditRequest request) {
         var routingKey = properties.getRoutingKeys().get("paymentRequest");
         if (routingKey == null) {
-            throw new IllegalStateException("Routing key for payment request not found");
+            throw new IllegalStateException("Routing key для оплаты кредита не найден");
         }
 
-        rabbitTemplate.convertAndSend(properties.getExchange(), routingKey, command);
+        rabbitTemplate.convertAndSend(properties.getExchange(), routingKey, request);
     }
 }
