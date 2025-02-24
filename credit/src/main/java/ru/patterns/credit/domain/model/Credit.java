@@ -8,12 +8,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -41,11 +43,18 @@ public class Credit {
     @Enumerated(EnumType.STRING)
     private CreditStatus status;
 
+    private LocalDate nextPaymentDate;
+
     public void addPayment(BigDecimal payment) {
         this.paidAmount = this.paidAmount.add(payment);
     }
 
     public boolean isPaidOff() {
         return this.paidAmount.compareTo(this.amount) >= 0;
+    }
+
+    @Transient
+    public BigDecimal getAmountRemainingToPay() {
+        return amount.subtract(paidAmount);
     }
 }

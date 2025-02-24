@@ -9,6 +9,7 @@ import ru.patterns.credit.domain.repository.CreditTariffRepository;
 import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -27,7 +28,8 @@ public class CreditFactory {
                 command.amount(),
                 BigDecimal.ZERO,
                 tariff,
-                CreditStatus.ACTIVE
+                CreditStatus.ACTIVE,
+                LocalDate.now().plusDays(1)
         );
     }
 }

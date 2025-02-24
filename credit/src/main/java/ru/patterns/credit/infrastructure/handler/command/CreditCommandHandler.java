@@ -13,6 +13,7 @@ import ru.patterns.credit.shared.request.PayCreditRequest;
 import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -50,7 +51,7 @@ public class CreditCommandHandler {
     }
 
     private void validateCredit(Credit credit) {
-        if (creditIsFullyPaid(credit)) {
+        if (credit.isPaidOff()) {
             throw new IllegalStateException("Кредит уже выплачен");
         }
     }
@@ -58,10 +59,8 @@ public class CreditCommandHandler {
     private void processPayment(Credit credit, BigDecimal amount) {
         var payCreditRequest = new PayCreditRequest(credit.getAccountId(), amount);
         eventPublisher.publishPaymentRequest(payCreditRequest);
-    }
-
-
-    private boolean creditIsFullyPaid(Credit credit){
-        return credit.getAmount().equals(credit.getPaidAmount());
+        credit.addPayment(amount);
+        credit.setNextPaymentDate(LocalDate.now().plusDays(1));
+        creditRepository.save(credit);
     }
 }
