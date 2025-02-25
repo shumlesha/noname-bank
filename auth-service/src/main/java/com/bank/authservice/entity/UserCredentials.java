@@ -24,6 +24,9 @@ public class UserCredentials {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
+    private UUID userId;
+
     @Column(nullable = false, unique = true, length = 64)
     @Check(name = "email_check", constraints = "email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'")
     private String email;

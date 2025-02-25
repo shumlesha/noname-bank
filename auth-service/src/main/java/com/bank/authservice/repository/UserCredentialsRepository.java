@@ -1,20 +1,18 @@
-package com.bank.userservice.repository;
+package com.bank.authservice.repository;
 
-import com.bank.userservice.entity.User;
+import com.bank.authservice.entity.UserCredentials;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
 import java.util.UUID;
 import static org.hibernate.jpa.HibernateHints.HINT_READ_ONLY;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
-    boolean existsByEmailIgnoreCase(String email);
+public interface UserCredentialsRepository extends JpaRepository<UserCredentials, UUID> {
 
     @QueryHints(@QueryHint(name = HINT_READ_ONLY, value = "true"))
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
-    Optional<User> findByEmailReadOnly(String email);
+    @Query("SELECT u FROM UserCredentials u WHERE LOWER(u.email) = LOWER(:email)")
+    boolean existsByEmailIgnoreCase(String email);
 }

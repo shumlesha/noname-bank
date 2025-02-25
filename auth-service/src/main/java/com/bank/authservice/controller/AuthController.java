@@ -1,5 +1,6 @@
 package com.bank.authservice.controller;
 
+import com.bank.authservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    //private final AuthService authService;
+    private final AuthService authService;
 }

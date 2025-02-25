@@ -10,6 +10,17 @@ spring:
       username: ${REDIS_USER}
       password: ${REDIS_PASSWORD}
       database: ${REDIS_DB}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
+    queue-config:
+      queue-name: ${RABBITMQ_QUEUE_NAME}
+      exchange: ${RABBITMQ_EXCHANGE_NAME}
+      routing-key: ${RABBITMQ_ROUTING_KEY}
+
 
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -62,3 +73,9 @@ springdoc:
     default-models-expand-depth: -1
     show-extensions: true
     validator-url: null
+
+jwt:
+  access-token-secret: ${ACCESS_TOKEN_SECRET}
+  refresh-token-secret: ${REFRESH_TOKEN_SECRET}
+  access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
+  refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
