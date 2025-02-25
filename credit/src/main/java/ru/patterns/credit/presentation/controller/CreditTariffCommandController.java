@@ -24,7 +24,7 @@ public class CreditTariffCommandController {
 
     @PostMapping("/create")
     public ResponseEntity<UUID> createTariff(@RequestBody CreateCreditTariffCommand command) {
-        UUID tariffId = creditTariffCommandHandler.handle(command);
+        var tariffId = creditTariffCommandHandler.handle(command);
         return ResponseEntity.ok(tariffId);
     }
 

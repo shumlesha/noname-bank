@@ -15,7 +15,7 @@ spring:
     locations:
       - migration
   rabbitmq:
-    host: localhost
+    host: 46.29.239.208
     port: 5672
     username: guest
     password: guest

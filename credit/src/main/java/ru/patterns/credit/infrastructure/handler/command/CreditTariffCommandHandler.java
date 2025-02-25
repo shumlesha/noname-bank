@@ -16,11 +16,12 @@ import java.util.UUID;
 public class CreditTariffCommandHandler {
     private final CreditTariffRepository creditTariffRepository;
 
-    @Transactional
     public UUID handle(CreateCreditTariffCommand command) {
-        var creditTariff = new CreditTariff(UUID.randomUUID(), command.name(), command.interestRate());
-        creditTariffRepository.save(creditTariff);
-        return creditTariff.getId();
+        var creditTariff = new CreditTariff();
+        creditTariff.setName(command.name());
+        creditTariff.setInterestRate(command.interestRate());
+        var newCreditTariff = creditTariffRepository.save(creditTariff);
+        return newCreditTariff.getId();
     }
 
     @Transactional

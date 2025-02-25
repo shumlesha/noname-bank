@@ -15,6 +15,7 @@ import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,9 +38,7 @@ public class CreditCommandHandler {
     public UUID handle(PayCreditCommand command) {
         var credit = getCredit(command.creditId());
         validateCredit(credit);
-
         processPayment(credit, command.amount());
-
         return credit.getId();
     }
 
@@ -50,7 +49,9 @@ public class CreditCommandHandler {
 
     private CreateCreditAccountResponse requestCreditAccount(CreateCreditCommand command) {
         var request = new CreateCreditAccountRequest(command.clientId(), command.amount());
-        return eventPublisher.publishCreditCreation(request);
+        var eventResponse = eventPublisher.publishCreditCreation(request);
+        return Optional.ofNullable(eventResponse)
+                .orElseThrow(() -> new RuntimeException("Ивент не пришел"));
     }
 
     private void validateCredit(Credit credit) {
