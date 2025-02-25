@@ -1,6 +1,8 @@
 package ru.patterns.credit.infrastructure.handler.command;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.application.command.CreateCreditCommand;
@@ -9,10 +11,13 @@ import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.handler.command.serialization.CreditFactory;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditEventPublisher;
+import ru.patterns.credit.shared.CreateCreditAccountResponseRaw;
 import ru.patterns.credit.shared.request.CreateCreditAccountRequest;
 import ru.patterns.credit.shared.request.PayCreditRequest;
 import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
+import ru.patterns.credit.shared.response.CreateCreditResponseMessage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -20,18 +25,28 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreditCommandHandler {
     private final CreditRepository creditRepository;
     private final CreditEventPublisher eventPublisher;
     private final CreditFactory creditFactory;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public UUID handle(CreateCreditCommand command) {
-        var accountData = requestCreditAccount(command);
-        var credit = creditFactory.createCredit(command, accountData);
-        creditRepository.save(credit);
+        try {
+            var accountData = requestCreditAccount(command);
 
-        return credit.getId();
+            if (accountData instanceof CreateCreditResponseMessage responseMessage){
+                var credit = creditFactory.createCredit(command, responseMessage.account());
+                creditRepository.save(credit);
+                return credit.getId();
+            } else {
+                throw new RuntimeException("error");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("error");
+        }
     }
 
     @Transactional
@@ -47,11 +62,11 @@ public class CreditCommandHandler {
                 .orElseThrow(() -> new IllegalArgumentException("Кредит не найден"));
     }
 
-    private CreateCreditAccountResponse requestCreditAccount(CreateCreditCommand command) {
+    private CreateCreditAccountResponseRaw requestCreditAccount(CreateCreditCommand command) throws IOException {
         var request = new CreateCreditAccountRequest(command.clientId(), command.amount());
         var eventResponse = eventPublisher.publishCreditCreation(request);
-        return Optional.ofNullable(eventResponse)
-                .orElseThrow(() -> new RuntimeException("Ивент не пришел"));
+        log.warn(eventResponse.getBody().toString());
+        return objectMapper.readValue(eventResponse.getBody(), CreateCreditAccountResponseRaw.class);
     }
 
     private void validateCredit(Credit credit) {
