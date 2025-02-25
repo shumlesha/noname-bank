@@ -12,12 +12,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RedisConfig {
+    private static final String REDIS_ADDRESS_TEMPLATE = "redis://%s:%s";
 
     @Bean
     public RedissonClient redissonClient(RedisProperties redisProperties) {
         Config config = new Config();
+
+        String address = REDIS_ADDRESS_TEMPLATE.formatted(redisProperties.getHost(), redisProperties.getPort());
+
         config.useSingleServer()
-                .setAddress(redisProperties.getHost() + ":" + redisProperties.getPort())
+                .setAddress(address)
                 .setUsername(redisProperties.getUsername())
                 .setPassword(redisProperties.getPassword())
                 .setConnectionPoolSize(64)
