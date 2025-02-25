@@ -8,6 +8,8 @@ import ru.patterns.credit.application.command.AutoPaymentCommand;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.handler.command.AutoPaymentCommandHandler;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Service
@@ -22,9 +24,16 @@ public class AutoPaymentJob implements Job {
         var creditsToPay = creditRepository.findCreditsDueForPayment(LocalDate.now());
 
         for (var credit : creditsToPay) {
+            var interestRate = credit.getTariff().getInterestRate();
             var remainingAmount = credit.getAmountRemainingToPay();
-            var command = new AutoPaymentCommand(credit.getId(), remainingAmount);
-            autoPaymentCommandHandler.handle(command);
+
+            var paymentAmount = remainingAmount.multiply(interestRate)
+                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+
+            if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+                var command = new AutoPaymentCommand(credit.getId(), paymentAmount);
+                autoPaymentCommandHandler.handle(command);
+            }
         }
     }
 }

@@ -65,7 +65,6 @@ public class CreditCommandHandler {
     private CreateCreditAccountResponseRaw requestCreditAccount(CreateCreditCommand command) throws IOException {
         var request = new CreateCreditAccountRequest(command.clientId(), command.amount());
         var eventResponse = eventPublisher.publishCreditCreation(request);
-        log.warn(eventResponse.getBody().toString());
         return objectMapper.readValue(eventResponse.getBody(), CreateCreditAccountResponseRaw.class);
     }
 
