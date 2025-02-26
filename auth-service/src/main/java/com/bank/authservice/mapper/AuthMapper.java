@@ -1,6 +1,8 @@
 package com.bank.authservice.mapper;
 
-import com.bank.authservice.dto.user.RegisterUserRequest;
+import com.bank.authservice.dto.auth.LoginUserRequest;
+import com.bank.authservice.dto.auth.RegisterUserRequest;
+import com.bank.authservice.dto.user.GetUserRequest;
 import com.bank.authservice.dto.user.SaveUserRequest;
 import com.bank.authservice.entity.UserCredentials;
 import com.bank.authservice.security.PasswordEncoderMapper;
@@ -13,7 +15,8 @@ public interface AuthMapper {
     SaveUserRequest toSaveUserRequest(RegisterUserRequest registerUserRequest);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "passwordHash", qualifiedByName = "passwordHash")
+    @Mapping(target = "passwordHash", qualifiedByName = "passwordHash", source = "registerUserRequest.password")
     UserCredentials toUserCredentials(UUID userId, RegisterUserRequest registerUserRequest);
 
+    GetUserRequest toGetUserRequest(LoginUserRequest loginUserRequest);
 }

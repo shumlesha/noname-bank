@@ -7,6 +7,7 @@ import org.redisson.api.RBloomFilter;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RSetCache;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -19,8 +20,8 @@ public class RedisTokenStorageService implements TokenStorageService {
     private final JwtProperties jwtProperties;
 
     @Override
-    public void storeRefreshToken(String tokenId, String email) {
-        refreshTokensMap.put(tokenId, email, jwtProperties.getRefreshTokenExpiration(),
+    public void storeRefreshToken(String tokenId, UUID userId) {
+        refreshTokensMap.put(tokenId, userId.toString(), jwtProperties.getRefreshTokenExpiration(),
                 TimeUnit.MILLISECONDS);
     }
 
@@ -33,9 +34,20 @@ public class RedisTokenStorageService implements TokenStorageService {
     }
 
     @Override
+    public boolean isRefreshTokenPresentForUser(String tokenId, UUID userId) {
+        String storedUserId = refreshTokensMap.get(tokenId);
+        return storedUserId != null && storedUserId.equals(userId.toString());
+    }
+
+    @Override
     public void revokeAccessToken(String tokenId) {
         revokedTokensBloomFilter.add(tokenId);
         revokedTokensSet.add(tokenId, jwtProperties.getAccessTokenExpiration(),
                 TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void removeRefreshToken(String tokenId) {
+        refreshTokensMap.remove(tokenId);
     }
 }

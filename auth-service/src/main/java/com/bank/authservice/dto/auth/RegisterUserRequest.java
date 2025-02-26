@@ -1,18 +1,19 @@
-package com.bank.authservice.dto.user;
+package com.bank.authservice.dto.auth;
 
+import com.bank.authservice.dto.user.Role;
 import com.bank.authservice.enumeration.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveUserRequest implements Serializable {
+public class RegisterUserRequest {
     private String email;
     private String fullName;
-    private List<String> roles;
     private Gender gender;
+    private List<Role> roles;
+    private String password;
 }

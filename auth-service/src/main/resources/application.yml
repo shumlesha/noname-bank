@@ -79,3 +79,10 @@ jwt:
   refresh-token-secret: ${REFRESH_TOKEN_SECRET}
   access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
   refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG

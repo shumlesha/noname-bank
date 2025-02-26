@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
     implementation 'org.apache.kafka:kafka-streams'
     implementation 'org.liquibase:liquibase-core'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.hibernate:hibernate-jcache:6.2.7.Final'
     compileOnly 'org.projectlombok:lombok'

@@ -1,16 +1,13 @@
 package com.bank.authservice.dto.user;
 
-import com.bank.authservice.enumeration.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterUserRequest {
+public class GetUserRequest implements Serializable {
     private String email;
-    private String fullName;
-    private Gender gender;
-    private String password;
 }

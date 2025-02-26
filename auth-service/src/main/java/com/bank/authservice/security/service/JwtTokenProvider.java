@@ -1,11 +1,18 @@
 package com.bank.authservice.security.service;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface JwtTokenProvider {
-    String createAccessToken(String email, List<String> roles);
+    String createAccessToken(UUID userId, String email, List<String> roles);
 
-    String createRefreshToken(String email);
+    String createRefreshToken(UUID userId, String email);
 
-    boolean validateToken(String token, boolean isRefreshToken);
+    boolean validateAccessToken(String token);
+
+    void revokeAccessToken(String token);
+
+    boolean validateRefreshToken(String token);
+
+    String extractEmail(String token);
 }
