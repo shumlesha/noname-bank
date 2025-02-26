@@ -5,8 +5,11 @@ spring:
     url: r2dbc:postgresql://localhost:5432/core-service
     username: postgres
     password: postgres
+  kafka:
+    bootstrap-servers: localhost:29094
 
 core:
+  enabled: true
   blocking:
     enabled: false
     kafka-properties:

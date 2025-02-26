@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - includeAll:
+      path: changesets
+      relativeToChangelogFile: true
+  - include:
+      file: db/changelog/scripts/25-02-changelog.sql
