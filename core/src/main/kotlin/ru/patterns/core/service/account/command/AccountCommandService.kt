@@ -1,20 +1,16 @@
 package ru.patterns.core.service.account.command
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
-import reactor.kafka.sender.KafkaSender
-import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountIdentification
 import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
 import ru.patterns.core.service.account.repository.AccountRepository
+import ru.patterns.core.service.kafka.KafkaEventSender
 import java.time.LocalDateTime
 
 interface AccountCommandService {
@@ -41,8 +37,7 @@ interface AccountCommandService {
 @Service
 class AccountCommandServiceImpl(
     private val accountRepository: AccountRepository,
-    private val kafkaSender: KafkaSender<String, String>,
-    private val objectMapper: ObjectMapper
+    private val kafkaEventSender: KafkaEventSender
 ) : AccountCommandService {
     @Transactional
     override fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult> =
@@ -58,12 +53,7 @@ class AccountCommandServiceImpl(
 
     @Transactional
     override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult> =
-        accountRepository.findById(
-            accountIdentification = AccountIdentification(
-                clientId = closeAccountCommand.clientId,
-                accountId = closeAccountCommand.accountId
-            )
-        )
+        accountRepository.findById(closeAccountCommand.accountId)
             .flatMap { findResult ->
                 when (findResult) {
                     is AccountRepository.FindAccountResult.Success -> closeAccountIfNeed(findResult.account)
@@ -105,13 +95,13 @@ class AccountCommandServiceImpl(
 
     private fun processSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CreateAccountResult> =
         Mono.just(saveResult.account)
-            .doOnNext { account -> sendEventToKafkaAsync(account) }
+            .doOnSuccess { account -> kafkaEventSender.sendEventToKafkaAsync(account) }
             .map(CreateAccountResult::Success)
 
     private fun processCloseSuccessSaveResult(saveResult: AccountRepository.SaveAccountResult.Success): Mono<CloseAccountResult> =
         Mono.just(saveResult.account)
-            .doOnNext { account -> sendEventToKafkaAsync(account) }
-            .map (CloseAccountResult::Success)
+            .doOnSuccess { account -> kafkaEventSender.sendEventToKafkaAsync(account) }
+            .map(CloseAccountResult::Success)
 
     private fun Mono<AccountRepository.SaveAccountResult>.handleSaveResult() =
         this
@@ -120,18 +110,5 @@ class AccountCommandServiceImpl(
     private fun isClosed(account: Account): Boolean =
         account.closedTimestamp != null
 
-    private fun SenderRecord(value: Account) =
-        SenderRecord.create<String?, String, String?>(
-            ProducerRecord(
-                "ACCOUNT",
-                objectMapper.writeValueAsString(value)
-            ),
-            null
-        )
 
-    private fun sendEventToKafkaAsync(account: Account) {
-        val senderRecord = SenderRecord(account).toMono()
-
-        kafkaSender.send(senderRecord).subscribe()
-    }
 }

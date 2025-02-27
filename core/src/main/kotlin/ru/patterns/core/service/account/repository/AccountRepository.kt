@@ -2,12 +2,13 @@ package ru.patterns.core.service.account.repository
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountIdentification
+import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.service.account.command.serialization.Factory
 import ru.patterns.core.service.account.command.serialization.Serializer
@@ -15,9 +16,10 @@ import ru.patterns.core.service.account.entity.AccountEntity
 import ru.patterns.core.service.account.repository.AccountRepository.FindAccountResult
 import ru.patterns.core.service.account.repository.AccountRepository.FindAllAccountResult
 import ru.patterns.core.service.account.repository.AccountRepository.SaveAccountResult
+import java.util.UUID
 
 sealed interface AccountRepository {
-    fun findById(accountIdentification: AccountIdentification): Mono<FindAccountResult>
+    fun findById(accountId: AccountId): Mono<FindAccountResult>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult>
     fun saveAll(accounts: List<Account>): Mono<SaveAllAccountResult>
     fun save(createAccountCommand: CreateAccountCommand): Mono<SaveAccountResult>
@@ -26,7 +28,7 @@ sealed interface AccountRepository {
     sealed interface FindAccountResult {
         data class Success(val account: Account) : FindAccountResult
         sealed interface Error : FindAccountResult {
-            data object AccountNotFound : Error
+            data class AccountNotFound(val accountId: UUID) : Error
             data class Unexpected(val cause: Throwable) : Error
         }
     }
@@ -53,11 +55,8 @@ class AccountRepositoryImpl(
 ) : AccountRepository {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    override fun findById(accountIdentification: AccountIdentification): Mono<FindAccountResult> =
-        repository.findByClientIdAndId(
-            clientId = accountIdentification.clientId.value,
-            accountId = accountIdentification.accountId.value
-        )
+    override fun findById(accountId: AccountId): Mono<FindAccountResult> =
+        repository.findById(accountId.value)
             .map(Factory::Account)
             .map<FindAccountResult>(FindAccountResult::Success)
             .onErrorResume { error ->
@@ -65,8 +64,8 @@ class AccountRepositoryImpl(
                 FindAccountResult.Error.Unexpected(error).toMono()
             }
             .switchIfEmpty {
-                log.info("Счет с id: {} не найден", accountIdentification)
-                FindAccountResult.Error.AccountNotFound.toMono()
+                log.info("Счет с id: {} не найден", accountId)
+                FindAccountResult.Error.AccountNotFound(accountId.value).toMono()
             }
 
     override fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult> =
@@ -80,6 +79,7 @@ class AccountRepositoryImpl(
                 FindAllAccountResult.Error(error).toMono()
             }
 
+    @Transactional
     override fun saveAll(accounts: List<Account>): Mono<AccountRepository.SaveAllAccountResult> =
         Mono.fromCallable { accounts.map(Serializer::AccountEntity) }
             .doOnSuccess { log.info("Сохраняем {} счетов", it.size) }
@@ -90,10 +90,12 @@ class AccountRepositoryImpl(
             .doOnError { error -> log.error("При сохранении счета произошла ошибка", error) }
             .onErrorResume { error -> AccountRepository.SaveAllAccountResult.Error(error).toMono() }
 
+    @Transactional
     override fun save(createAccountCommand: CreateAccountCommand): Mono<SaveAccountResult> =
         Mono.fromCallable { Serializer.AccountEntity(createAccountCommand) }
             .flatMap { accountEntity -> saveEntity(accountEntity) }
 
+    @Transactional
     override fun save(account: Account): Mono<SaveAccountResult> =
         Mono.fromCallable { Serializer.AccountEntity(account) }
             .flatMap { accountEntity -> saveEntity(accountEntity) }

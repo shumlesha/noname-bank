@@ -10,5 +10,4 @@ import java.util.UUID
 @Repository
 interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
     fun findAllByClientId(clientId: UUID): Flux<AccountEntity>
-    fun findByClientIdAndId(clientId: UUID, accountId: UUID): Mono<AccountEntity>
 }
