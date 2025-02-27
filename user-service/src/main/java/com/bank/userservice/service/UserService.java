@@ -7,11 +7,11 @@ import com.bank.userservice.entity.User;
 import java.util.UUID;
 
 public interface UserService {
-    void createUser(UserCreatePayload payload);
+    UserDto createUser(UserCreatePayload payload);
 
     UserDto banUser(UUID userId, BanUserRequest banUserRequest, UUID currentUserId);
 
-    User getByEmail(String email);
+    UserDto getByEmail(String email);
 
     UserDto getUserById(UUID id);
 }

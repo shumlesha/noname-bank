@@ -16,4 +16,5 @@ public class UserDto {
     private String email;
     private Gender gender;
     private Set<RoleDto> roles;
+    private boolean banned;
 }

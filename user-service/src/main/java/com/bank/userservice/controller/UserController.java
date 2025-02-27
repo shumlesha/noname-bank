@@ -10,6 +10,7 @@ import com.bank.userservice.util.ResponseBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class UserController {
 
 
     @PostMapping("/ban/{userId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     @Operation(summary = "Ban a user", description = "Ban a user by providing the user id and the ban reason")
     public ResponseEntity<DefaultResponse<UserDto>> banUser(@PathVariable UUID userId,
                                                             @RequestBody BanUserRequest banUserRequest,
