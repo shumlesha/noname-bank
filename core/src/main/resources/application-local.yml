@@ -6,13 +6,13 @@ spring:
     username: postgres
     password: postgres
   kafka:
-    bootstrap-servers: localhost:29094
+    bootstrap-servers: ${core.blocking.kafka-properties.bootstrap-servers}
 
 core:
   enabled: true
   blocking:
-    enabled: false
+    enabled: true
     kafka-properties:
       blocking-topic:
-        name: "BLOCKING"
-      bootstrap-servers: http://localhost:29092
+        name: "user_blocked"
+      bootstrap-servers: localhost:29092

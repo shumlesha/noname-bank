@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "auth-service")
 public interface AuthServiceClient {
-    @GetMapping("/auth/validate")
+    @GetMapping("/auth/verify")
     ResponseEntity<String> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token);
 }

@@ -13,7 +13,7 @@ object Serializer {
             id = null,
             clientId = createAccountCommand.clientId,
             number = generate16DigitNumber(),
-            isCredit = createAccountCommand.isCredit,
+            isCredit = false,
             creationTimestamp = LocalDateTime.now(),
             blockedTimestamp = null,
             closedTimestamp = null,

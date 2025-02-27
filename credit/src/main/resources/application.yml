@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: credit-service
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5430/creditdb
+    username: ${POSTGRES_USER:creditdb}
+    password: ${POSTGRES_PASSWORD:creditdb}
+  flyway:
+    enabled: true
+    locations:
+      - migration
+  rabbitmq:
+    host: 46.29.239.208
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 2
+          max-attempts: 5
+    exchange: "credit-exchange"
+    queues:
+      creditCreateRequest: "credit.create.request"
+      creditCreateResponse: "credit.create.response"
+      paymentRequest: "credit.payment.request"
+      paymentResponse: "credit.payment.response"
+    routing-keys:
+      creditCreateRequest: "credit.create.request"
+      creditCreateResponse: "credit.create.response"
+      paymentRequest: "credit.payment.request"
+      paymentResponse: "credit.payment.response"
+
+server:
+  port: 8085
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
