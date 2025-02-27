@@ -1,6 +1,7 @@
 package ru.patterns.core.service.account.command.serialization
 
 import ru.patterns.core.commands.account.CreateAccountCommand
+import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.service.account.entity.AccountEntity
 import java.math.BigDecimal
@@ -18,6 +19,18 @@ object Serializer {
             blockedTimestamp = null,
             closedTimestamp = null,
             balance = BigDecimal.ZERO
+        )
+
+    fun AccountEntity(createCreditAccountCommand: CreateCreditAccountCommand) =
+        AccountEntity(
+            id = null,
+            clientId = createCreditAccountCommand.clientId,
+            number = generate16DigitNumber(),
+            isCredit = true,
+            creationTimestamp = LocalDateTime.now(),
+            blockedTimestamp = null,
+            closedTimestamp = null,
+            balance = createCreditAccountCommand.amount
         )
 
     fun AccountEntity(account: Account) =
