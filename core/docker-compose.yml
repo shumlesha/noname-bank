@@ -11,7 +11,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: local
       # Параметры Kafka
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: "localhost:29094" # Указать значение сервера
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "46.29.239.208:29094" # Указать значение сервера
       # EUREKA заменяйте на актуальный
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://localhost:8761/eureka/
       # Настройки БД
@@ -22,7 +22,7 @@ services:
       SPRING_LIQUIBASE_USER: postgres
       SPRING_LIQUIBASE_PASSWORD: postgres
       # Настройки MQ
-      SPRING_RABBITMQ_HOST: localhost # Указать значение сервера
+      SPRING_RABBITMQ_HOST: 46.29.239.208 # Указать значение сервера
 
   postgres:
     image: postgres:17

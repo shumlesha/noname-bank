@@ -1,4 +1,4 @@
-package ru.patterns.credit.shared.request;
+package ru.patterns.credit.shared.request.credit.create;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

@@ -1,27 +1,24 @@
 package ru.patterns.credit.infrastructure.messaging.publisher;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.patterns.credit.configuration.mq.RabbitMQProperties;
-import ru.patterns.credit.shared.request.CreateCreditAccountRequest;
-import ru.patterns.credit.shared.request.PayCreditRequest;
+import ru.patterns.credit.shared.request.credit.create.CreateCreditAccountRequest;
 import ru.patterns.credit.utils.ObjectMapperUtils;
 
 import java.util.UUID;
 
 @Service
 @Slf4j
-public class CreditEventPublisher {
+public class CreditCreateEventPublisher {
     private final RabbitTemplate rabbitTemplate;
     private final RabbitMQProperties properties;
 
-    public CreditEventPublisher(
+    public CreditCreateEventPublisher(
             @Qualifier("asd") RabbitTemplate rabbitTemplate,
             RabbitMQProperties properties
     ) {
@@ -46,14 +43,5 @@ public class CreditEventPublisher {
                 routingKey,
                 message
         );
-    }
-
-    public void publishPaymentRequest(PayCreditRequest request) {
-        var routingKey = properties.getRoutingKeys().get("paymentRequest");
-        if (routingKey == null) {
-            throw new IllegalStateException("Routing key для оплаты кредита не найден");
-        }
-
-        rabbitTemplate.convertAndSend(properties.getExchange(), routingKey, request);
     }
 }

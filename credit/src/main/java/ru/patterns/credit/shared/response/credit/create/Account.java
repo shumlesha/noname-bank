@@ -1,6 +1,4 @@
-package ru.patterns.credit.shared.response;
-
-import ru.patterns.credit.shared.CreateCreditAccountResponseRaw;
+package ru.patterns.credit.shared.response.credit.create;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

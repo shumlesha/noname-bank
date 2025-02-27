@@ -1,13 +1,13 @@
 spring:
   rabbitmq:
-    host: localhost
+    host: 46.29.239.208
     port: 5672
     username: guest
     password: guest
   liquibase:
-    url: jdbc:postgresql://localhost:5432/core-service
+    url: jdbc:postgresql://localhost:5433/core-service
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/core-service
+    url: r2dbc:postgresql://localhost:5433/core-service
     username: postgres
     password: postgres
   kafka:
@@ -20,7 +20,7 @@ core:
     kafka-properties:
       blocking-topic:
         name: "user_blocked"
-      bootstrap-servers: localhost:29092
+      bootstrap-servers: 46.29.239.208:29092
   credit:
     mq:
       enabled: true
