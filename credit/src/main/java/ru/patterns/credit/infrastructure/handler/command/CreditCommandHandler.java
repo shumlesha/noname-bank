@@ -14,13 +14,13 @@ import ru.patterns.credit.infrastructure.messaging.publisher.CreditEventPublishe
 import ru.patterns.credit.shared.CreateCreditAccountResponseRaw;
 import ru.patterns.credit.shared.request.CreateCreditAccountRequest;
 import ru.patterns.credit.shared.request.PayCreditRequest;
+import ru.patterns.credit.shared.response.Account;
 import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
-import ru.patterns.credit.shared.response.CreateCreditResponseMessage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,7 +37,7 @@ public class CreditCommandHandler {
         try {
             var accountData = requestCreditAccount(command);
 
-            if (accountData instanceof CreateCreditResponseMessage responseMessage){
+            if (accountData instanceof CreateCreditAccountResponse responseMessage){
                 var credit = creditFactory.createCredit(command, responseMessage.account());
                 creditRepository.save(credit);
                 return credit.getId();
@@ -45,7 +45,7 @@ public class CreditCommandHandler {
                 throw new RuntimeException("error");
             }
         } catch (IOException e) {
-            throw new RuntimeException("error");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -65,7 +65,10 @@ public class CreditCommandHandler {
     private CreateCreditAccountResponseRaw requestCreditAccount(CreateCreditCommand command) throws IOException {
         var request = new CreateCreditAccountRequest(command.clientId(), command.amount());
         var eventResponse = eventPublisher.publishCreditCreation(request);
-        return objectMapper.readValue(eventResponse.getBody(), CreateCreditAccountResponseRaw.class);
+        String responseBody = new String(eventResponse.getBody(), StandardCharsets.UTF_8);
+        var account = objectMapper.readValue(eventResponse.getBody(), CreateCreditAccountResponseRaw.class);
+        log.info("Получен аккаунт {}", responseBody);
+        return account;
     }
 
     private void validateCredit(Credit credit) {
