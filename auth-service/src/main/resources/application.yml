@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:auth-service/.env[.properties]
   data:
     redis:
       host: ${REDIS_HOST}
