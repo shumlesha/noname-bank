@@ -27,7 +27,7 @@ spring:
         - id: client-interface
           uri: lb://client-interface
           predicates:
-            - Path=/**
+            - Path=/client/**
 eureka:
   client:
     service-url:

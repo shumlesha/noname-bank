@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  postgres:
+    container_name: postgres4
+    image: postgres:16
+    hostname: database
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=userdbdb
+      - POSTGRES_USER=${POSTGRES_USER:-userdbdb}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-userdbdb}
+    ports:
+      - "5427:5432"
+volumes:
+  pgdata:

@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  postgres:
+    container_name: postgres3
+    image: postgres:16
+    hostname: database
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=authdbdb
+      - POSTGRES_USER=${POSTGRES_USER:-authdbdb}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-authdbdb}
+    ports:
+      - "5428:5432"
+volumes:
+  pgdata:

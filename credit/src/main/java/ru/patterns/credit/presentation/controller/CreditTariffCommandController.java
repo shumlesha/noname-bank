@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/credit-tariff/command")
+@RequestMapping("/api/credit/tariff/command")
 public class CreditTariffCommandController {
     private final CreditTariffCommandHandler creditTariffCommandHandler;
 

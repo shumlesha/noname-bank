@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   config:
-    import: optional:file:auth-service/.env[.properties]
+    import: optional:file:.env[.properties]
   data:
     redis:
       host: ${REDIS_HOST}
@@ -79,6 +79,11 @@ jwt:
   refresh-token-secret: ${REFRESH_TOKEN_SECRET}
   access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
   refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
