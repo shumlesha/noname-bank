@@ -21,7 +21,7 @@ public class ResponseBuilder {
         return success(message, null);
     }
 
-    public ErrorApiResponse error(String message, HttpStatus status, Map<String, List<String>> errors) {
+    public ErrorApiResponse error(String message, HttpStatus status, Map<String, Object> errors) {
         return ErrorApiResponse.builder()
                 .status(status)
                 .message(message)

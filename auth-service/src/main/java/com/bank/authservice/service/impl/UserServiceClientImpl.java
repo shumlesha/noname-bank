@@ -1,7 +1,7 @@
 package com.bank.authservice.service.impl;
 
 import com.bank.authservice.config.rabbit.RabbitMQProperties;
-import com.bank.authservice.dto.intergration.ResponseWrapper;
+import com.bank.authservice.dto.intergration.response.ResponseWrapper;
 import com.bank.authservice.dto.intergration.event.EventMessage;
 import com.bank.authservice.dto.intergration.exception.IntegrationException;
 import com.bank.authservice.dto.user.GetUserRequest;
@@ -41,7 +41,7 @@ public class UserServiceClientImpl implements UserServiceClient {
     @Override
     public UserDto getUserByEmail(GetUserRequest getUserRequest) {
         EventMessage<GetUserRequest> eventMessage =
-                new EventMessage<>("USER_GET_BY_EMAIL", Instant.now(), getUserRequest);
+                new EventMessage<>("USER_GET", Instant.now(), getUserRequest);
         ResponseWrapper<UserDto> response = rabbitTemplate.convertSendAndReceiveAsType(
                 properties.getQueueConfig().getExchange(),
                 properties.getQueueConfig().getRoutingKey(),
