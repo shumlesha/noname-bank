@@ -1,4 +1,4 @@
-package ru.patterns.corequery.listener.account
+package ru.patterns.corequery.listener.transaction
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -6,15 +6,15 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.util.retry.Retry
-import ru.patterns.corequery.domain.Account
 import ru.patterns.corequery.config.KafkaListenerProperties
+import ru.patterns.corequery.domain.Transaction
 import ru.patterns.corequery.listener.RawMessageProcessor
 import java.time.Duration
 
 @Component
-class AccountKafkaMessageListener(
+class TransactionKafkaMessageListener(
     private val kafkaReceiver: KafkaReceiver<String, String>,
-    private val rawMessageProcessor: RawMessageProcessor<Account>,
+    private val rawMessageProcessor: RawMessageProcessor<Transaction>,
     kafkaListenerProperties: KafkaListenerProperties
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)

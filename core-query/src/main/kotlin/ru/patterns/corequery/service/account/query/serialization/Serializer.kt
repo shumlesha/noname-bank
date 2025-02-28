@@ -1,6 +1,6 @@
 package ru.patterns.corequery.service.account.query.serialization
 
-import ru.patterns.core.domain.Account
+import ru.patterns.corequery.domain.Account
 
 object Serializer {
     fun AccountEntity(account: Account) =

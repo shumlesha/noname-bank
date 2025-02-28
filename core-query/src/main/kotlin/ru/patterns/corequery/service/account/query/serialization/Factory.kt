@@ -1,10 +1,10 @@
 package ru.patterns.corequery.service.account.query.serialization
 
-import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountId
-import ru.patterns.core.domain.AccountNumber
-import ru.patterns.core.domain.Balance
-import ru.patterns.core.domain.ClientId
+import ru.patterns.corequery.domain.Account
+import ru.patterns.corequery.domain.AccountId
+import ru.patterns.corequery.domain.AccountNumber
+import ru.patterns.corequery.domain.Balance
+import ru.patterns.corequery.domain.ClientId
 
 
 object Factory {

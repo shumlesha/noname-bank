@@ -1,15 +1,14 @@
-package ru.patterns.corequery.domain
+package ru.patterns.corequery.listener.transaction
 
+import ru.patterns.corequery.domain.Balance
 import java.time.LocalDateTime
+import java.util.UUID
 
-/**
- * Транзакция
- */
-data class Transaction(
+data class TransactionQueryEntity(
     /**
      * Идентификатор транзакции
      */
-    val id: TransactionId,
+    val id: UUID,
     /**
      * Время совершения транзакции
      */
@@ -18,17 +17,17 @@ data class Transaction(
      * Идентификатор счета, откуда списываются средства,
      * может быть null, в случае, если происходит пополнение счета
      */
-    val accountFrom: AccountId?,
+    val accountFrom: UUID?,
     /**
      * Идентификатор счета, куда переводятся средства
      */
-    val accountTo: AccountId,
+    val accountTo: UUID,
     /**
      * Сумма, которую требуется перевести
      */
     val amount: Balance,
     /**
-     * Владелец счета, с которого произведен перевод
+     * Владелец счета, откуда списаны деньги
      */
-    val clientId: ClientId,
+    val clientId: UUID
 )

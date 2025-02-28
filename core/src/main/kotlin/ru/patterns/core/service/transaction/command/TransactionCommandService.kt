@@ -8,6 +8,7 @@ import ru.patterns.core.commands.transaction.CreateTransactionCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.Balance
+import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.MoneyTransfer
 import ru.patterns.core.domain.Transaction
 import ru.patterns.core.service.account.repository.AccountRepository
@@ -119,7 +120,7 @@ class TransactionCommandServiceImpl(
             .flatMap { saveResult ->
                 when (saveResult) {
                     is TransactionRepository.SaveTransactionResult.Success ->
-                        processSuccessSaveResult(saveResult.transaction)
+                        processSuccessSaveResult(moneyTransfer.accountFrom.clientId, saveResult.transaction)
 
                     is TransactionRepository.SaveTransactionResult.Error ->
                         CreateTransactionResult.Error.SaveErrorFromRepository(saveResult).toMono()
@@ -136,8 +137,8 @@ class TransactionCommandServiceImpl(
     private fun writeOnMoney(accountTo: Account, amount: BigDecimal): Account =
         accountTo.copy(balance = Balance(accountTo.balance.value + amount))
 
-    private fun processSuccessSaveResult(transaction: Transaction): Mono<CreateTransactionResult> =
+    private fun processSuccessSaveResult(clientId: ClientId, transaction: Transaction): Mono<CreateTransactionResult> =
         Mono.just(transaction)
-            .doOnSuccess { kafkaEventSender.sendEventToKafkaAsync(it) }
+            .doOnSuccess { kafkaEventSender.sendEventToKafkaAsync(clientId, it) }
             .map { CreateTransactionResult.Success(transaction) }
 }

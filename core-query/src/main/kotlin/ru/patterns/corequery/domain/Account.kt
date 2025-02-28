@@ -1,5 +1,9 @@
-package ru.patterns.core.domain
+package ru.patterns.corequery.domain
 
+import ru.patterns.corequery.domain.AccountId
+import ru.patterns.corequery.domain.AccountNumber
+import ru.patterns.corequery.domain.Balance
+import ru.patterns.corequery.domain.ClientId
 import java.time.LocalDateTime
 
 /**

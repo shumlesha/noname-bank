@@ -4,9 +4,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountIdentification
-import ru.patterns.core.domain.ClientId
+import ru.patterns.corequery.domain.Account
+import ru.patterns.corequery.domain.AccountIdentification
+import ru.patterns.corequery.domain.ClientId
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindAllResponse
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindByIdResponse
 import ru.patterns.corequery.service.account.query.repository.AccountRepository
