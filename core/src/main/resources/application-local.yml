@@ -20,7 +20,7 @@ core:
     kafka-properties:
       blocking-topic:
         name: "user_blocked"
-      bootstrap-servers: localhost:29092
+      bootstrap-servers: localhost:29094
   credit:
     mq:
       enabled: true

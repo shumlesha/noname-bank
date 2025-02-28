@@ -8,9 +8,9 @@ import ru.patterns.core.commands.account.CreateCreditAccountCommand
 class RawMqMessageParser(
     private val objectMapper: ObjectMapper
 ) {
-    fun parse(json: String): CreateCreditAccountCommand =
+    fun parse(body: ByteArray): CreateCreditAccountCommand =
         try {
-            objectMapper.readValue(json, CreateCreditAccountCommand::class.java)
+            objectMapper.readValue(body, CreateCreditAccountCommand::class.java)
         } catch (e: Exception) {
             throw IllegalArgumentException("Не удалось распарсить сообщение из MQ")
         }
