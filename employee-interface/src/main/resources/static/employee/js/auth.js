@@ -165,7 +165,7 @@ function initRegisterPage() {
                 email: response.data.email
             });
 
-            window.location.href = '/login';
+            window.location.href = '/employee/login';
         } catch (error) {
             errorMessageEl.textContent = error.message || 'Произошла ошибка при регистрации';
             errorMessageEl.style.display = 'block';
@@ -189,7 +189,7 @@ function initLoginPage() {
         try {
             const response = await apiService.login({ email, password });
             storageService.saveTokens(response.data);
-            window.location.href = '/home';
+            window.location.href = '/employee/home';
         } catch (error) {
             errorMessageEl.textContent = error.message || 'Неверный email или пароль';
             errorMessageEl.style.display = 'block';
@@ -206,7 +206,7 @@ function initHomePage() {
     const tokenData = storageService.getTokens();
 
     if (!tokenData) {
-        window.location.href = '/login';
+        window.location.href = '/employee/login';
         return;
     }
 
@@ -226,7 +226,7 @@ function initHomePage() {
         } finally {
             storageService.removeTokens();
             storageService.removeUserData();
-            window.location.href = '/login';
+            window.location.href = '/employee/login';
         }
     });
 }
@@ -235,7 +235,7 @@ function checkAuth() {
     const tokenData = storageService.getTokens();
 
     if (!tokenData) {
-        window.location.href = '/login';
+        window.location.href = '/employee/login';
         return false;
     }
 
@@ -245,7 +245,7 @@ function checkAuth() {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
 
-    if (currentPath !== '/login' && currentPath !== '/register') {
+    if (currentPath !== '/employee/login' && currentPath !== '/employee/register') {
         checkAuth();
     }
 });

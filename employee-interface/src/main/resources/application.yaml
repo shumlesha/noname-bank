@@ -11,5 +11,3 @@ eureka:
     prefer-ip-address: true
 server:
   port: 8088
-  servlet:
-    context-path: /employee
