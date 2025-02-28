@@ -108,8 +108,9 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = JwtUtil.extractJwtFromHeader(authHeader);
 
         boolean isTokenValid = jwtTokenProvider.validateAccessToken(accessToken);
+        UUID userId = jwtTokenProvider.extractUserId(accessToken);
 
-        return new TokenVerificationDto(isTokenValid);
+        return new TokenVerificationDto(isTokenValid, userId);
     }
 
     private TokenDto createTokenDto(UserDto user) {

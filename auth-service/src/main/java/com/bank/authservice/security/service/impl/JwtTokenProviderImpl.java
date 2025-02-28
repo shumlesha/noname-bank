@@ -104,6 +104,16 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         }
     }
 
+    @Override
+    public UUID extractUserId(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return UUID.fromString(signedJWT.getJWTClaimsSet().getClaim("userId").toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     private boolean checkSignature(SignedJWT signedJWT, TokenType tokenType) {
         try {
@@ -136,15 +146,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             return signedJWT.getJWTClaimsSet().getJWTID();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private UUID extractUserId(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            return UUID.fromString(signedJWT.getJWTClaimsSet().getClaim("userId").toString());
         } catch (Exception e) {
             return null;
         }
