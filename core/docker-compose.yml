@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: core
+    ports:
+      - "10080:10080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      # Параметры Kafka
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "localhost:29094" # Указать значение сервера
+      # EUREKA заменяйте на актуальный
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://localhost:8761/eureka/
+      # Настройки БД
+      SPRING_R2DBC_URL: r2dbc:postgresql://postgres:5432/core-service
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://postgres:5432/core-service
+      SPRING_LIQUIBASE_USER: postgres
+      SPRING_LIQUIBASE_PASSWORD: postgres
+      # Настройки MQ
+      SPRING_RABBITMQ_HOST: localhost # Указать значение сервера
+
+  postgres:
+    image: postgres:17
+    container_name: core_postgres_db
+    environment:
+      POSTGRES_DB: core-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
