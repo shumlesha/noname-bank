@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.application.command.PayCreditCommand;
 import ru.patterns.credit.domain.model.Credit;
+import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditPayEventPublisher;
 import ru.patterns.credit.shared.request.credit.pay.PayCreditRequest;
@@ -24,20 +25,17 @@ public class CreditPayCommandHandler {
     @Transactional
     public UUID handle(PayCreditCommand command) {
         var credit = getCredit(command.creditId());
-        validateCredit(credit);
         processPayment(credit, command.amount());
+        if (credit.isPaidOff()) {
+            credit.setStatus(CreditStatus.PAID_OFF);
+            creditRepository.save(credit);
+        }
         return credit.getId();
     }
 
     private Credit getCredit(UUID creditId) {
         return creditRepository.findById(creditId)
                 .orElseThrow(() -> new IllegalArgumentException("Кредит не найден"));
-    }
-
-    private void validateCredit(Credit credit) {
-        if (credit.isPaidOff()) {
-            throw new IllegalStateException("Кредит уже выплачен");
-        }
     }
 
     private void processPayment(Credit credit, BigDecimal amount) {
