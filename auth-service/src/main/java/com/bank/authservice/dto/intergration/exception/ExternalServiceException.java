@@ -1,14 +1,16 @@
 package com.bank.authservice.dto.intergration.exception;
 
-import com.bank.authservice.dto.intergration.ErrorResponse;
-import lombok.Getter;
+import com.bank.authservice.dto.intergration.response.ErrorResponse;
+import com.bank.authservice.exception.SystemException;
+import com.bank.authservice.util.ErrorUtil;
+import java.util.HashMap;
 
-@Getter
-public class ExternalServiceException extends RuntimeException {
-    private final ErrorResponse errorResponse;
 
-    public ExternalServiceException(String message, ErrorResponse errorResponse) {
-        super(message);
-        this.errorResponse = errorResponse;
+public class ExternalServiceException extends SystemException {
+    public ExternalServiceException(ErrorResponse errorResponse) {
+        super(errorResponse.getMessage(),
+                errorResponse.getStatus(),
+                ErrorUtil.getMetadata(errorResponse)
+         );
     }
 }

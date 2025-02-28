@@ -1,5 +1,6 @@
 package com.bank.authservice.security;
 
+import com.bank.authservice.exception.JwtException;
 import com.bank.authservice.security.service.JwtTokenProvider;
 import com.bank.authservice.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -45,6 +46,9 @@ public class JwtFilter extends GenericFilterBean {
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
             }
+        } else {
+            SecurityContextHolder.clearContext();
+            (servletRequest).setAttribute("jwtException", new JwtException("Invalid token"));
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

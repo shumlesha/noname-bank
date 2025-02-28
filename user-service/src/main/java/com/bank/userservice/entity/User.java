@@ -1,6 +1,7 @@
 package com.bank.userservice.entity;
 
 import com.bank.userservice.enumeration.Gender;
+import com.bank.userservice.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,7 +56,7 @@ public class User {
 
     public void ban() {
         if (this.isBanned()) {
-            throw new IllegalArgumentException("User is already banned");
+            throw new BadRequestException("User is already banned");
         }
         this.banned = true;
     }

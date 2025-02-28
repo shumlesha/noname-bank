@@ -1,5 +1,6 @@
 package com.bank.userservice.security.config;
 
+import com.bank.userservice.dto.api.ErrorApiResponse;
 import com.bank.userservice.dto.api.ErrorResponse;
 import com.bank.userservice.util.ResponseBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +24,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        ErrorResponse errorResponse = ResponseBuilder.error(
+        ErrorApiResponse errorResponse = ResponseBuilder.error(
                 accessDeniedException.getMessage(),
                 HttpStatus.FORBIDDEN
         );

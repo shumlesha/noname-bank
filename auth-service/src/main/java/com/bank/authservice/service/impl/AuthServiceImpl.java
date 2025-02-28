@@ -12,6 +12,8 @@ import com.bank.authservice.dto.user.RoleDto;
 import com.bank.authservice.dto.user.SaveUserRequest;
 import com.bank.authservice.dto.user.UserDto;
 import com.bank.authservice.entity.UserCredentials;
+import com.bank.authservice.exception.BadRequestException;
+import com.bank.authservice.exception.BusinessException;
 import com.bank.authservice.mapper.AuthMapper;
 import com.bank.authservice.repository.UserCredentialsRepository;
 import com.bank.authservice.security.service.JwtTokenProvider;
@@ -20,6 +22,7 @@ import com.bank.authservice.service.UserServiceClient;
 import com.bank.authservice.util.JwtUtil;
 import com.bank.authservice.validator.UserCredentialsValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -77,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         boolean isTokenValid = jwtTokenProvider.validateRefreshToken(refreshTokenRequest.getRefreshToken());
 
         if (!isTokenValid) {
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new BadRequestException("Invalid refresh token");
         }
 
         String email = jwtTokenProvider.extractEmail(refreshTokenRequest.getRefreshToken());
@@ -92,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
         boolean isRefreshTokenValid = jwtTokenProvider.validateRefreshToken(logoutRequest.getRefreshToken());
 
         if (!isRefreshTokenValid) {
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new BadRequestException("Invalid refresh token");
         }
 
         String accessToken = JwtUtil.extractJwtFromHeader(authHeader);
@@ -104,8 +108,9 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = JwtUtil.extractJwtFromHeader(authHeader);
 
         boolean isTokenValid = jwtTokenProvider.validateAccessToken(accessToken);
+        UUID userId = jwtTokenProvider.extractUserId(accessToken);
 
-        return new TokenVerificationDto(isTokenValid);
+        return new TokenVerificationDto(isTokenValid, userId);
     }
 
     private TokenDto createTokenDto(UserDto user) {
