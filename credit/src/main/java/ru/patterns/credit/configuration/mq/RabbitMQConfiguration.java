@@ -6,6 +6,10 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +43,30 @@ public class RabbitMQConfiguration {
                                 .to(exchange)
                                 .with(entry.getValue())
                 ));
+    }
+
+    @Bean("asd")
+    public RabbitTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(new SimpleMessageConverter());
+        rabbitTemplate.setReplyAddress(replyQueue().getName());
+        rabbitTemplate.setReplyTimeout(10000);
+        rabbitTemplate.setUseDirectReplyToContainer(false);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer replyListenerContainer(ConnectionFactory connectionFactory) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.setQueues(replyQueue());
+        container.setMessageListener(amqpTemplate(connectionFactory));
+        return container;
+    }
+
+    @Bean
+    public Queue replyQueue() {
+        return new Queue("credit.create.response");
     }
 }
 

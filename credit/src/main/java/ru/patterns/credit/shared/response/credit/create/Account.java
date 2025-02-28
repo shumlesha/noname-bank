@@ -1,10 +1,10 @@
-package ru.patterns.credit.shared.response;
+package ru.patterns.credit.shared.response.credit.create;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CreateCreditAccountResponse(
+public record Account(
         UUID id,
         LocalDateTime creationTimestamp,
         LocalDateTime blockedTimestamp,

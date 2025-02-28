@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.patterns.credit.application.command.AutoPaymentCommand;
 import ru.patterns.credit.domain.repository.CreditRepository;
-import ru.patterns.credit.infrastructure.messaging.publisher.CreditEventPublisher;
-import ru.patterns.credit.shared.request.PayCreditRequest;
+import ru.patterns.credit.infrastructure.messaging.publisher.CreditPayEventPublisher;
+import ru.patterns.credit.shared.request.credit.pay.PayCreditRequest;
 
 import java.time.LocalDate;
 
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class AutoPaymentCommandHandler {
 
     private final CreditRepository creditRepository;
-    private final CreditEventPublisher eventPublisher;
+    private final CreditPayEventPublisher eventPublisher;
 
     @Transactional
     public void handle(AutoPaymentCommand command) {

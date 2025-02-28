@@ -4,31 +4,38 @@ import com.bank.userservice.aspect.PublishBanEvent;
 import com.bank.userservice.dto.event.payload.UserCreatePayload;
 import com.bank.userservice.dto.user.BanUserRequest;
 import com.bank.userservice.dto.user.UserDto;
+import com.bank.userservice.entity.Role;
 import com.bank.userservice.entity.User;
 import com.bank.userservice.mapper.UserMapper;
+import com.bank.userservice.repository.RoleRepository;
 import com.bank.userservice.repository.UserRepository;
 import com.bank.userservice.service.UserService;
 import com.bank.userservice.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final UserMapper userMapper;
 
     @Override
     @Transactional
-    public void createUser(UserCreatePayload payload) {
+    public UserDto createUser(UserCreatePayload payload) {
         userValidator.checkUserAlreadyExists(payload.getEmail());
+        List<Role> roles = roleRepository.findAllByNameIn(payload.getRoles());
 
         User user = userMapper.toEntity(payload);
+        user.setRoles(Set.copyOf(roles));
 
-        userRepository.save(user);
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
@@ -45,9 +52,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User getByEmail(String email) {
-        return userRepository.findByEmailReadOnly(email)
+    public UserDto getByEmail(String email) {
+        User user = userRepository.findByEmailReadOnly(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userMapper.toDto(user);
     }
 
     @Override

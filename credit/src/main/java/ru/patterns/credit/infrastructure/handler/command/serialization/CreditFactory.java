@@ -6,7 +6,7 @@ import ru.patterns.credit.application.command.CreateCreditCommand;
 import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditTariffRepository;
-import ru.patterns.credit.shared.response.CreateCreditAccountResponse;
+import ru.patterns.credit.shared.response.credit.create.Account;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ import java.util.UUID;
 public class CreditFactory {
     private final CreditTariffRepository creditTariffRepository;
 
-    public Credit createCredit(CreateCreditCommand command, CreateCreditAccountResponse accountData) {
+    public Credit createCredit(CreateCreditCommand command, Account accountData) {
         var tariff = creditTariffRepository.findById(command.tariffId())
                 .orElseThrow(() -> new IllegalArgumentException("Кредитный тариф не найден"));
 

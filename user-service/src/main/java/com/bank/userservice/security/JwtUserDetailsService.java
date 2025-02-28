@@ -1,5 +1,6 @@
 package com.bank.userservice.security;
 
+import com.bank.userservice.dto.user.UserDto;
 import com.bank.userservice.entity.User;
 import com.bank.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.getByEmail(email);
+        UserDto user = userService.getByEmail(email);
 
         return UserFactory.create(user);
     }
