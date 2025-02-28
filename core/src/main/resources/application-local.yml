@@ -1,4 +1,9 @@
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
   liquibase:
     url: jdbc:postgresql://localhost:5432/core-service
   r2dbc:
@@ -15,4 +20,22 @@ core:
     kafka-properties:
       blocking-topic:
         name: "user_blocked"
-      bootstrap-servers: localhost:29092
+      bootstrap-servers: localhost:29094
+  credit:
+    mq:
+      enabled: true
+      credit-create-request:
+        name: "credit.create.request"
+      credit-create-response:
+        name: "credit.create.response"
+      exchange: "credit-exchange"
+      queues:
+        creditCreateRequest: ${core.credit.mq.credit-create-request.name}
+        creditCreateResponse: ${core.credit.mq.credit-create-response.name}
+        paymentRequest: "credit.payment.request"
+        paymentResponse: "credit.payment.response"
+      routing-keys:
+        creditCreateRequest: "credit.create.request"
+        creditCreateResponse: "credit.create.response"
+        paymentRequest: "credit.payment.request"
+        paymentResponse: "credit.payment.response"

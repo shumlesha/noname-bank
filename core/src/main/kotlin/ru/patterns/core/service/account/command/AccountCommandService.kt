@@ -6,6 +6,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
+import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 
 interface AccountCommandService {
     fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult>
+    fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateAccountResult>
     fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult>
 
     sealed interface CreateAccountResult {
@@ -50,6 +52,16 @@ class AccountCommandServiceImpl(
             }
             .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
 
+    @Transactional
+    override fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateAccountResult> =
+        accountRepository.save(createCreditAccountCommand)
+            .flatMap { saveResult ->
+                when (saveResult) {
+                    is AccountRepository.SaveAccountResult.Success -> processSuccessSaveResult(saveResult)
+                    is AccountRepository.SaveAccountResult.Error -> CreateAccountResult.Error(saveResult.cause).toMono()
+                }
+            }
+            .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
 
     @Transactional
     override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult> =

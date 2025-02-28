@@ -1,6 +1,7 @@
 package com.bank.authservice.security.service.impl;
 
 import com.bank.authservice.enumeration.TokenType;
+import com.bank.authservice.exception.BadRequestException;
 import com.bank.authservice.security.JwtProperties;
 import com.bank.authservice.security.service.JwtTokenProvider;
 import com.bank.authservice.security.service.TokenStorageService;
@@ -103,6 +104,16 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         }
     }
 
+    @Override
+    public UUID extractUserId(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return UUID.fromString(signedJWT.getJWTClaimsSet().getClaim("userId").toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     private boolean checkSignature(SignedJWT signedJWT, TokenType tokenType) {
         try {
@@ -140,15 +151,6 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         }
     }
 
-    private UUID extractUserId(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            return UUID.fromString(signedJWT.getJWTClaimsSet().getClaim("userId").toString());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     private String createToken(UUID userId, String email, List<String> roles, String secret, long expiration) {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.HS256)
                 .type(JOSEObjectType.JWT)
@@ -174,7 +176,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
             signedJWT.sign(signer);
             return signedJWT.serialize();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create token");
+            throw new BadRequestException("Failed to create token");
         }
     }
 }

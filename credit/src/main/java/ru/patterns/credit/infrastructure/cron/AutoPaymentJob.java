@@ -24,14 +24,8 @@ public class AutoPaymentJob implements Job {
         var creditsToPay = creditRepository.findCreditsDueForPayment(LocalDate.now());
 
         for (var credit : creditsToPay) {
-            var interestRate = credit.getTariff().getInterestRate();
-            var remainingAmount = credit.getAmountRemainingToPay();
-
-            var paymentAmount = remainingAmount.multiply(interestRate)
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-
-            if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
-                var command = new AutoPaymentCommand(credit.getId(), paymentAmount);
+            if (!credit.isPaidOff()) {
+                var command = new AutoPaymentCommand(credit.getId());
                 autoPaymentCommandHandler.handle(command);
             }
         }

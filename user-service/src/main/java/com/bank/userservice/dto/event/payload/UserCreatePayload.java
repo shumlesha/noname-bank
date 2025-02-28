@@ -5,6 +5,7 @@ import com.bank.userservice.enumeration.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,4 +14,5 @@ public class UserCreatePayload implements Payload {
     private String email;
     private String fullName;
     private Gender gender;
+    private List<String> roles;
 }

@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.command.CreateCreditCommand;
 import ru.patterns.credit.application.command.PayCreditCommand;
-import ru.patterns.credit.infrastructure.handler.command.CreditCommandHandler;
+import ru.patterns.credit.infrastructure.handler.command.CreditCreateCommandHandler;
+import ru.patterns.credit.infrastructure.handler.command.CreditPayCommandHandler;
 
 import java.util.UUID;
 
@@ -16,17 +17,18 @@ import java.util.UUID;
 @RequestMapping("/api/credit/command")
 @RequiredArgsConstructor
 public class CreditCommandController {
-    private final CreditCommandHandler creditCommandHandler;
+    private final CreditCreateCommandHandler creditCreateCommandHandler;
+    private final CreditPayCommandHandler creditPayCommandHandler;
 
     @PostMapping
     public ResponseEntity<UUID> createCredit(@RequestBody CreateCreditCommand command) {
-        var creditId = creditCommandHandler.handle(command);
+        var creditId = creditCreateCommandHandler.handle(command);
         return ResponseEntity.ok(creditId);
     }
 
     @PostMapping("/pay")
     public ResponseEntity<Void> payCredit(@RequestBody PayCreditCommand command) {
-        creditCommandHandler.handle(command);
+        creditPayCommandHandler.handle(command);
         return ResponseEntity.ok().build();
     }
 }

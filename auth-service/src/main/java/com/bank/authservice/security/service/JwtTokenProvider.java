@@ -15,4 +15,6 @@ public interface JwtTokenProvider {
     boolean validateRefreshToken(String token);
 
     String extractEmail(String token);
+
+    UUID extractUserId(String token);
 }

@@ -32,9 +32,14 @@ public class JwtUtil {
 
 
     public static String extractJwtFromHeader(String header) {
-        if (header == null ||!header.startsWith("Bearer ")) {
+        if (header == null) {
             return null;
         }
-        return header.substring(7);
+
+        if (header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+
+        return header;
     }
 }

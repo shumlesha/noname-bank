@@ -1,6 +1,9 @@
 package com.bank.userservice.validator;
 
 import com.bank.userservice.entity.User;
+import com.bank.userservice.exception.BadRequestException;
+import com.bank.userservice.exception.EntityAlreadyExistsException;
+import com.bank.userservice.exception.EntityNotFoundException;
 import com.bank.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,20 +16,20 @@ public class UserValidator {
 
     public void checkUserAlreadyExists(String email) {
         if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw new IllegalArgumentException("User with this email already exists");
+            throw new EntityAlreadyExistsException("User", "email", email);
         }
     }
 
     public User validateBan(UUID userId, UUID currentUserId) {
         if (userId.equals(currentUserId)) {
-            throw new IllegalArgumentException("You cannot ban yourself");
+            throw new BadRequestException("You cannot ban yourself");
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User", userId));
 
         if (user.isBanned()) {
-            throw new IllegalArgumentException("User is already banned");
+            throw new BadRequestException("User is already banned");
         }
 
         return user;

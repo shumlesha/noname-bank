@@ -1,5 +1,6 @@
 package com.bank.userservice.security;
 
+import com.bank.userservice.exception.JwtException;
 import com.bank.userservice.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,7 @@ public class JwtFilter extends GenericFilterBean {
             token = authHeader.substring(7);
         }
 
-        if (token != null) { // TODO: уточнить валидацию в гейтвее
+        if (token != null) {
             try {
                 UsernamePasswordAuthenticationToken authToken = jwtUtil.getAuthentication(token);
 
@@ -43,6 +44,9 @@ public class JwtFilter extends GenericFilterBean {
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
             }
+        } else {
+            SecurityContextHolder.clearContext();
+            (servletRequest).setAttribute("jwtException", new JwtException("Missing auth token"));
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

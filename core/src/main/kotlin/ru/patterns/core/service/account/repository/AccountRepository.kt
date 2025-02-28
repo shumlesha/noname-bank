@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CreateAccountCommand
+import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.ClientId
@@ -23,6 +24,7 @@ sealed interface AccountRepository {
     fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult>
     fun saveAll(accounts: List<Account>): Mono<SaveAllAccountResult>
     fun save(createAccountCommand: CreateAccountCommand): Mono<SaveAccountResult>
+    fun save(createCreditAccountCommand: CreateCreditAccountCommand): Mono<SaveAccountResult>
     fun save(account: Account): Mono<SaveAccountResult>
 
     sealed interface FindAccountResult {
@@ -93,6 +95,10 @@ class AccountRepositoryImpl(
     @Transactional
     override fun save(createAccountCommand: CreateAccountCommand): Mono<SaveAccountResult> =
         Mono.fromCallable { Serializer.AccountEntity(createAccountCommand) }
+            .flatMap { accountEntity -> saveEntity(accountEntity) }
+
+    override fun save(createCreditAccountCommand: CreateCreditAccountCommand): Mono<SaveAccountResult> =
+        Mono.fromCallable { Serializer.AccountEntity(createCreditAccountCommand) }
             .flatMap { accountEntity -> saveEntity(accountEntity) }
 
     @Transactional

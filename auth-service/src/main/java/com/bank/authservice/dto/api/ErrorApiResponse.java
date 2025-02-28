@@ -15,5 +15,5 @@ import java.util.Map;
 public class ErrorApiResponse {
     private HttpStatus status;
     private String message;
-    private Map<String, List<String>> errors;
+    private Map<String, Object> errors;
 }

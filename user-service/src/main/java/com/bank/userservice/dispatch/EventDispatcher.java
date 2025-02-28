@@ -1,5 +1,6 @@
 package com.bank.userservice.dispatch;
 
+import com.bank.userservice.dto.api.interagration.ExternalResponse;
 import com.bank.userservice.dto.event.EventMessage;
 import com.bank.userservice.dto.event.Payload;
 import com.bank.userservice.handlers.Handler;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class EventDispatcher {
     private final Map<String, Handler<? extends Payload>> handlers;
 
-    public void dispatch(EventMessage<?> eventMessage) {
+    public ExternalResponse<?> dispatch(EventMessage<?> eventMessage) {
         String eventType = eventMessage.getEventType();
         String handlerName = eventType.formatToHandlerName();
 
@@ -29,13 +30,14 @@ public class EventDispatcher {
             throw new IllegalArgumentException("Payload type mismatch for event type: " + eventType);
         }
 
-        dispatchWithPayload(handler, eventMessage);
+        return dispatchWithPayload(handler, eventMessage);
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Payload> void dispatchWithPayload(Handler<T> handler, EventMessage<?> eventMessage) {
+    private <T extends Payload> ExternalResponse<?> dispatchWithPayload(Handler<T> handler,
+                                                                        EventMessage<?> eventMessage) {
         T payload = handler.getPayloadClass().cast(eventMessage.getPayload());
 
-        handler.handle((EventMessage<T>) eventMessage, payload);
+        return handler.handle((EventMessage<T>) eventMessage, payload);
     }
 }

@@ -7,7 +7,27 @@ spring:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/auth/**
+            - Path=/api/auth/**
+
+        - id: credit-service
+          uri: lb://credit-service
+          predicates:
+            - Path=/api/credit/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+
+        - id: core-query
+          uri: lb://core-query
+          predicates:
+            - Path=/api/account/**
+
+        - id: client-interface
+          uri: lb://client-interface
+          predicates:
+            - Path=/**
 eureka:
   client:
     service-url:

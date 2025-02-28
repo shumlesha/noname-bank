@@ -24,16 +24,16 @@ public class RedisConfig {
                 .setAddress(address)
                 .setUsername(redisProperties.getUsername())
                 .setPassword(redisProperties.getPassword())
-                .setConnectionPoolSize(64)
-                .setConnectionMinimumIdleSize(24)
-                .setSubscriptionConnectionPoolSize(50);
+                .setConnectionPoolSize(16)
+                .setConnectionMinimumIdleSize(8)
+                .setSubscriptionConnectionPoolSize(10);
 
         return Redisson.create(config);
     }
 
     @Bean
     public RBloomFilter<String> revokedTokensBloomFilter(RedissonClient redisson) {
-        RBloomFilter<String> bloomFilter = redisson.getBloomFilter("revoked-tokens");
+        RBloomFilter<String> bloomFilter = redisson.getBloomFilter("revoked-tokens-bloom");
 
         bloomFilter.tryInit(1_000_000L, 0.03);
         return bloomFilter;
