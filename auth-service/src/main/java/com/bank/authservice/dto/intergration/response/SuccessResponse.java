@@ -1,4 +1,4 @@
-package com.bank.authservice.dto.intergration;
+package com.bank.authservice.dto.intergration.response;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;

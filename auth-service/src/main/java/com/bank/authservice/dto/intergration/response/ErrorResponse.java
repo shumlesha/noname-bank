@@ -1,4 +1,4 @@
-package com.bank.authservice.dto.intergration;
+package com.bank.authservice.dto.intergration.response;
 
 import com.bank.authservice.dto.intergration.exception.ExternalServiceException;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -17,6 +17,6 @@ public class ErrorResponse implements ResponseWrapper<Object> {
 
     @Override
     public Object getOrThrow() {
-        throw new ExternalServiceException(message, this);
+        throw new ExternalServiceException(this);
     }
 }

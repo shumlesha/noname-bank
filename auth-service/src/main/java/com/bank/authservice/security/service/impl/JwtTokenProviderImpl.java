@@ -1,6 +1,7 @@
 package com.bank.authservice.security.service.impl;
 
 import com.bank.authservice.enumeration.TokenType;
+import com.bank.authservice.exception.BadRequestException;
 import com.bank.authservice.security.JwtProperties;
 import com.bank.authservice.security.service.JwtTokenProvider;
 import com.bank.authservice.security.service.TokenStorageService;
@@ -174,7 +175,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
             signedJWT.sign(signer);
             return signedJWT.serialize();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create token");
+            throw new BadRequestException("Failed to create token");
         }
     }
 }

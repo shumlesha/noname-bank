@@ -1,5 +1,6 @@
 package com.bank.userservice.security.config;
 
+import com.bank.userservice.dto.api.ErrorApiResponse;
 import com.bank.userservice.dto.api.ErrorResponse;
 import com.bank.userservice.util.ResponseBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        ErrorResponse errorResponse = ResponseBuilder.error(
-                authException.getMessage(),
+        Exception exception = (Exception) request.getAttribute("jwtException");
+        String message = authException.getMessage();
+
+        if (exception != null) {
+            message = exception.getMessage();
+        }
+
+        ErrorApiResponse errorResponse = ResponseBuilder.error(
+                message,
                 HttpStatus.UNAUTHORIZED
         );
 

@@ -1,10 +1,10 @@
 package com.bank.userservice.util;
 
+
 import com.bank.userservice.dto.api.DefaultResponse;
-import com.bank.userservice.dto.api.ErrorResponse;
+import com.bank.userservice.dto.api.ErrorApiResponse;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
-import java.util.List;
 import java.util.Map;
 
 @UtilityClass
@@ -21,15 +21,15 @@ public class ResponseBuilder {
         return success(message, null);
     }
 
-    public ErrorResponse error(String message, HttpStatus status, Map<String, List<String>> errors) {
-        return ErrorResponse.builder()
+    public ErrorApiResponse error(String message, HttpStatus status, Map<String, Object> errors) {
+        return ErrorApiResponse.builder()
                 .status(status)
                 .message(message)
                 .errors(errors)
                 .build();
     }
 
-    public ErrorResponse error(String message, HttpStatus status) {
+    public ErrorApiResponse error(String message, HttpStatus status) {
         return error(message, status, null);
     }
 }

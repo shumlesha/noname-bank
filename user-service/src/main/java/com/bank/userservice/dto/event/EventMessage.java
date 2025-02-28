@@ -1,6 +1,7 @@
 package com.bank.userservice.dto.event;
 
 import com.bank.userservice.dto.event.payload.UserCreatePayload;
+import com.bank.userservice.dto.event.payload.UserGetPayload;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -32,7 +33,8 @@ public class EventMessage<T extends Payload> {
             visible = true
     )
     @JsonSubTypes({
-            @JsonSubTypes.Type(value = UserCreatePayload.class, name = "USER_CREATE")
+            @JsonSubTypes.Type(value = UserCreatePayload.class, name = "USER_CREATE"),
+            @JsonSubTypes.Type(value = UserGetPayload.class, name = "USER_GET")
     })
     private T payload;
 }
