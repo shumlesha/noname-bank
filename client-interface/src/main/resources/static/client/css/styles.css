@@ -214,3 +214,91 @@ body {
         gap: 10px;
     }
 }
+
+/* Table styles */
+#accounts-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#accounts-table th, #accounts-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+#accounts-table th {
+    background: #2980b9;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+#accounts-table td {
+    color: #333;
+    font-size: 14px;
+}
+
+#accounts-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#accounts-table tr:hover {
+    background-color: #eaf4ff;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#accounts-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Button styles inside the table */
+#accounts-table .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+#accounts-table .btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+#accounts-table .btn-primary:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+#accounts-table .btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+#accounts-table .btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    #accounts-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #accounts-table th, #accounts-table td {
+        min-width: 120px;
+    }
+}

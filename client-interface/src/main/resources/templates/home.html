@@ -10,7 +10,7 @@
 <div class="container">
     <header class="main-header">
         <div class="logo">
-            <h1>Моё приложение</h1>
+            <h1>NoName Банк</h1>
         </div>
         <div class="user-info">
             <span id="user-email"></span>
@@ -21,7 +21,6 @@
     <div class="main-content">
         <div class="welcome-message">
             <h2>Добро пожаловать!</h2>
-            <p>Вы успешно вошли в систему.</p>
         </div>
 
         <div class="content-section">
@@ -31,13 +30,35 @@
                 <p><strong>Email:</strong> <span id="user-email-details"></span></p>
             </div>
         </div>
+
+        <div class="content-section">
+            <h3>Ваши счета</h3>
+            <button onclick="createAccount()" class="btn btn-primary">Создать счёт</button>
+            <table id="accounts-table">
+                <thead>
+                <tr>
+                    <th>Номер счёта</th>
+                    <th>Баланс</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody id="accounts-list">
+                <tr>
+                    <td colspan="5">Загрузка данных...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script th:src="@{/client/js/auth.js}"></script>
+<script th:src="@{/client/js/accounts.js}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initHomePage();
+        loadAccounts();
     });
 </script>
 </body>
