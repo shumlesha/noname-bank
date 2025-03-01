@@ -2,7 +2,7 @@
 
 ### Запросы
 
-1. POST `/api/account/query`
+1. POST `/api/query/account`
 
 **body**
 
@@ -37,7 +37,7 @@
 }
 ```
 
-2. POST `/api/account/query/list`
+2. POST `/api/query/account/list`
 
 **body**
 

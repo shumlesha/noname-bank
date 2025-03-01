@@ -10,9 +10,9 @@ import java.util.UUID
 @Table(name = "transactions")
 class TransactionEntity(
     @Id
-    val id: UUID? = null,
+    val id: UUID,
     @Column(value = "transaction_timestamp")
-    val transactionTimestamp: LocalDateTime = LocalDateTime.now(),
+    val transactionTimestamp: LocalDateTime,
     @Column(value = "account_from")
     val accountFrom: UUID?,
     @Column(value = "account_to")

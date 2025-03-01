@@ -38,6 +38,12 @@ object Factory {
                     statusCode = 400
                 )
 
+            is TransactionCommandService.CreateTransactionResult.Error.AccountClosedOrBlocked ->
+                ErrorResponse(
+                    message = "Счет закрыт или заблокирован",
+                    statusCode = 400
+                )
+
             else -> ErrorResponse(
                 message = "Что-то пошло не так",
                 statusCode = 500

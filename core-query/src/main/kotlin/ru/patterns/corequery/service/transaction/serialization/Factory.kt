@@ -9,7 +9,7 @@ import ru.patterns.corequery.domain.TransactionId
 object Factory {
     fun Transaction(transactionEntity: TransactionEntity): Transaction =
         Transaction(
-            id = TransactionId(transactionEntity.id!!),
+            id = TransactionId(transactionEntity.id),
             transactionTimestamp = transactionEntity.transactionTimestamp,
             accountFrom = transactionEntity.accountFrom?.let { AccountId(it) },
             accountTo = AccountId(transactionEntity.accountTo),

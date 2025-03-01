@@ -29,6 +29,7 @@ sealed interface TransactionCommandService {
             data object SameAccount : Error
             data class AccountNotFound(val accountId: UUID) : Error
             data class UnexpectedError(val cause: Throwable) : Error
+            data object AccountClosedOrBlocked : Error
         }
     }
 }
@@ -91,6 +92,8 @@ class TransactionCommandServiceImpl(
     ): Mono<CreateTransactionResult> {
         if (moneyTransfer.accountFrom.balance.value < moneyTransfer.amount) {
             return CreateTransactionResult.Error.NotEnoughMoney.toMono()
+        } else if (isAccountClosedOrBlocked(moneyTransfer.accountFrom) || isAccountClosedOrBlocked(moneyTransfer.accountTo)) {
+            return CreateTransactionResult.Error.AccountClosedOrBlocked.toMono()
         }
 
         val updatedAccountFrom = writeOffMoney(moneyTransfer.accountFrom, moneyTransfer.amount)
@@ -119,8 +122,11 @@ class TransactionCommandServiceImpl(
         transactionRepository.save(moneyTransfer)
             .flatMap { saveResult ->
                 when (saveResult) {
-                    is TransactionRepository.SaveTransactionResult.Success ->
+                    is TransactionRepository.SaveTransactionResult.Success -> {
+                        kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountFrom)
+                        kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountTo)
                         processSuccessSaveResult(moneyTransfer.accountFrom.clientId, saveResult.transaction)
+                    }
 
                     is TransactionRepository.SaveTransactionResult.Error ->
                         CreateTransactionResult.Error.SaveErrorFromRepository(saveResult).toMono()
@@ -130,6 +136,9 @@ class TransactionCommandServiceImpl(
                 log.error("При сохранении произошла неожиданная ошибка", error)
                 CreateTransactionResult.Error.UnexpectedError(error).toMono()
             }
+
+    private fun isAccountClosedOrBlocked(account: Account): Boolean =
+        account.closedTimestamp != null || account.blockedTimestamp != null
 
     private fun writeOffMoney(accountFrom: Account, amount: BigDecimal): Account =
         accountFrom.copy(balance = Balance(accountFrom.balance.value - amount))
