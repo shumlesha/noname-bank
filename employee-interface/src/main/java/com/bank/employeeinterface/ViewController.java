@@ -23,6 +23,16 @@ public class ViewController {
         return "home";
     }
 
+    @GetMapping("/profile")
+    public String profilePage() {
+        return "home";
+    }
+
+    @GetMapping("/me")
+    public String mePage() {
+        return "home";
+    }
+
     @GetMapping("/")
     public String indexPage() {
         return "redirect:/employee/home";
