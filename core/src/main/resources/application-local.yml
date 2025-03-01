@@ -28,6 +28,10 @@ core:
         name: "credit.create.request"
       credit-create-response:
         name: "credit.create.response"
+      credit-payment-request:
+        name: "credit.payment.request"
+      credit-payment-response:
+        name: "credit.payment.response"
       exchange: "credit-exchange"
       queues:
         creditCreateRequest: ${core.credit.mq.credit-create-request.name}

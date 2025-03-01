@@ -4,10 +4,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountIdentification
-import ru.patterns.core.domain.ClientId
+import ru.patterns.corequery.domain.Account
+import ru.patterns.corequery.domain.AccountIdentification
+import ru.patterns.corequery.domain.ClientId
+import ru.patterns.corequery.domain.GetAccountsWithPagination
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindAllResponse
+import ru.patterns.corequery.service.account.query.AccountQueryService.FindAllWithPaginationResponse
 import ru.patterns.corequery.service.account.query.AccountQueryService.FindByIdResponse
 import ru.patterns.corequery.service.account.query.repository.AccountRepository
 
@@ -15,6 +17,7 @@ import ru.patterns.corequery.service.account.query.repository.AccountRepository
 interface AccountQueryService {
     fun findById(accountIdentification: AccountIdentification): Mono<FindByIdResponse>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse>
+    fun findAllWithPagination(getAccountsWithPagination: GetAccountsWithPagination): Mono<FindAllWithPaginationResponse>
 
     sealed interface FindByIdResponse {
         data class Success(val account: Account) : FindByIdResponse
@@ -27,6 +30,11 @@ interface AccountQueryService {
     sealed interface FindAllResponse {
         data class Success(val accounts: List<Account>) : FindAllResponse
         data class Error(val cause: Throwable) : FindAllResponse
+    }
+
+    sealed interface FindAllWithPaginationResponse {
+        data class Success(val accounts: List<Account>) : FindAllWithPaginationResponse
+        data class Error(val cause: Throwable) : FindAllWithPaginationResponse
     }
 }
 
@@ -80,4 +88,18 @@ class AccountQueryServiceImpl(
                 }
             }
             .onErrorResume { error -> FindAllResponse.Error(error).toMono() }
+
+    override fun findAllWithPagination(getAccountsWithPagination: GetAccountsWithPagination): Mono<FindAllWithPaginationResponse> =
+        accountRepository.findAllWithPagination(getAccountsWithPagination)
+            .doOnSuccess { log.debug("Получены счета: {}", it) }
+            .map { findAllWithPaginationResult ->
+                when (findAllWithPaginationResult) {
+                    is AccountRepository.FindAllWithPaginationResult.Success ->
+                        FindAllWithPaginationResponse.Success(findAllWithPaginationResult.accounts)
+
+                    is AccountRepository.FindAllWithPaginationResult.Error ->
+                        FindAllWithPaginationResponse.Error(findAllWithPaginationResult.cause)
+                }
+            }
+            .onErrorResume { error -> FindAllWithPaginationResponse.Error(error).toMono() }
 }

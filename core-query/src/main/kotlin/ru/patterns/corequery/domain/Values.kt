@@ -1,4 +1,4 @@
-package ru.patterns.core.domain
+package ru.patterns.corequery.domain
 
 import java.math.BigDecimal
 import java.util.UUID
@@ -14,3 +14,12 @@ value class ClientId(val value: UUID)
 
 @JvmInline
 value class Balance(val value: BigDecimal)
+
+@JvmInline
+value class TransactionId(val value: UUID)
+
+@JvmInline
+value class PaginationSize(val value: Int)
+
+@JvmInline
+value class PaginationOffset(val value: Int)

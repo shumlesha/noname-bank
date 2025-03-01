@@ -1,44 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
+    <meta name="description" content="Личный кабинет сотрудника банка NoName">
+    <title>Личный кабинет сотрудника | Банк NoName</title>
     <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
 </head>
 <body>
-<div class="container">
-    <header class="main-header">
-        <div class="logo">
-            <h1>Моё приложение</h1>
-        </div>
-        <div class="user-info">
-            <span id="user-email"></span>
-            <button id="logout-btn" class="btn btn-logout">Выйти</button>
-        </div>
-    </header>
-
-    <div class="main-content">
-        <div class="welcome-message">
-            <h2>Добро пожаловать!</h2>
-            <p>Вы успешно вошли в систему.</p>
-        </div>
-
-        <div class="content-section">
-            <h3>Ваши данные</h3>
-            <div class="user-details">
-                <p><strong>ID пользователя:</strong> <span id="user-id"></span></p>
-                <p><strong>Email:</strong> <span id="user-email-details"></span></p>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo">
+                <h1>Банк NoName</h1>
             </div>
-        </div>
-    </div>
-</div>
+            <div class="user-info">
+                <span id="user-email" class="user-email"></span>
+                <button id="logout-btn" class="btn btn-logout">Выйти</button>
+            </div>
+        </header>
 
-<script th:src="@{/employee/js/auth.js}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initHomePage();
-    });
-</script>
+        <main class="main-content">
+            <section class="welcome-section">
+                <h2>Личный кабинет сотрудника</h2>
+                <p>Добро пожаловать в систему управления банком NoName.</p>
+            </section>
+
+            <section class="profile-section">
+                <h3>Информация о сотруднике</h3>
+                <div class="user-details">
+                    <div class="loading-indicator">
+                        <span class="loading-text">Загрузка данных...</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 Банк NoName. Все права защищены.</p>
+        </footer>
+    </div>
+
+
+    <script th:src="@{/employee/js/auth.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initHomePage();
+        });
+    </script>
 </body>
 </html>

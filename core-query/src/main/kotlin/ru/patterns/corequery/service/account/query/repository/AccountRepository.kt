@@ -5,11 +5,13 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.domain.Account
-import ru.patterns.core.domain.AccountIdentification
-import ru.patterns.core.domain.ClientId
+import ru.patterns.corequery.domain.Account
+import ru.patterns.corequery.domain.AccountIdentification
+import ru.patterns.corequery.domain.ClientId
+import ru.patterns.corequery.domain.GetAccountsWithPagination
 import ru.patterns.corequery.service.account.query.repository.AccountRepository.FindAccountResult
 import ru.patterns.corequery.service.account.query.repository.AccountRepository.FindAllAccountResult
+import ru.patterns.corequery.service.account.query.repository.AccountRepository.FindAllWithPaginationResult
 import ru.patterns.corequery.service.account.query.repository.AccountRepository.SaveAccountResult
 import ru.patterns.corequery.service.account.query.serialization.Factory
 import ru.patterns.corequery.service.account.query.serialization.Serializer
@@ -18,6 +20,7 @@ sealed interface AccountRepository {
     fun save(account: Account): Mono<SaveAccountResult>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult>
     fun findById(accountIdentification: AccountIdentification): Mono<FindAccountResult>
+    fun findAllWithPagination(getAccountsWithPagination: GetAccountsWithPagination): Mono<FindAllWithPaginationResult>
 
     sealed interface FindAllAccountResult {
         data class Success(val accounts: List<Account>) : FindAllAccountResult
@@ -35,6 +38,11 @@ sealed interface AccountRepository {
     sealed interface SaveAccountResult {
         data object Success : SaveAccountResult
         data class Error(val cause: Throwable) : SaveAccountResult
+    }
+
+    sealed interface FindAllWithPaginationResult {
+        data class Success(val accounts: List<Account>) : FindAllWithPaginationResult
+        data class Error(val cause: Throwable) : FindAllWithPaginationResult
     }
 }
 
@@ -75,5 +83,18 @@ class AccountRepositoryImpl(
             .switchIfEmpty {
                 log.info("Счет с id: {} не найден", accountIdentification)
                 FindAccountResult.Error.AccountNotFound.toMono()
+            }
+
+    override fun findAllWithPagination(getAccountsWithPagination: GetAccountsWithPagination): Mono<FindAllWithPaginationResult> =
+        repository.findAllWithPagination(
+            size = getAccountsWithPagination.size.value,
+            offset = getAccountsWithPagination.offset.value
+        )
+            .collectList()
+            .map { accountEntities -> accountEntities.map(Factory::Account) }
+            .map<FindAllWithPaginationResult>(FindAllWithPaginationResult::Success)
+            .onErrorResume { error ->
+                log.error("При получении всех счетов произошла ошибка", error)
+                FindAllWithPaginationResult.Error(error).toMono()
             }
 }

@@ -24,22 +24,31 @@ class KafkaListenerConfiguration {
         val springKafkaProperties: KafkaProperties,
         val kafkaListenerProperties: KafkaListenerProperties
     ) {
-        @Bean
-        fun kafkaReceiver(): KafkaReceiver<String, String> = KafkaReceiver.create(consumerConfigs())
+        @Bean("accountKafkaReceiver")
+        fun accountKafkaReceiver(): KafkaReceiver<String, String> = KafkaReceiver.create(accountConsumerConfigs())
 
-        fun consumerConfigs(): ReceiverOptions<String, String> {
-            val props = mapOf<String, Any>(
+        private fun accountConsumerConfigs(): ReceiverOptions<String, String> =
+            ReceiverOptions
+                .create<String, String>(consumerProps())
+                .subscription(singleton(kafkaListenerProperties.accountTopic.name))
+
+        @Bean("transactionKafkaReceiver")
+        fun transactionKafkaReceiver(): KafkaReceiver<String, String> =
+            KafkaReceiver.create(transactionConsumerConfigs())
+
+        private fun transactionConsumerConfigs(): ReceiverOptions<String, String> =
+            ReceiverOptions
+                .create<String, String>(consumerProps())
+                .subscription(singleton(kafkaListenerProperties.transactionTopic.name))
+
+        private fun consumerProps(): Map<String, Any> =
+            mapOf<String, Any>(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to springKafkaProperties.bootstrapServers,
                 ConsumerConfig.GROUP_ID_CONFIG to kafkaListenerProperties.groupId,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
                 JsonDeserializer.TRUSTED_PACKAGES to "*"
             )
-
-            return ReceiverOptions
-                .create<String, String>(props)
-                .subscription(singleton(kafkaListenerProperties.accountTopic.name))
-        }
     }
 }
 

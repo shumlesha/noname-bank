@@ -1,4 +1,4 @@
-package ru.patterns.core.domain
+package ru.patterns.corequery.domain
 
 data class AccountIdentification(
     val clientId: ClientId,
@@ -7,4 +7,14 @@ data class AccountIdentification(
 
 data class ClientIdentification(
     val clientId: ClientId
+)
+
+data class TransactionInfo(
+    val clientId: ClientId,
+    val transactionId: TransactionId
+)
+
+data class GetAccountsWithPagination(
+    val size: PaginationSize,
+    val offset: PaginationOffset,
 )
