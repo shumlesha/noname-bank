@@ -74,3 +74,67 @@
   "statusCode": 500
 }
 ```
+
+3. POST `/api/query/transaction/list`
+
+**body**
+```json
+{
+    "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+}
+```
+
+**Success**
+
+```json
+{
+    "transactions": [
+        {
+            "id": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1",
+            "transactionTimestamp": "2025-03-01 09:27:20",
+            "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0",
+            "amount": 100
+        }
+    ]
+}
+```
+
+**Error**
+
+```json
+{
+  "message": "Произошла ошибка",
+  "statusCode": 500
+}
+```
+
+5POST `/api/query/transaction`
+   **body**
+```json
+{
+  "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0",
+  "transactionId": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1"
+}
+```
+
+**Success**
+
+```json
+{
+  "id": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1",
+  "transactionTimestamp": "2025-03-01 09:27:20",
+  "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+  "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+  "amount": 100,
+  "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+}
+```
+
+**Error**
+
+```json
+{
+  "message": "Указанная транзакция не найдена",
+  "statusCode": 401
+}
+```

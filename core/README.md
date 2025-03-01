@@ -64,3 +64,35 @@
   "statusCode": 401
 }
 ```
+
+3. POST `/api/transaction/create`
+
+**body**
+
+```json
+{
+  "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+  "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+  "amount" : "1000"
+}
+```
+
+**Success**
+
+```json
+{
+  "transactionId": "1a05b670-5fa1-423b-bc21-f31708fb7c44",
+  "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+  "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+  "amount": 1003
+}
+```
+
+**Error**
+
+```json
+{
+  "message": "Указанного счета не существует",
+  "statusCode": 401
+}
+```
