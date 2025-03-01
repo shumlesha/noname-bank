@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.patterns.credit.configuration.mq.RabbitMQProperties;
 import ru.patterns.credit.shared.request.credit.pay.PayCreditRequest;
@@ -17,12 +18,15 @@ public class CreditPayEventPublisher {
     private final RabbitTemplate rabbitTemplate;
     private final RabbitMQProperties properties;
 
-    public CreditPayEventPublisher(RabbitTemplate rabbitTemplate, RabbitMQProperties properties) {
+    public CreditPayEventPublisher(
+            @Qualifier("rabbitPayCreditTemplate") RabbitTemplate rabbitTemplate,
+            RabbitMQProperties properties
+    ) {
         this.rabbitTemplate = rabbitTemplate;
         this.properties = properties;
     }
 
-    public void publishPaymentRequest(PayCreditRequest request) {
+    public Message publishPaymentRequest(PayCreditRequest request) {
         var routingKey = properties.getRoutingKeys().get("paymentRequest");
         if (routingKey == null) {
             throw new IllegalStateException("Routing key для оплаты кредита не найден");
@@ -34,6 +38,10 @@ public class CreditPayEventPublisher {
 
         var message = new Message(ObjectMapperUtils.writeValueAsAString(request).getBytes(), messageProperties);
 
-        rabbitTemplate.send(routingKey,message);
+        return rabbitTemplate.sendAndReceive(
+                properties.getExchange(),
+                routingKey,
+                message
+        );
     }
 }

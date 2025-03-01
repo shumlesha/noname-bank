@@ -45,8 +45,8 @@ public class RabbitMQConfiguration {
                 ));
     }
 
-    @Bean("asd")
-    public RabbitTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+    @Bean("rabbitCreateCreditTemplate")
+    public RabbitTemplate rabbitCreateCreditTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(new SimpleMessageConverter());
         rabbitTemplate.setReplyAddress(replyQueue().getName());
@@ -60,7 +60,7 @@ public class RabbitMQConfiguration {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueues(replyQueue());
-        container.setMessageListener(amqpTemplate(connectionFactory));
+        container.setMessageListener(rabbitCreateCreditTemplate(connectionFactory));
         return container;
     }
 
@@ -68,5 +68,30 @@ public class RabbitMQConfiguration {
     public Queue replyQueue() {
         return new Queue("credit.create.response");
     }
+
+    @Bean("rabbitPayCreditTemplate")
+    public RabbitTemplate rabbitPayCreditTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(new SimpleMessageConverter());
+        rabbitTemplate.setReplyAddress(payCreditQueue().getName());
+        rabbitTemplate.setReplyTimeout(10000);
+        rabbitTemplate.setUseDirectReplyToContainer(false);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public Queue payCreditQueue() {
+        return new Queue("credit.payment.response");
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer payCreditListenerContainer(ConnectionFactory connectionFactory) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.setQueues(payCreditQueue());
+        container.setMessageListener(rabbitPayCreditTemplate(connectionFactory));
+        return container;
+    }
 }
+
 

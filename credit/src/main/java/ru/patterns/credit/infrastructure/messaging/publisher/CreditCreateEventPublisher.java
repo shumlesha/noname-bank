@@ -19,7 +19,7 @@ public class CreditCreateEventPublisher {
     private final RabbitMQProperties properties;
 
     public CreditCreateEventPublisher(
-            @Qualifier("asd") RabbitTemplate rabbitTemplate,
+            @Qualifier("rabbitCreateCreditTemplate") RabbitTemplate rabbitTemplate,
             RabbitMQProperties properties
     ) {
         this.rabbitTemplate = rabbitTemplate;
