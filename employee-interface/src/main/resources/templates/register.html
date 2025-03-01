@@ -1,68 +1,95 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
+    <meta name="description" content="Регистрация сотрудника в системе банка NoName">
+    <title>Регистрация | Банк NoName</title>
     <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
 </head>
 <body>
-<div class="container">
-    <div class="auth-form">
-        <h1>Регистрация</h1>
-        <div id="error-message" class="error-message" style="display: none;"></div>
-        <form id="register-form">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+    <div class="container">
+        <header class="auth-header">
+            <div class="logo">
+                <h1>Банк NoName</h1>
             </div>
-            <div class="form-group">
-                <label for="fullName">Полное имя:</label>
-                <input type="text" id="fullName" name="fullName" required>
-            </div>
-            <div class="form-group">
-                <label for="gender">Пол:</label>
-                <select id="gender" name="gender" required>
-                    <option value="">Выберите пол</option>
-                    <option value="MALE">Мужской</option>
-                    <option value="FEMALE">Женский</option>
-                    <option value="OTHER">Другой</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Роль:</label>
-                <div class="role-options">
-                    <label class="role-option">
-                        <input type="checkbox" name="roles" value="CLIENT" checked> Клиент
-                    </label>
-                    <label class="role-option">
-                        <input type="checkbox" name="roles" value="EMPLOYEE"> Сотрудник
-                    </label>
+        </header>
+        
+        <main class="main-content">
+            <section class="auth-form-container">
+                <h2>Регистрация</h2>
+                
+                <div id="error-message" class="error-message" aria-live="polite" style="display: none;"></div>
+                
+                <form id="register-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Полное имя:</label>
+                        <input type="text" id="fullName" name="fullName" required autocomplete="name">
+                    </div>
+                    
+                    <fieldset class="form-group">
+                        <legend>Пол:</legend>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="gender" value="MALE" required> Мужской
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="gender" value="FEMALE"> Женский
+                            </label>
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset class="form-group">
+                        <legend>Роль:</legend>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="roles" value="CLIENT" checked> Клиент
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="roles" value="EMPLOYEE"> Сотрудник
+                            </label>
+                        </div>
+                    </fieldset>
+                    
+                    <div class="form-group">
+                        <label for="password">Пароль:</label>
+                        <input type="password" id="password" name="password" required autocomplete="new-password" 
+                               minlength="8" aria-describedby="password-hint">
+                        <small id="password-hint" class="form-hint">Пароль должен содержать не менее 8 символов</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтвердите пароль:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    </div>
+                </form>
+                
+                <div class="form-footer">
+                    <p>Уже есть аккаунт? <a th:href="@{/employee/login}">Войти</a></p>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="password">Пароль:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword">Подтвердите пароль:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-            </div>
-        </form>
-        <div class="form-footer">
-            <p>Уже есть аккаунт? <a th:href="@{/employee/login}">Войти</a></p>
-        </div>
+            </section>
+        </main>
+        
+        <footer class="main-footer">
+            <p>&copy; 2025 Банк NoName. Все права защищены.</p>
+        </footer>
     </div>
-</div>
 
-<script th:src="@{/employee/js/auth.js}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initRegisterPage();
-    });
-</script>
+
+    <script th:src="@{/employee/js/auth.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initRegisterPage();
+        });
+    </script>
 </body>
 </html>
