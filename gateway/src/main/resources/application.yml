@@ -22,7 +22,12 @@ spring:
         - id: core-query
           uri: lb://core-query
           predicates:
-            - Path=/api/account/**
+            - Path=/api/query/account/**, /api/query/transaction/**
+
+        - id: core
+          uri: lb://core
+          predicates:
+            - Path=/api/account/**, /api/transaction/**
 
         - id: client-interface
           uri: lb://client-interface
