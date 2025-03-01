@@ -9,10 +9,14 @@ import reactor.core.publisher.Mono
 import ru.patterns.corequery.service.transaction.serialization.TransactionEntity
 import java.util.UUID
 
+
 @Repository
 interface TransactionR2dbcRepository : R2dbcRepository<TransactionEntity, UUID> {
     fun findAllByClientId(clientId: UUID): Flux<TransactionEntity>
     fun findByIdAndClientId(transactionId: UUID, clientId: UUID): Mono<TransactionEntity>
+
+    @Query("SELECT * FROM transactions t WHERE t.account_from = :accountId OR t.account_to = :accountId")
+    fun findAllByAccountId(accountId: UUID): Flux<TransactionEntity>
 
     @Modifying
     @Query(

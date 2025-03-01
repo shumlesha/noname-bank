@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
+import ru.patterns.corequery.domain.AccountId
 import ru.patterns.corequery.domain.ClientId
 import ru.patterns.corequery.domain.Transaction
 import ru.patterns.corequery.domain.TransactionInfo
@@ -18,6 +19,7 @@ sealed interface TransactionRepository {
     fun save(transaction: Transaction): Mono<SaveTransactionResult>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllTransactionResult>
     fun findById(transactionInfo: TransactionInfo): Mono<FindTransactionResult>
+    fun findAllByAccountId(accountId: AccountId): Mono<FindAllTransactionResult>
 
     sealed interface FindAllTransactionResult {
         data class Success(val transactions: List<Transaction>) : FindAllTransactionResult
@@ -48,7 +50,7 @@ class TransactionRepositoryImpl(
         Mono.fromCallable { Serializer.TransactionEntity(transaction) }
             .flatMap { transactionEntity -> repository.save(transactionEntity) }
             .map<SaveTransactionResult> { SaveTransactionResult.Success }
-            .doOnError { error -> log.error("При сохранении счета произошла ошибка", error) }
+            .doOnError { error -> log.error("При сохранении транзакции произошла ошибка", error) }
             .onErrorResume { error -> SaveTransactionResult.Error(error).toMono() }
 
     override fun findAllByClientId(clientId: ClientId): Mono<FindAllTransactionResult> =
@@ -57,7 +59,7 @@ class TransactionRepositoryImpl(
             .map { transactionEntities -> transactionEntities.map(Factory::Transaction) }
             .map<FindAllTransactionResult>(FindAllTransactionResult::Success)
             .onErrorResume { error ->
-                log.error("При получении счетов клиента: {} произошла ошибка", clientId, error)
+                log.error("При получении транзакций клиента: {} произошла ошибка", clientId, error)
                 FindAllTransactionResult.Error(error).toMono()
             }
 
@@ -75,6 +77,16 @@ class TransactionRepositoryImpl(
             .switchIfEmpty {
                 log.info("Транзакция с id: {} не найдена", transactionInfo)
                 FindTransactionResult.Error.AccountNotFound.toMono()
+            }
+
+    override fun findAllByAccountId(accountId: AccountId): Mono<FindAllTransactionResult> =
+        repository.findAllByAccountId(accountId.value)
+            .collectList()
+            .map { transactionEntities -> transactionEntities.map(Factory::Transaction) }
+            .map<FindAllTransactionResult>(FindAllTransactionResult::Success)
+            .onErrorResume { error ->
+                log.error("При получении транзакций счета: {} произошла ошибка", accountId, error)
+                FindAllTransactionResult.Error(error).toMono()
             }
 
 }

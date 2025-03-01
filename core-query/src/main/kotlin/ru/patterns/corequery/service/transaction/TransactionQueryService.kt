@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import ru.patterns.corequery.domain.AccountId
 import ru.patterns.corequery.domain.ClientId
 import ru.patterns.corequery.domain.Transaction
 import ru.patterns.corequery.domain.TransactionInfo
@@ -14,6 +15,7 @@ import ru.patterns.corequery.service.transaction.repository.TransactionRepositor
 sealed interface TransactionQueryService {
     fun findById(transactionInfo: TransactionInfo): Mono<FindByIdResponse>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse>
+    fun findAllByAccountId(accountId: AccountId): Mono<FindAllResponse>
 
     sealed interface FindByIdResponse {
         data class Success(val transaction: Transaction) : FindByIdResponse
@@ -61,14 +63,31 @@ class TransactionQueryServiceImpl(
 
     override fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse> =
         transactionRepository.findAllByClientId(clientId)
-            .doOnSuccess { log.debug("Получены транзакции клиента с id: {}", clientId) }
+            .doOnSuccess { log.debug("Получены транзакций клиента с id: {}", clientId) }
             .doOnError { error ->
                 log.error(
-                    "При получении счетов клиента по id: {} произошла ошибка",
+                    "При получении транзакций клиента по id: {} произошла ошибка",
                     clientId,
                     error
                 )
             }
+            .handleFindAllResponse()
+
+    override fun findAllByAccountId(accountId: AccountId): Mono<FindAllResponse> =
+        transactionRepository.findAllByAccountId(accountId)
+            .doOnSuccess { log.debug("Получены транзакций счета с id: {}", accountId) }
+            .doOnError { error ->
+                log.error(
+                    "При получении транзакций счета по id: {} произошла ошибка",
+                    accountId,
+                    error
+                )
+            }
+            .handleFindAllResponse()
+
+
+    private fun Mono<TransactionRepository.FindAllTransactionResult>.handleFindAllResponse() =
+        this
             .map { findAllResult ->
                 when (findAllResult) {
                     is TransactionRepository.FindAllTransactionResult.Success ->

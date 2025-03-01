@@ -75,7 +75,7 @@
 }
 ```
 
-3. POST `/api/query/transaction/list`
+3. POST `/api/query/transaction/client` (все операции клиента)
 
 **body**
 ```json
@@ -88,14 +88,32 @@
 
 ```json
 {
-    "transactions": [
-        {
-            "id": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1",
-            "transactionTimestamp": "2025-03-01 09:27:20",
-            "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0",
-            "amount": 100
-        }
-    ]
+  "transactions": [
+    {
+      "id": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1",
+      "transactionTimestamp": "2025-03-01 09:27:20",
+      "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "amount": 100,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    },
+    {
+      "id": "1b507a23-2816-4c95-a4d9-4409f494a606",
+      "transactionTimestamp": "2025-03-01 09:37:06",
+      "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "amount": 100,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    },
+    {
+      "id": "1a05b670-5fa1-423b-bc21-f31708fb7c44",
+      "transactionTimestamp": "2025-03-01 09:37:18",
+      "accountFrom": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "accountTo": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "amount": 1003,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    }
+  ]
 }
 ```
 
@@ -167,6 +185,57 @@
    ],
    "page": 0,
    "pageSize": 1
+}
+```
+
+**Error**
+
+```json
+{
+   "message": "Произошла ошибка",
+   "statusCode": 500
+}
+```
+
+6. POST `/api/query/transaction/account` (получение всех транзакций счета)
+
+**body**
+```json
+{
+  "accountId": "0d3ef08c-b2eb-4c28-9788-8715225e1a04"
+}
+```
+
+**Success**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "4ac9c349-eb8e-4f1d-afd2-2b8cc199fad1",
+      "transactionTimestamp": "2025-03-01 09:27:20",
+      "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "amount": 100,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    },
+    {
+      "id": "1b507a23-2816-4c95-a4d9-4409f494a606",
+      "transactionTimestamp": "2025-03-01 09:37:06",
+      "accountFrom": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "accountTo": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "amount": 100,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    },
+    {
+      "id": "1a05b670-5fa1-423b-bc21-f31708fb7c44",
+      "transactionTimestamp": "2025-03-01 09:37:18",
+      "accountFrom": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "accountTo": "c2dfd101-a169-4e69-8078-7806c4683683",
+      "amount": 1003,
+      "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+    }
+  ]
 }
 ```
 

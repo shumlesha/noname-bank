@@ -8,7 +8,7 @@ object Serializer {
         when (findAllResponse) {
             is TransactionQueryService.FindAllResponse.Success -> FindAllTransactionResponse(
                 findAllResponse.transactions.map { transaction ->
-                    ShortTransactionRaw(transaction)
+                    FindTransactionResponse(transaction)
                 }
             )
 
@@ -45,13 +45,5 @@ object Serializer {
             accountTo = transaction.accountTo.value,
             amount = transaction.amount.value,
             clientId = transaction.clientId.value
-        )
-
-    private fun ShortTransactionRaw(transaction: Transaction) =
-        ShortTransactionRaw(
-            id = transaction.id.value,
-            transactionTimestamp = transaction.transactionTimestamp,
-            clientId = transaction.clientId.value,
-            amount = transaction.amount.value
         )
 }
