@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/credit-tariff/query")
+@RequestMapping("/api/credit/tariff/query")
 public class CreditTariffQueryController {
     private final CreditTariffQueryHandler creditTariffQueryHandler;
 

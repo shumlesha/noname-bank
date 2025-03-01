@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Банковское приложение</title>
+    <link rel="stylesheet" href="/client/css/style.css">
+    <script>
+        function updateBalance() {
+            let accountSelect = document.getElementById("accountSelect");
+            let balanceDisplay = document.getElementById("balance");
+            let balances = JSON.parse(accountSelect.getAttribute("data-balances"));
+            balanceDisplay.innerText = "Баланс: " + balances[accountSelect.value] + " ₽";
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            alert("Баланс пополнен!");
+        }
+    </script>
+</head>
+<body onload="updateBalance()">
+<div class="container">
+    <h2>Ваши счета</h2>
+    <select id="accountSelect" data-balances='{"1001": 5000, "1002": 12000, "1003": 3500}' onchange="updateBalance()">
+        <option value="1001">Счет 1001</option>
+        <option value="1002">Счет 1002</option>
+        <option value="1003">Счет 1003</option>
+    </select>
+
+    <p id="balance" class="balance"></p>
+
+    <h3>Пополнить баланс</h3>
+    <form onsubmit="submitForm(event)">
+        <input type="number" min="1" placeholder="Введите сумму" required>
+        <button type="submit">Пополнить</button>
+    </form>
+</div>
+</body>
+</html>

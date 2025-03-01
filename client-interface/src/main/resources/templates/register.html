@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/client/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Регистрация</h2>
+    <form id="registerForm">
+        <input type="text" id="fullName" placeholder="Полное имя" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <select id="gender">
+            <option value="MALE">Мужской</option>
+            <option value="FEMALE">Женский</option>
+        </select>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <p>Уже есть аккаунт? <a href="/client/login">Войти</a></p>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: document.getElementById('email').value,
+                fullName: document.getElementById('fullName').value,
+                gender: document.getElementById('gender').value,
+                roles: ["CLIENT"],
+                password: document.getElementById('password').value
+            })
+        });
+
+        if (response.ok) {
+            alert('Регистрация успешна! Перенаправляем на вход...');
+            window.location.href = "/client/login";
+        } else {
+            alert('Ошибка регистрации');
+        }
+    });
+</script>
+</body>
+</html>

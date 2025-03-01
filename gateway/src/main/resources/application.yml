@@ -27,7 +27,12 @@ spring:
         - id: client-interface
           uri: lb://client-interface
           predicates:
-            - Path=/**
+            - Path=/client/**
+
+        - id: employee-interface
+          uri: lb://employee-interface
+          predicates:
+            - Path=/employee/**
 eureka:
   client:
     service-url:
