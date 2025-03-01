@@ -1,4 +1,4 @@
-package ru.patterns.core.credit.listener.serialization
+package ru.patterns.core.credit.listener.account.serialization
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

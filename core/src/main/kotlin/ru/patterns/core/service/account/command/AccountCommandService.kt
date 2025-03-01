@@ -19,6 +19,7 @@ interface AccountCommandService {
     fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateAccountResult>
     fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult>
 
+
     sealed interface CreateAccountResult {
         data class Success(val account: Account) : CreateAccountResult
         data class Error(val cause: Throwable) : CreateAccountResult

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.transaction.CreateTransactionCommand
+import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.Balance
@@ -14,12 +15,23 @@ import ru.patterns.core.domain.Transaction
 import ru.patterns.core.service.account.repository.AccountRepository
 import ru.patterns.core.service.kafka.KafkaEventSender
 import ru.patterns.core.service.transaction.command.TransactionCommandService.CreateTransactionResult
+import ru.patterns.core.service.transaction.command.TransactionCommandService.CreditPaymentResult
 import ru.patterns.core.service.transaction.repository.TransactionRepository
 import java.math.BigDecimal
 import java.util.UUID
 
 sealed interface TransactionCommandService {
     fun create(createTransactionCommand: CreateTransactionCommand): Mono<CreateTransactionResult>
+    fun payCredit(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): Mono<CreditPaymentResult>
+
+    sealed interface CreditPaymentResult {
+        data class Success(val debt: BigDecimal) : CreditPaymentResult
+        sealed interface Error : CreditPaymentResult {
+            data class AccountNotFound(val accountId: UUID) : Error
+            data object ZeroBalance : Error
+            data class Unexpected(val cause: Throwable) : Error
+        }
+    }
 
     sealed interface CreateTransactionResult {
         data class Success(val transaction: Transaction) : CreateTransactionResult
@@ -60,6 +72,90 @@ class TransactionCommandServiceImpl(
 
                     is AccountRepository.FindAccountResult.Error.Unexpected ->
                         CreateTransactionResult.Error.UnexpectedError(findResult.cause).toMono()
+                }
+            }
+    }
+
+    override fun payCredit(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): Mono<CreditPaymentResult> =
+        accountRepository.findById(AccountId(creditPaymentTransactionCommand.accountId))
+            .flatMap { findResult ->
+                when (findResult) {
+                    is AccountRepository.FindAccountResult.Success -> payCredit(
+                        account = findResult.account,
+                        paymentAmount = creditPaymentTransactionCommand.amount
+                    )
+
+                    is AccountRepository.FindAccountResult.Error.AccountNotFound ->
+                        CreditPaymentResult.Error.AccountNotFound(creditPaymentTransactionCommand.accountId).toMono()
+
+                    is AccountRepository.FindAccountResult.Error.Unexpected ->
+                        CreditPaymentResult.Error.Unexpected(findResult.cause).toMono()
+                }
+            }
+
+    private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> =
+        Mono.fromCallable {
+            val currentAccountBalance = account.balance.value
+
+            if (currentAccountBalance < paymentAmount) {
+                // Если средств недостаточно, обновляем баланс до нуля и вычисляем долг
+                val updatedAccount = updateAccountBalance(account, BigDecimal.ZERO)
+                updatedAccount to (paymentAmount - currentAccountBalance)
+            } else {
+                // Если средств достаточно, списываем деньги и долг равен нулю
+                val updatedAccount = writeOffMoney(account, paymentAmount)
+                updatedAccount to BigDecimal.ZERO
+            }
+        }
+            .flatMap { (account, debt) ->
+                accountRepository.save(account)
+                    .flatMap { saveResult ->
+                        when (saveResult) {
+                            is AccountRepository.SaveAccountResult.Success -> {
+                                kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
+                                createCreditTransaction(saveResult.account, paymentAmount, debt)
+                            }
+
+                            is AccountRepository.SaveAccountResult.Error -> {
+                                CreditPaymentResult.Error.Unexpected(saveResult.cause).toMono()
+                            }
+                        }
+                    }
+            }
+
+    private fun createCreditTransaction(
+        account: Account,
+        amount: BigDecimal,
+        debt: BigDecimal
+    ): Mono<CreditPaymentResult> {
+        val paymentAmount = if (debt != BigDecimal.ZERO)
+            amount - debt
+        else
+            amount
+
+        if (paymentAmount == BigDecimal.ZERO) {
+            return CreditPaymentResult.Error.ZeroBalance.toMono()
+        }
+
+        val command = CreditPaymentTransactionCommand(
+            accountId = account.id.value,
+            amount = paymentAmount
+        )
+
+        return transactionRepository.save(command)
+            .map { saveResult ->
+                when (saveResult) {
+                    is TransactionRepository.SaveTransactionResult.Success -> {
+                        kafkaEventSender.sendEventToKafkaAsync(
+                            clientId = account.clientId,
+                            transaction = saveResult.transaction
+                        )
+                        CreditPaymentResult.Success(debt = debt)
+                    }
+
+                    is TransactionRepository.SaveTransactionResult.Error -> {
+                        CreditPaymentResult.Error.Unexpected(saveResult.cause)
+                    }
                 }
             }
     }
@@ -140,11 +236,14 @@ class TransactionCommandServiceImpl(
     private fun isAccountClosedOrBlocked(account: Account): Boolean =
         account.closedTimestamp != null || account.blockedTimestamp != null
 
-    private fun writeOffMoney(accountFrom: Account, amount: BigDecimal): Account =
-        accountFrom.copy(balance = Balance(accountFrom.balance.value - amount))
+    private fun updateAccountBalance(account: Account, newBalance: BigDecimal): Account =
+        account.copy(balance = Balance(newBalance))
 
-    private fun writeOnMoney(accountTo: Account, amount: BigDecimal): Account =
-        accountTo.copy(balance = Balance(accountTo.balance.value + amount))
+    private fun writeOffMoney(account: Account, amount: BigDecimal): Account =
+        account.copy(balance = Balance(account.balance.value - amount))
+
+    private fun writeOnMoney(account: Account, amount: BigDecimal): Account =
+        account.copy(balance = Balance(account.balance.value + amount))
 
     private fun processSuccessSaveResult(clientId: ClientId, transaction: Transaction): Mono<CreateTransactionResult> =
         Mono.just(transaction)

@@ -18,7 +18,9 @@ data class MqProperties(
     val queues: Map<String, String>,
     val routingKeys: Map<String, String>,
     val creditCreateRequest: RoutingKey,
-    val creditCreateResponse: RoutingKey
+    val creditCreateResponse: RoutingKey,
+    val creditPaymentRequest: RoutingKey,
+    val creditPaymentResponse: RoutingKey
 ) {
     data class RoutingKey(
         val name: String
