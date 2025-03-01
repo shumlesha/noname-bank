@@ -34,6 +34,24 @@ object Serializer {
                 )
         }
 
+    fun FindAllWithPaginationResponse(
+        findAllWithPaginationResult: AccountQueryService.FindAllWithPaginationResponse,
+        page: Int
+    ): AccountResponse =
+        when (findAllWithPaginationResult) {
+            is AccountQueryService.FindAllWithPaginationResponse.Success ->
+                FindAllWithPaginationResponse(
+                    accounts = findAllWithPaginationResult.accounts,
+                    page = page
+                )
+
+            is AccountQueryService.FindAllWithPaginationResponse.Error ->
+                ErrorResponse(
+                    message = "При получении счетов произошла ошибка",
+                    statusCode = 500
+                )
+        }
+
     private fun FindAccountResponse(account: Account) =
         FindAccountResponse(
             id = account.id.value,
@@ -48,5 +66,12 @@ object Serializer {
     private fun FindAllAccountsResponse(accounts: List<Account>) =
         FindAllAccountsResponse(
             data = accounts.map(Serializer::FindAccountResponse)
+        )
+
+    private fun FindAllWithPaginationResponse(accounts: List<Account>, page: Int) =
+        FindAllWithPaginationResponse(
+            data = accounts.map(Serializer::FindAccountResponse),
+            page = page,
+            pageSize = accounts.size
         )
 }

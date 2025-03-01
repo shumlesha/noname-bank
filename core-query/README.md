@@ -108,8 +108,9 @@
 }
 ```
 
-5POST `/api/query/transaction`
-   **body**
+4. POST `/api/query/transaction`
+
+**body**
 ```json
 {
   "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0",
@@ -136,5 +137,44 @@
 {
   "message": "Указанная транзакция не найдена",
   "statusCode": 401
+}
+```
+
+5. POST `/api/query/account/all` (получение всех счетов для сотрудника)
+
+**body**
+```json
+{
+   "size": 1,
+   "offset": 0
+}
+```
+
+**Success**
+
+```json
+{
+   "data": [
+      {
+         "id": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+         "blockedTimestamp": null,
+         "closedTimestamp": null,
+         "clientId": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+         "number": "5440613954528454",
+         "balance": 2203,
+         "isCredit": false
+      }
+   ],
+   "page": 0,
+   "pageSize": 1
+}
+```
+
+**Error**
+
+```json
+{
+   "message": "Произошла ошибка",
+   "statusCode": 500
 }
 ```

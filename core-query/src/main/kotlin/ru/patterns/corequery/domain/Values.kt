@@ -17,3 +17,9 @@ value class Balance(val value: BigDecimal)
 
 @JvmInline
 value class TransactionId(val value: UUID)
+
+@JvmInline
+value class PaginationSize(val value: Int)
+
+@JvmInline
+value class PaginationOffset(val value: Int)

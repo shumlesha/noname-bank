@@ -14,6 +14,9 @@ interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
     fun findAllByClientId(clientId: UUID): Flux<AccountEntity>
     fun findByClientIdAndId(clientId: UUID, accountId: UUID): Mono<AccountEntity>
 
+    @Query("SELECT * FROM accounts ORDER BY id LIMIT :size OFFSET :offset")
+    fun findAllWithPagination(size: Int, offset: Int): Flux<AccountEntity>
+
     @Modifying
     @Query(
         """

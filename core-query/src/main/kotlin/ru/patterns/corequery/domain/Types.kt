@@ -13,3 +13,8 @@ data class TransactionInfo(
     val clientId: ClientId,
     val transactionId: TransactionId
 )
+
+data class GetAccountsWithPagination(
+    val size: PaginationSize,
+    val offset: PaginationOffset,
+)
