@@ -22,7 +22,7 @@ data class Transaction(
     /**
      * Идентификатор счета, куда переводятся средства
      */
-    val accountTo: AccountId,
+    val accountTo: AccountId?,
     /**
      * Сумма, которую требуется перевести
      */

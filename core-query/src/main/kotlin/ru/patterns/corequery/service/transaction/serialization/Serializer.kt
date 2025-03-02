@@ -7,7 +7,7 @@ object Serializer {
         TransactionEntity(
             id = transaction.id.value,
             accountFrom = transaction.accountFrom?.value,
-            accountTo = transaction.accountTo.value,
+            accountTo = transaction.accountTo?.value,
             amount = transaction.amount.value,
             clientId = transaction.clientId.value,
             transactionTimestamp = transaction.transactionTimestamp,

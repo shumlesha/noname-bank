@@ -21,7 +21,7 @@ data class TransactionQueryEntity(
     /**
      * Идентификатор счета, куда переводятся средства
      */
-    val accountTo: UUID,
+    val accountTo: UUID?,
     /**
      * Сумма, которую требуется перевести
      */

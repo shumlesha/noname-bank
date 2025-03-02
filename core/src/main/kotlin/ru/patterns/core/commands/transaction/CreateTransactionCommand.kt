@@ -1,12 +1,12 @@
 package ru.patterns.core.commands.transaction
 
 import jakarta.validation.constraints.Min
-import java.math.BigDecimal
-import java.util.UUID
+import ru.patterns.core.domain.AccountId
+import ru.patterns.core.domain.Balance
 
 class CreateTransactionCommand(
-    val accountFrom: UUID,
-    val accountTo: UUID,
+    val accountFrom: AccountId,
+    val accountTo: AccountId,
     @field:Min(value = 0, message = "Баланс для перевода должен быть > 0")
-    val amount: BigDecimal
+    val amount: Balance
 )

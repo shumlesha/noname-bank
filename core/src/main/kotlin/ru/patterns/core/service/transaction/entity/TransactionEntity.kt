@@ -16,7 +16,7 @@ class TransactionEntity(
     @Column(value = "account_from")
     val accountFrom: UUID?,
     @Column(value = "account_to")
-    val accountTo: UUID,
+    val accountTo: UUID?,
     @Column(value = "amount")
     val amount: BigDecimal
 )

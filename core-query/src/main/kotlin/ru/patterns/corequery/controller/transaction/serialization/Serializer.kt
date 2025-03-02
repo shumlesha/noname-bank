@@ -42,7 +42,7 @@ object Serializer {
             id = transaction.id.value,
             transactionTimestamp = transaction.transactionTimestamp,
             accountFrom = transaction.accountFrom?.value,
-            accountTo = transaction.accountTo.value,
+            accountTo = transaction.accountTo?.value,
             amount = transaction.amount.value,
             clientId = transaction.clientId.value
         )
