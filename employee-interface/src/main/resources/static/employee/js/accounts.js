@@ -158,11 +158,13 @@ const loadAccountDetails = async (accountId, clientId) => {
         const response = await apiService.getAccountDetails(accountId, clientId);
         hideElement(loadingIndicator);
 
-        if (response && response.data && response.data.id) {
-            renderAccountDetails(response.data, accountDetailsContainer);
+        const accountData = response.data ? response.data : response;
+
+        if (accountData && accountData.id) {
+            renderAccountDetails(accountData, accountDetailsContainer);
             loadAccountTransactions(accountId);
         } else {
-            console.error('Данные счета не содержат необходимых полей:', response.data);
+            console.error('Данные счета не содержат необходимых полей:', response);
             showMessage('Данные счета неполные или в неверном формате', 'error');
             accountDetailsContainer.innerHTML = '';
         }
@@ -180,17 +182,28 @@ const loadAccountTransactions = async (accountId) => {
 
     if (!transactionsContainer) return;
 
+    console.log('Loading transactions for account ID:', accountId);
     showElement(loadingIndicator);
     transactionsContainer.style.display = 'block';
     transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3><div class="loading-indicator"><span class="loading-text">Загрузка транзакций...</span></div>';
 
     try {
         const response = await apiService.getAccountTransactions(accountId);
+        console.log('Raw transaction response:', response);
         hideElement(loadingIndicator);
 
-        if (response && response.data && response.data.transactions) {
+
+        if (response && response.transactions && Array.isArray(response.transactions)) {
+            console.log('Found transactions array in response:', response.transactions);
+            renderTransactionsList(response.transactions, transactionsContainer);
+        } else if (response && response.data && response.data.transactions && Array.isArray(response.data.transactions)) {
+            console.log('Found transactions array in response.data:', response.data.transactions);
             renderTransactionsList(response.data.transactions, transactionsContainer);
+        } else if (Array.isArray(response)) {
+            console.log('Response is a direct array of transactions:', response);
+            renderTransactionsList(response, transactionsContainer);
         } else {
+            console.error('Неожиданный формат данных транзакций:', response);
             transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3><p class="info-message">Транзакции не найдены</p>';
         }
     } catch (error) {
@@ -259,6 +272,11 @@ const renderAccountsList = (accounts, container) => {
 };
 
 const renderAccountDetails = (account, container) => {
+    if (!account || typeof account !== 'object') {
+        container.innerHTML = '<p class="error-message">Некорректные данные счета</p>';
+        return;
+    }
+
     const status = account.closedTimestamp
         ? 'Закрыт'
         : account.blockedTimestamp
@@ -287,6 +305,8 @@ const renderAccountDetails = (account, container) => {
 };
 
 const renderTransactionsList = (transactions, container) => {
+    console.log('Rendering transactions list:', transactions);
+    
     if (!transactions || !transactions.length) {
         container.innerHTML = '<h3>Транзакции по счету</h3><div class="error-message-container"><p class="info-message">Транзакции не найдены</p></div>';
         return;
@@ -306,17 +326,22 @@ const renderTransactionsList = (transactions, container) => {
     </thead>
     <tbody>
       ${transactions.map(tx => {
-        const transactionDate = tx.transactionTimestamp ? new Date(tx.transactionTimestamp).toLocaleString('ru-RU') : 'Нет данных';
-        const accountFrom = tx.accountFrom || 'Пополнение';
-        const accountTo = tx.accountTo || 'Нет данных';
-        const amount = tx.amount !== undefined ? tx.amount.toLocaleString('ru-RU') + ' ₽' : 'Нет данных';
-        return `<tr>
-          <td>${tx.id || 'Нет данных'}</td>
-          <td>${transactionDate}</td>
-          <td>${accountFrom}</td>
-          <td>${accountTo}</td>
-          <td>${amount}</td>
-        </tr>`;
+        try {
+            const transactionDate = tx.transactionTimestamp ? new Date(tx.transactionTimestamp).toLocaleString('ru-RU') : 'Нет данных';
+            const accountFrom = tx.accountFrom || 'Пополнение';
+            const accountTo = tx.accountTo || 'Нет данных';
+            const amount = tx.amount !== undefined ? tx.amount.toLocaleString('ru-RU') + ' ₽' : 'Нет данных';
+            return `<tr>
+              <td>${tx.id || 'Нет данных'}</td>
+              <td>${transactionDate}</td>
+              <td>${accountFrom}</td>
+              <td>${accountTo}</td>
+              <td>${amount}</td>
+            </tr>`;
+        } catch (error) {
+            console.error('Error rendering transaction:', tx, error);
+            return `<tr><td colspan="5">Ошибка отображения транзакции</td></tr>`;
+        }
     }).join('')}
     </tbody>
   `;
