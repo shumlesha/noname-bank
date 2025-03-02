@@ -6,7 +6,7 @@ spring:
     username: postgres
     password: postgres
   kafka:
-    bootstrap-servers: localhost:29094
+    bootstrap-servers: 46.29.239.208:29094
 query:
   kafka:
     listener:

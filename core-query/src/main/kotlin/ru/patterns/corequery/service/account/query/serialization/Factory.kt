@@ -14,7 +14,7 @@ object Factory {
             creationTimestamp = accountEntity.creationTimestamp,
             blockedTimestamp = accountEntity.blockedTimestamp,
             closedTimestamp = accountEntity.closedTimestamp,
-            clientId = ClientId(accountEntity.id),
+            clientId = ClientId(accountEntity.clientId),
             number = AccountNumber(accountEntity.number),
             balance = Balance(accountEntity.balance),
             isCredit = accountEntity.isCredit
