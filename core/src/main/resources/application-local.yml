@@ -15,6 +15,13 @@ spring:
 
 core:
   enabled: true
+  atm:
+    enabled: true
+    kafka:
+      withdrawal-topic:
+        name: "WITHDRAWAL"
+      deposit-topic:
+        name: "DEPOSIT"
   blocking:
     enabled: true
     kafka-properties:

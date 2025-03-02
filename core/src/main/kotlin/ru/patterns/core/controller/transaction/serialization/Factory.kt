@@ -8,7 +8,7 @@ object Factory {
             is TransactionCommandService.CreateTransactionResult.Success -> createResult.transaction.let { transaction ->
                 CreateTransactionResponse(
                     transactionId = transaction.id,
-                    accountTo = transaction.accountTo,
+                    accountTo = transaction.accountTo!!,
                     accountFrom = transaction.accountFrom!!,
                     amount = transaction.amount.value
                 )

@@ -1,0 +1,14 @@
+server:
+  port: 8082
+
+spring:
+  kafka:
+    bootstrap-servers: localhostL:29094
+
+atm:
+  enabled: true
+  kafka:
+    deposit-topic:
+      name: "DEPOSIT"
+    withdrawal-topic:
+      name: "WITHDRAWAL"

@@ -10,7 +10,7 @@ data class FindTransactionResponse(
     @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val transactionTimestamp: LocalDateTime,
     val accountFrom: UUID?,
-    val accountTo: UUID,
+    val accountTo: UUID?,
     val amount: BigDecimal,
     val clientId: UUID
 ) : TransactionResponse

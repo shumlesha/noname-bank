@@ -12,7 +12,7 @@ object Factory {
             id = TransactionId(transactionEntity.id),
             transactionTimestamp = transactionEntity.transactionTimestamp,
             accountFrom = transactionEntity.accountFrom?.let { AccountId(it) },
-            accountTo = AccountId(transactionEntity.accountTo),
+            accountTo = transactionEntity.accountTo?.let { AccountId(it) },
             amount = Balance(transactionEntity.amount),
             clientId = ClientId(transactionEntity.clientId)
         )
