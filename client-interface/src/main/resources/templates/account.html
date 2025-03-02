@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали счета</title>
+    <link rel="stylesheet" th:href="@{/client/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <header class="main-header">
+        <div class="logo">
+            <h1>NoName Банк</h1>
+        </div>
+        <div class="user-info">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="btn btn-logout">Выйти</button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="content-section">
+            <h2>Детали счета</h2>
+            <div id="account-info">
+                <p><strong>Номер счета:</strong> <span id="account-number"></span></p>
+                <p><strong>Баланс:</strong> <span id="account-balance"></span></p>
+                <p><strong>Тип счета:</strong> <span id="account-type"></span></p>
+                <p><strong>Статус:</strong> <span id="account-status"></span></p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Транзакции</h3>
+            <table id="transactions-table">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Счет</th>
+                    <th>Сумма</th>
+                </tr>
+                </thead>
+                <tbody id="transactions-list">
+                <tr>
+                    <td colspan="3">Загрузка данных...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button onclick="window.history.back()" class="btn btn-secondary">Назад</button>
+    </div>
+</div>
+
+<script th:src="@{/client/js/storageService.js}"></script>
+<script th:src="@{/client/js/apiService.js}"></script>
+<script th:src="@{/client/js/accountDetails.js}"></script>
+
+</body>
+</html>
