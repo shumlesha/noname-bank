@@ -8,6 +8,7 @@ import ru.patterns.credit.application.command.DeleteCreditTariffCommand;
 import ru.patterns.credit.application.command.UpdateCreditTariffCommand;
 import ru.patterns.credit.domain.model.CreditTariff;
 import ru.patterns.credit.domain.repository.CreditTariffRepository;
+import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class CreditTariffCommandHandler {
     @Transactional
     public void handle(UpdateCreditTariffCommand command) {
         var creditTariff = creditTariffRepository.findById(command.tariffId())
-                .orElseThrow(() -> new IllegalArgumentException("Тариф не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Тариф не найден"));
         creditTariff.setName(command.name());
         creditTariff.setInterestRate(command.interestRate());
         creditTariffRepository.save(creditTariff);
@@ -36,7 +37,7 @@ public class CreditTariffCommandHandler {
     @Transactional
     public void handle(DeleteCreditTariffCommand command) {
         if (!creditTariffRepository.existsById(command.tariffId())) {
-            throw new IllegalArgumentException("Тариф не найден");
+            throw new ResourceNotFoundException("Тариф не найден");
         }
         creditTariffRepository.deleteById(command.tariffId());
     }

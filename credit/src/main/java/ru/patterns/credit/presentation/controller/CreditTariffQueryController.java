@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.query.GetAllCreditTariffsQuery;
 import ru.patterns.credit.application.query.GetCreditTariffByIdQuery;
 import ru.patterns.credit.infrastructure.handler.query.CreditTariffQueryHandler;
+import ru.patterns.credit.shared.common.DefaultResponse;
 import ru.patterns.credit.shared.dto.CreditTariffDto;
 
 import java.util.List;
@@ -21,16 +22,17 @@ public class CreditTariffQueryController {
     private final CreditTariffQueryHandler creditTariffQueryHandler;
 
     @GetMapping("/all")
-    public ResponseEntity<List<CreditTariffDto>> getAllTariffs() {
+    public ResponseEntity<DefaultResponse<List<CreditTariffDto>>> getAllTariffs() {
         var query = new GetAllCreditTariffsQuery();
         var tariffs = creditTariffQueryHandler.handle(query);
-        return ResponseEntity.ok(tariffs);
+        return ResponseEntity.ok(DefaultResponse.success(tariffs));
     }
 
     @GetMapping("/{tariffId}")
-    public ResponseEntity<CreditTariffDto> getTariffById(@PathVariable UUID tariffId) {
+    public ResponseEntity<DefaultResponse<CreditTariffDto>> getTariffById(@PathVariable UUID tariffId) {
         var query = new GetCreditTariffByIdQuery(tariffId);
         var tariff = creditTariffQueryHandler.handle(query);
-        return ResponseEntity.ok(tariff);
+        return ResponseEntity.ok(DefaultResponse.success(tariff));
     }
 }
+

@@ -7,6 +7,7 @@ import ru.patterns.credit.application.query.GetCreditByIdQuery;
 import ru.patterns.credit.application.query.GetCreditsByClientQuery;
 import ru.patterns.credit.shared.dto.CreditDto;
 import ru.patterns.credit.domain.repository.CreditRepository;
+import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 import ru.patterns.credit.shared.mapper.CreditMapper;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class CreditQueryHandler {
     @Transactional(readOnly = true)
     public CreditDto handle(GetCreditByIdQuery query) {
         var credit = creditRepository.findById(query.creditId())
-                .orElseThrow(() -> new IllegalArgumentException("Кредит не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Кредит не найден"));
         return CreditMapper.toDto(credit);
     }
 }

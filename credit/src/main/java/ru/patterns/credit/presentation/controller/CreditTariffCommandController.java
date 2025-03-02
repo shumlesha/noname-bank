@@ -13,6 +13,7 @@ import ru.patterns.credit.application.command.CreateCreditTariffCommand;
 import ru.patterns.credit.application.command.DeleteCreditTariffCommand;
 import ru.patterns.credit.application.command.UpdateCreditTariffCommand;
 import ru.patterns.credit.infrastructure.handler.command.CreditTariffCommandHandler;
+import ru.patterns.credit.shared.common.DefaultResponse;
 
 import java.util.UUID;
 
@@ -23,22 +24,23 @@ public class CreditTariffCommandController {
     private final CreditTariffCommandHandler creditTariffCommandHandler;
 
     @PostMapping("/create")
-    public ResponseEntity<UUID> createTariff(@RequestBody CreateCreditTariffCommand command) {
+    public ResponseEntity<DefaultResponse<UUID>> createTariff(@RequestBody CreateCreditTariffCommand command) {
         var tariffId = creditTariffCommandHandler.handle(command);
-        return ResponseEntity.ok(tariffId);
+        return ResponseEntity.ok(DefaultResponse.success(tariffId));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Void> updateTariff(@RequestBody UpdateCreditTariffCommand command) {
+    public ResponseEntity<DefaultResponse<Void>> updateTariff(@RequestBody UpdateCreditTariffCommand command) {
         creditTariffCommandHandler.handle(command);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(DefaultResponse.success(null));
     }
 
     @DeleteMapping("/delete/{tariffId}")
-    public ResponseEntity<Void> deleteTariff(@PathVariable UUID tariffId) {
+    public ResponseEntity<DefaultResponse<Void>> deleteTariff(@PathVariable UUID tariffId) {
         var command = new DeleteCreditTariffCommand(tariffId);
         creditTariffCommandHandler.handle(command);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(DefaultResponse.success(null));
     }
 }
+
 

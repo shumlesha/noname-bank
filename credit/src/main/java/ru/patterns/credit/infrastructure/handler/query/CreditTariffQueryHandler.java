@@ -7,6 +7,7 @@ import ru.patterns.credit.application.query.GetAllCreditTariffsQuery;
 import ru.patterns.credit.application.query.GetCreditTariffByIdQuery;
 import ru.patterns.credit.domain.repository.CreditTariffRepository;
 import ru.patterns.credit.shared.dto.CreditTariffDto;
+import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 import ru.patterns.credit.shared.mapper.CreditTariffMapper;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class CreditTariffQueryHandler {
     @Transactional(readOnly = true)
     public CreditTariffDto handle(GetCreditTariffByIdQuery query) {
         var tariff = creditTariffRepository.findById(query.tariffId())
-                .orElseThrow(() -> new IllegalArgumentException("Тариф не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Тариф не найден"));
         return CreditTariffMapper.toDto(tariff);
     }
 }
