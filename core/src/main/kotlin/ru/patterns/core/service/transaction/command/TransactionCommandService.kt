@@ -54,27 +54,27 @@ class TransactionCommandServiceImpl(
 ) : TransactionCommandService {
     private val log = LoggerFactory.getLogger(this::class.java)!!
 
-    override fun create(createTransactionCommand: CreateTransactionCommand): Mono<CreateTransactionResult> {
+    override fun create(createTransactionCommand: CreateTransactionCommand): Mono<CreateTransactionResult> =
         if (createTransactionCommand.accountTo == createTransactionCommand.accountFrom) {
-            return CreateTransactionResult.Error.SameAccount.toMono()
-        }
+            CreateTransactionResult.Error.SameAccount.toMono()
+        } else {
+            accountRepository.findById(createTransactionCommand.accountFrom)
+                .flatMap { findResult ->
+                    when (findResult) {
+                        is AccountRepository.FindAccountResult.Success -> findAccountToAndIfFoundThenCreateTransaction(
+                            createTransactionCommand = createTransactionCommand,
+                            accountFrom = findResult.account
+                        )
 
-        return accountRepository.findById(AccountId(createTransactionCommand.accountFrom))
-            .flatMap { findResult ->
-                when (findResult) {
-                    is AccountRepository.FindAccountResult.Success -> findAccountToAndIfFoundThenCreateTransaction(
-                        createTransactionCommand = createTransactionCommand,
-                        accountFrom = findResult.account
-                    )
+                        is AccountRepository.FindAccountResult.Error.AccountNotFound ->
+                            CreateTransactionResult.Error.AccountNotFound(createTransactionCommand.accountFrom.value)
+                                .toMono()
 
-                    is AccountRepository.FindAccountResult.Error.AccountNotFound ->
-                        CreateTransactionResult.Error.AccountNotFound(createTransactionCommand.accountFrom).toMono()
-
-                    is AccountRepository.FindAccountResult.Error.Unexpected ->
-                        CreateTransactionResult.Error.UnexpectedError(findResult.cause).toMono()
+                        is AccountRepository.FindAccountResult.Error.Unexpected ->
+                            CreateTransactionResult.Error.UnexpectedError(findResult.cause).toMono()
+                    }
                 }
-            }
-    }
+        }
 
     override fun payCredit(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): Mono<CreditPaymentResult> =
         accountRepository.findById(AccountId(creditPaymentTransactionCommand.accountId))
@@ -164,19 +164,19 @@ class TransactionCommandServiceImpl(
         createTransactionCommand: CreateTransactionCommand,
         accountFrom: Account
     ): Mono<CreateTransactionResult> =
-        accountRepository.findById(AccountId(createTransactionCommand.accountTo))
+        accountRepository.findById(createTransactionCommand.accountTo)
             .flatMap { findResult ->
                 when (findResult) {
                     is AccountRepository.FindAccountResult.Success -> updateAccountsAndCreateTransaction(
                         MoneyTransfer(
                             accountFrom = accountFrom,
                             accountTo = findResult.account,
-                            amount = createTransactionCommand.amount
+                            amount = createTransactionCommand.amount.value
                         )
                     )
 
                     is AccountRepository.FindAccountResult.Error.AccountNotFound ->
-                        CreateTransactionResult.Error.AccountNotFound(createTransactionCommand.accountTo).toMono()
+                        CreateTransactionResult.Error.AccountNotFound(createTransactionCommand.accountTo.value).toMono()
 
                     is AccountRepository.FindAccountResult.Error.Unexpected ->
                         CreateTransactionResult.Error.UnexpectedError(findResult.cause).toMono()

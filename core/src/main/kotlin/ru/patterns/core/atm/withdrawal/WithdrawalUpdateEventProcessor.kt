@@ -3,26 +3,32 @@ package ru.patterns.core.atm.withdrawal
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
+import ru.patterns.core.atm.AtmService
 import ru.patterns.core.atm.EventProcessor
 import ru.patterns.core.atm.withdrawal.serialization.Factory
 import ru.patterns.core.atm.withdrawal.serialization.WithdrawalRaw
-import ru.patterns.core.service.transaction.repository.TransactionRepository
 
 @Component
 class WithdrawalUpdateEventProcessor(
-    private val transactionRepository: TransactionRepository
+    private val atmService: AtmService
 ) : EventProcessor<WithdrawalRaw> {
     @Transactional
     override fun process(event: WithdrawalRaw): Mono<EventProcessor.ProcessResult> =
         Mono.fromCallable { Factory.Withdrawal(event) }
-            .flatMap { deposit -> transactionRepository.save(deposit) }
-            .map { saveResult ->
-                when (saveResult) {
-                    is TransactionRepository.SaveTransactionResult.Success ->
+            .flatMap { withdrawal -> atmService.withdrawal(withdrawal) }
+            .map { withdrawalResult ->
+                when (withdrawalResult) {
+                    is AtmService.WithdrawalResult.Success ->
                         EventProcessor.ProcessResult.Success
 
-                    is TransactionRepository.SaveTransactionResult.Error ->
-                        EventProcessor.ProcessResult.Error(saveResult.cause)
+                    is AtmService.WithdrawalResult.Error.AccountNotFound ->
+                        EventProcessor.ProcessResult.Error(IllegalStateException("Account not found"))
+
+                    is AtmService.WithdrawalResult.Error.NotEnoughMoney ->
+                        EventProcessor.ProcessResult.Error(IllegalStateException("Not enough money on account"))
+
+                    is AtmService.WithdrawalResult.Error.Unexpected ->
+                        EventProcessor.ProcessResult.Error(withdrawalResult.cause)
                 }
             }
 }

@@ -3,26 +3,29 @@ package ru.patterns.core.atm.deposit
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
+import ru.patterns.core.atm.AtmService
 import ru.patterns.core.atm.EventProcessor
 import ru.patterns.core.atm.deposit.serialization.DepositRaw
 import ru.patterns.core.atm.deposit.serialization.Factory
-import ru.patterns.core.service.transaction.repository.TransactionRepository
 
 @Component
 class DepositUpdateEventProcessor(
-    private val transactionRepository: TransactionRepository
+    private val atmService: AtmService
 ) : EventProcessor<DepositRaw> {
     @Transactional
     override fun process(event: DepositRaw): Mono<EventProcessor.ProcessResult> =
         Mono.fromCallable { Factory.Deposit(event) }
-            .flatMap { deposit -> transactionRepository.save(deposit) }
-            .map { saveResult ->
-                when (saveResult) {
-                    is TransactionRepository.SaveTransactionResult.Success ->
+            .flatMap { deposit -> atmService.deposit(deposit) }
+            .map { depositResult ->
+                when (depositResult) {
+                    is AtmService.DepositResult.Success ->
                         EventProcessor.ProcessResult.Success
 
-                    is TransactionRepository.SaveTransactionResult.Error ->
-                        EventProcessor.ProcessResult.Error(saveResult.cause)
+                    is AtmService.DepositResult.Error.AccountNotFound ->
+                        EventProcessor.ProcessResult.Error(IllegalStateException("Account not found"))
+
+                    is AtmService.DepositResult.Error.Unexpected ->
+                        EventProcessor.ProcessResult.Error(depositResult.cause)
                 }
             }
 }

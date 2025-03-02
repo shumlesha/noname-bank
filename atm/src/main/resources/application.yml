@@ -3,7 +3,7 @@ server:
 
 spring:
   kafka:
-    bootstrap-servers: localhostL:29094
+    bootstrap-servers: localhost:29094
 
 atm:
   enabled: true

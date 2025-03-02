@@ -35,7 +35,7 @@ class KafkaEventSender(
 
     private fun sendEventAsync(senderRecord: Mono<SenderRecord<String, String, String>>) {
         kafkaSender.send(senderRecord)
-            .doOnNext { log.info("Сообщение: {} отправлено", senderRecord) }
+            .doOnNext { log.debug("Сообщение отправлено") }
             .subscribe()
     }
 
