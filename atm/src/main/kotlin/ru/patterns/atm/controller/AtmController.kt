@@ -1,5 +1,6 @@
 package ru.patterns.atm.controller
 
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,14 +16,14 @@ class AtmController(
     private val kafkaEventSender: KafkaEventSender
 ) {
     @PostMapping("/deposit")
-    fun deposit(@RequestBody depositRaw: DepositRaw) {
+    fun deposit(@RequestBody @Valid depositRaw: DepositRaw) {
         val deposit = Factory.Deposit(depositRaw)
 
         kafkaEventSender.sendEventToKafkaAsync(deposit)
     }
 
     @PostMapping("/withdraw")
-    fun withdraw(@RequestBody withdrawalRaw: WithdrawalRaw) {
+    fun withdraw(@RequestBody @Valid withdrawalRaw: WithdrawalRaw) {
         val withdrawal = Factory.Withdrawal(withdrawalRaw)
 
         kafkaEventSender.sendEventToKafkaAsync(withdrawal)
