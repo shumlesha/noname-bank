@@ -29,6 +29,11 @@ spring:
           predicates:
             - Path=/api/account/**, /api/transaction/**
 
+        - id: atm
+          uri: lb://atm
+          predicates:
+            - Path=/api/atm/**
+
         - id: client-interface
           uri: lb://client-interface
           predicates:
@@ -40,6 +45,7 @@ spring:
             - Path=/employee/**
 eureka:
   client:
+    registry-fetch-interval-seconds: 5
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
