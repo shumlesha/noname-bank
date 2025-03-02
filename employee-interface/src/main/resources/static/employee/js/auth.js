@@ -1,6 +1,7 @@
 const API_BASE_URL = '/api';
 const AUTH_ENDPOINT = `${API_BASE_URL}/auth`;
 const USERS_ENDPOINT = `${API_BASE_URL}/users`;
+const QUERY_ENDPOINT = `${API_BASE_URL}/query`;
 const TOKEN_STORAGE_KEY = 'auth_tokens';
 const USER_STORAGE_KEY = 'user_data';
 
@@ -8,53 +9,63 @@ const API_URLS = {
     register: `${AUTH_ENDPOINT}/register`,
     login: `${AUTH_ENDPOINT}/login`,
     logout: `${AUTH_ENDPOINT}/logout`,
-    me: `${USERS_ENDPOINT}/me`
+    me: `${USERS_ENDPOINT}/me`,
+    accountAll: `${QUERY_ENDPOINT}/account/all`,
+    accountDetails: `${QUERY_ENDPOINT}/account`,
+    accountList: `${QUERY_ENDPOINT}/account/list`,
+    transactionClient: `${QUERY_ENDPOINT}/transaction/client`,
+    transactionAccount: `${QUERY_ENDPOINT}/transaction/account`,
+    transaction: `${QUERY_ENDPOINT}/transaction`
 };
 
-
 const storageService = {
-    saveTokens: function(tokenData) {
-        localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify({
+    saveTokens: (tokenData) => {
+        if (!tokenData) {
+            console.error('Token data is null or undefined');
+            return;
+        }
+        if (!tokenData.accessToken) console.error('Token data missing accessToken:', tokenData);
+        if (!tokenData.refreshToken) console.error('Token data missing refreshToken:', tokenData);
+        if (!tokenData.userId) console.error('Token data missing userId:', tokenData);
+
+        const tokenToSave = {
             userId: tokenData.userId,
             accessToken: tokenData.accessToken,
             refreshToken: tokenData.refreshToken
-        }));
+        };
+        localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokenToSave));
     },
 
-
-    getTokens: function() {
+    getTokens: () => {
         const tokensStr = localStorage.getItem(TOKEN_STORAGE_KEY);
-        return tokensStr ? JSON.parse(tokensStr) : null;
+        if (!tokensStr) return null;
+        try {
+            const tokens = JSON.parse(tokensStr);
+            if (!tokens.accessToken) console.error('Retrieved tokens missing accessToken:', tokens);
+            if (!tokens.refreshToken) console.error('Retrieved tokens missing refreshToken:', tokens);
+            if (!tokens.userId) console.error('Retrieved tokens missing userId:', tokens);
+            return tokens;
+        } catch (error) {
+            console.error('Error parsing tokens from localStorage:', error);
+            return null;
+        }
     },
 
+    removeTokens: () => localStorage.removeItem(TOKEN_STORAGE_KEY),
 
-    removeTokens: function() {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-    },
+    saveUserData: (userData) => localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData)),
 
-
-    saveUserData: function(userData) {
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
-    },
-
-
-    getUserData: function() {
+    getUserData: () => {
         const userDataStr = localStorage.getItem(USER_STORAGE_KEY);
         return userDataStr ? JSON.parse(userDataStr) : null;
     },
 
-
-    removeUserData: function() {
-        localStorage.removeItem(USER_STORAGE_KEY);
-    }
+    removeUserData: () => localStorage.removeItem(USER_STORAGE_KEY)
 };
 
-
 const apiService = {
-
-    fetch: async function(url, options = {}) {
+    fetch: async (url, options = {}) => {
         const tokenData = storageService.getTokens();
-
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json'
@@ -74,25 +85,16 @@ const apiService = {
             }
         };
 
-
-        if (fetchOptions.skipAuth) {
-            delete fetchOptions.skipAuth;
-        }
-
-        console.log('Выполнение запроса к:', url);
-        console.log('Опции запроса:', JSON.stringify(fetchOptions));
+        if (fetchOptions.skipAuth) delete fetchOptions.skipAuth;
 
         try {
             const response = await fetch(url, fetchOptions);
-            console.log('Статус ответа:', response.status);
-            
             let data;
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
                 const text = await response.text();
-                console.log('Текстовый ответ:', text);
                 data = { message: text };
             }
 
@@ -100,7 +102,6 @@ const apiService = {
                 console.error('Ошибка API:', data);
                 throw new Error(data.message || `Ошибка сервера: ${response.status}`);
             }
-
             return data;
         } catch (error) {
             console.error('API request error:', error);
@@ -108,8 +109,7 @@ const apiService = {
         }
     },
 
-
-    register: async function(userData) {
+    register: async (userData) => {
         const options = {
             method: 'POST',
             body: JSON.stringify({
@@ -121,325 +121,258 @@ const apiService = {
             }),
             skipAuth: true
         };
-
-        console.log('Отправляемые данные:', options.body);
-        return this.fetch(API_URLS.register, options);
+        return apiService.fetch(API_URLS.register, options);
     },
 
-
-    login: async function(credentials) {
+    login: async (credentials) => {
         const options = {
             method: 'POST',
             body: JSON.stringify(credentials),
             skipAuth: true
         };
-
-        return this.fetch(API_URLS.login, options);
+        return apiService.fetch(API_URLS.login, options);
     },
 
-
-    logout: async function() {
-        const options = {
-            method: 'POST'
-        };
-
-        return this.fetch(API_URLS.logout, options);
+    logout: async () => {
+        const options = { method: 'POST' };
+        return apiService.fetch(API_URLS.logout, options);
     },
 
+    getUserMe: async () => {
+        const options = { method: 'GET' };
+        try {
+            return await apiService.fetch(API_URLS.me, options);
+        } catch (error) {
+            console.error('Error in getUserMe:', error);
+            throw error;
+        }
+    },
 
-    getUserMe: async function() {
-        const options = {
-            method: 'GET'
-        };
+    getAllAccounts: async (pageSize = 10, pageOffset = 0) => {
+        return apiService.fetch(API_URLS.accountAll, {
+            method: 'POST',
+            body: JSON.stringify({ size: pageSize, offset: pageOffset })
+        });
+    },
 
-        return this.fetch(API_URLS.me, options);
+    getAccountDetails: async (accountId, clientId) => {
+        return apiService.fetch(API_URLS.accountDetails, {
+            method: 'POST',
+            body: JSON.stringify({ accountId, clientId })
+        });
+    },
+
+    getClientAccounts: async (clientId) => {
+        return apiService.fetch(API_URLS.accountList, {
+            method: 'POST',
+            body: JSON.stringify({ clientId })
+        });
+    },
+
+    getAccountTransactions: async (accountId) => {
+        return apiService.fetch(API_URLS.transactionAccount, {
+            method: 'POST',
+            body: JSON.stringify({ accountId })
+        });
+    },
+
+    getClientTransactions: async (clientId) => {
+        return apiService.fetch(API_URLS.transactionClient, {
+            method: 'POST',
+            body: JSON.stringify({ clientId })
+        });
+    },
+
+    getTransactionDetails: async (transactionId, clientId) => {
+        return apiService.fetch(API_URLS.transaction, {
+            method: 'POST',
+            body: JSON.stringify({ transactionId, clientId })
+        });
     }
 };
 
-
-function initRegisterPage() {
+const initRegisterPage = () => {
     const registerForm = document.getElementById('register-form');
     const errorMessageEl = document.getElementById('error-message');
-
     if (!registerForm) return;
 
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         errorMessageEl.style.display = 'none';
 
-        const email = document.getElementById('email').value;
-        const fullName = document.getElementById('fullName').value;
-        
+        const email = document.getElementById('email').value,
+            fullName = document.getElementById('fullName').value,
+            genderRadio = document.querySelector('input[name="gender"]:checked'),
+            gender = genderRadio ? genderRadio.value : null,
+            password = document.getElementById('password').value,
+            confirmPassword = document.getElementById('confirmPassword').value;
 
-        const genderRadio = document.querySelector('input[name="gender"]:checked');
-        const gender = genderRadio ? genderRadio.value : null;
-        
         if (!gender) {
             errorMessageEl.textContent = 'Выберите пол (мужской или женский)';
             errorMessageEl.style.display = 'block';
             return;
         }
-
-
         if (gender !== 'MALE' && gender !== 'FEMALE') {
             errorMessageEl.textContent = 'Выберите допустимый пол (мужской или женский)';
             errorMessageEl.style.display = 'block';
             return;
         }
-
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
         if (password !== confirmPassword) {
             errorMessageEl.textContent = 'Пароли не совпадают';
             errorMessageEl.style.display = 'block';
             return;
         }
-
         const roleCheckboxes = document.querySelectorAll('input[name="roles"]:checked');
         const roles = Array.from(roleCheckboxes).map(cb => cb.value);
-
         if (roles.length === 0) {
             errorMessageEl.textContent = 'Выберите хотя бы одну роль';
             errorMessageEl.style.display = 'block';
             return;
         }
 
-        const userData = {
-            email,
-            fullName,
-            gender,
-            roles,
-            password
-        };
-
-        console.log('Данные для регистрации:', userData);
+        const userData = { email, fullName, gender, roles, password };
 
         try {
             const response = await apiService.register(userData);
-            console.log('Ответ сервера:', response);
-
-            storageService.saveUserData({
-                userId: response.data.userId,
-                email: response.data.email
-            });
-
+            storageService.saveUserData({ userId: response.data.userId, email: response.data.email });
             window.location.href = '/employee/login';
         } catch (error) {
-            console.error('Ошибка при регистрации:', error);
             errorMessageEl.textContent = error.message || 'Произошла ошибка при регистрации';
             errorMessageEl.style.display = 'block';
         }
     });
-}
+};
 
-
-function initLoginPage() {
+const initLoginPage = () => {
     const loginForm = document.getElementById('login-form');
     const errorMessageEl = document.getElementById('error-message');
-
     if (!loginForm) return;
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         errorMessageEl.style.display = 'none';
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('email').value,
+            password = document.getElementById('password').value;
 
         try {
             const response = await apiService.login({ email, password });
             storageService.saveTokens(response.data);
             window.location.href = '/employee/me';
         } catch (error) {
-            console.error('Ошибка при входе:', error);
             errorMessageEl.textContent = error.message || 'Неверный email или пароль';
             errorMessageEl.style.display = 'block';
         }
     });
-}
+};
 
-
-function initHomePage() {
-    const logoutBtn = document.getElementById('logout-btn');
-    const userEmailEl = document.getElementById('user-email');
-    const userDetailsContainer = document.querySelector('.user-details');
+const initHomePage = () => {
+    const logoutBtn = document.getElementById('logout-btn'),
+        userEmailEl = document.getElementById('user-email'),
+        userDetailsContainer = document.querySelector('.user-details');
 
     const tokenData = storageService.getTokens();
-
     if (!tokenData) {
         window.location.href = '/employee/login';
         return;
     }
 
-
     apiService.getUserMe()
         .then(response => {
             const userData = response.data;
-            
-
-            console.log('User data received:', userData);
-            console.log('Gender data:', userData.gender);
-            
-
             storageService.saveUserData(userData);
-            
-
             if (userEmailEl) userEmailEl.textContent = userData.email;
-            
-
             if (userDetailsContainer) {
                 userDetailsContainer.innerHTML = '';
-                
-
                 const card = document.createElement('div');
                 card.className = 'employee-card';
-                
-
-                const nameElement = document.createElement('p');
-                nameElement.innerHTML = `<strong>ФИО:</strong> <span>${userData.fullName || 'Не указано'}</span>`;
-                card.appendChild(nameElement);
-                
-
-                const emailElement = document.createElement('p');
-                emailElement.innerHTML = `<strong>Email:</strong> <span>${userData.email}</span>`;
-                card.appendChild(emailElement);
-
-
+                addCardField(card, 'ФИО', userData.fullName || 'Не указано');
+                addCardField(card, 'Email', userData.email);
                 if (userData.gender) {
-                    const genderText = formatGenderValue(userData.gender);
-                    const genderElement = document.createElement('p');
-                    genderElement.innerHTML = `<strong>Пол:</strong> <span>${genderText}</span>`;
-                    card.appendChild(genderElement);
+                    addCardField(card, 'Пол', formatGenderValue(userData.gender));
                 }
-                
-
-                const statusElement = document.createElement('p');
-                statusElement.innerHTML = `<strong>Статус:</strong> <span>${userData.banned ? 'Заблокирован' : 'Активен'}</span>`;
-                card.appendChild(statusElement);
-                
+                addCardField(card, 'Статус', userData.banned ? 'Заблокирован' : 'Активен');
                 userDetailsContainer.appendChild(card);
             }
         })
         .catch(error => {
-            console.error('Error fetching user data:', error);
             if (userDetailsContainer) {
                 userDetailsContainer.innerHTML = '<p class="error-message">Не удалось загрузить данные пользователя. Пожалуйста, попробуйте позже.</p>';
             }
         });
 
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            await apiService.logout();
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            storageService.removeTokens();
-            storageService.removeUserData();
-            window.location.href = '/employee/login';
-        }
-    });
-}
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await apiService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                storageService.removeTokens();
+                storageService.removeUserData();
+                window.location.href = '/employee/login';
+            }
+        });
+    }
+};
 
-
-function renderEmployeeCard(userData, container) {
+const renderEmployeeCard = (userData, container) => {
     if (!container) return;
-    
     container.innerHTML = '';
-
     const card = document.createElement('div');
     card.className = 'employee-card';
-
     addCardField(card, 'ФИО', userData.fullName || 'Не указано');
-
     addCardField(card, 'Email', userData.email);
-
-    if (userData.gender) {
-        const genderText = formatGenderValue(userData.gender);
-        addCardField(card, 'Пол', genderText);
-    }
-
+    if (userData.gender) addCardField(card, 'Пол', formatGenderValue(userData.gender));
     addCardField(card, 'Статус', userData.banned ? 'Заблокирован' : 'Активен');
-    
     container.appendChild(card);
-}
+};
 
-
-function addCardField(card, label, value) {
+const addCardField = (card, label, value) => {
     const element = document.createElement('p');
     element.innerHTML = `<strong>${label}:</strong> <span>${value}</span>`;
     card.appendChild(element);
-}
+};
 
-
-function formatGenderValue(gender) {
+const formatGenderValue = (gender) => {
     if (typeof gender === 'string') {
-        if (gender === 'MALE') return 'Мужской';
-        if (gender === 'FEMALE') return 'Женский';
-        return gender;
-    } 
-    
-
+        return gender === 'MALE' ? 'Мужской' : gender === 'FEMALE' ? 'Женский' : gender;
+    }
     if (gender && typeof gender === 'object') {
-        if (gender.name) {
-            if (gender.name === 'MALE') return 'Мужской';
-            if (gender.name === 'FEMALE') return 'Женский';
-            return gender.name;
-        }
-        
-
+        if (gender.name) return gender.name === 'MALE' ? 'Мужской' : gender.name === 'FEMALE' ? 'Женский' : gender.name;
         if (gender.toString) {
             const genderStr = gender.toString();
-            if (genderStr === 'MALE') return 'Мужской';
-            if (genderStr === 'FEMALE') return 'Женский';
-            return genderStr;
+            return genderStr === 'MALE' ? 'Мужской' : genderStr === 'FEMALE' ? 'Женский' : genderStr;
         }
     }
-    
     return 'Не указано';
-}
+};
 
+const checkAuth = () => {
+    const currentPath = window.location.pathname,
+        isLoginPage = currentPath === '/employee/login',
+        isRegisterPage = currentPath === '/employee/register';
 
-function showErrorMessage(container) {
-    if (!container) return;
-    
-    container.innerHTML = '<p class="error-message">Не удалось загрузить данные пользователя. Пожалуйста, попробуйте позже.</p>';
-}
-
-
-async function handleLogout() {
-    try {
-        await apiService.logout();
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        storageService.removeTokens();
-        storageService.removeUserData();
-        window.location.href = '/employee/login';
-    }
-}
-
-
-function checkAuth() {
-    const currentPath = window.location.pathname;
-    const isLoginPage = currentPath === '/employee/login';
-    const isRegisterPage = currentPath === '/employee/register';
-    
     if (!isLoginPage && !isRegisterPage) {
         const tokenData = storageService.getTokens();
         if (!tokenData) {
             window.location.href = '/employee/login';
+            return false;
         }
+        return true;
     } else if (storageService.getTokens()) {
         window.location.href = '/employee/me';
+        return false;
     }
-}
+    return true;
+};
 
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
-
     if (currentPath !== '/employee/login' && currentPath !== '/employee/register') {
         checkAuth();
+        if (document.getElementById('logout-btn')) {
+            initHomePage();
+        }
     }
 });

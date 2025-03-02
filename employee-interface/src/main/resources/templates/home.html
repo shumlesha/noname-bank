@@ -20,6 +20,11 @@
         </header>
 
         <main class="main-content">
+            <div class="tab-navigation">
+                <a href="/employee/me" class="tab-button active">Профиль</a>
+                <a href="/employee/accounts" class="tab-button">Счета клиентов</a>
+            </div>
+            
             <section class="welcome-section">
                 <h2>Личный кабинет сотрудника</h2>
                 <p>Добро пожаловать в систему управления банком NoName.</p>
@@ -39,7 +44,6 @@
             <p>&copy; 2025 Банк NoName. Все права защищены.</p>
         </footer>
     </div>
-
 
     <script th:src="@{/employee/js/auth.js}"></script>
     <script>

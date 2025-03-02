@@ -32,6 +32,11 @@ public class ViewController {
     public String mePage() {
         return "home";
     }
+    
+    @GetMapping("/accounts")
+    public String accountsPage() {
+        return "accounts";
+    }
 
     @GetMapping("/")
     public String indexPage() {

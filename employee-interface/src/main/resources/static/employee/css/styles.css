@@ -1,12 +1,8 @@
-/**
- * Стили для интерфейса сотрудника банка NoName
- * Версия: 1.0
- */
 
-/* ===== ОСНОВНЫЕ СТИЛИ И СБРОС ===== */
 :root {
     --primary-color: #3498db;
     --primary-dark: #2980b9;
+    --primary-hover: #2980b9;
     --secondary-color: #2c3e50;
     --danger-color: #e74c3c;
     --danger-dark: #c0392b;
@@ -17,7 +13,11 @@
     --border-color: #e5e5e5;
     --text-color: #333333;
     --text-muted: #757575;
+    --light-text: #757575;
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --card-bg: #ffffff;
+    --header-bg: #f9f9f9;
     --border-radius: 8px;
     --spacing-xs: 5px;
     --spacing-sm: 10px;
@@ -52,7 +52,7 @@ body {
     flex-direction: column;
 }
 
-/* ===== ТИПОГРАФИКА ===== */
+
 h1, h2, h3, h4, h5, h6 {
     color: var(--secondary-color);
     margin-bottom: var(--spacing-md);
@@ -85,8 +85,7 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ===== КОМПОНЕНТЫ ===== */
-/* Кнопки */
+
 .btn {
     display: inline-block;
     padding: 12px 24px;
@@ -124,7 +123,7 @@ a:hover {
     background-color: var(--danger-dark);
 }
 
-/* Формы */
+
 .auth-form-container {
     max-width: 500px;
     margin: 0 auto;
@@ -178,7 +177,7 @@ a:hover {
     margin-top: var(--spacing-xs);
 }
 
-/* Радио и чекбоксы */
+
 fieldset {
     border: none;
     margin-bottom: var(--spacing-lg);
@@ -227,7 +226,7 @@ legend {
     color: var(--text-muted);
 }
 
-/* Сообщения */
+
 .error-message {
     background-color: #f8d7da;
     color: #721c24;
@@ -267,8 +266,7 @@ legend {
     to { transform: rotate(360deg); }
 }
 
-/* ===== МАКЕТ СТРАНИЦЫ ===== */
-/* Шапка */
+
 .main-header,
 .auth-header {
     display: flex;
@@ -298,7 +296,7 @@ legend {
     font-weight: 500;
 }
 
-/* Основной контент */
+
 .main-content {
     background-color: var(--white);
     border-radius: var(--border-radius);
@@ -323,7 +321,7 @@ legend {
     border-radius: 4px;
 }
 
-/* Карточка сотрудника */
+
 .employee-card {
     background-color: var(--white);
     border-radius: var(--border-radius);
@@ -357,7 +355,7 @@ legend {
     flex: 1;
 }
 
-/* Подвал */
+
 .main-footer {
     text-align: center;
     padding: var(--spacing-lg) 0;
@@ -366,25 +364,25 @@ legend {
     font-size: 0.9rem;
 }
 
-/* ===== АДАПТИВНОСТЬ ===== */
+
 @media (max-width: 768px) {
     .container {
         padding: var(--spacing-md);
     }
-    
+
     .auth-form-container {
         padding: var(--spacing-lg);
     }
-    
+
     .main-content {
         padding: var(--spacing-lg);
     }
-    
+
     .main-header {
         flex-direction: column;
         gap: var(--spacing-md);
     }
-    
+
     .user-info {
         width: 100%;
         justify-content: space-between;
@@ -396,9 +394,36 @@ legend {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .employee-card strong {
         width: 100%;
         margin-bottom: var(--spacing-xs);
     }
+}
+
+
+.tab-navigation {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.tab-button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.tab-button.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.tab-button:hover:not(.active) {
+    border-bottom-color: var(--border-color);
 }
