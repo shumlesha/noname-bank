@@ -1,15 +1,15 @@
 spring:
   rabbitmq:
-    host: localhost
+    host: 46.29.239.208
     port: 5672
     username: guest
     password: guest
   liquibase:
-    url: jdbc:postgresql://localhost:5432/core-service
+    url: jdbc:postgresql://46.29.239.208:5433/postgres
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/core-service
-    username: postgres
-    password: postgres
+    url: r2dbc:postgresql://46.29.239.208:5433/postgres
+    username: core_user
+    password: core_password_strongvery
   kafka:
     bootstrap-servers: ${core.blocking.kafka-properties.bootstrap-servers}
 

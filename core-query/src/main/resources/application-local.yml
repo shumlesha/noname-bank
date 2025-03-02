@@ -1,10 +1,10 @@
 spring:
   liquibase:
-    url: jdbc:postgresql://localhost:5432/core-service-query
+    url: jdbc:postgresql://46.29.239.208:5434/postgres
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/core-service-query
-    username: postgres
-    password: postgres
+    url: r2dbc:postgresql://46.29.239.208:5434/postgres
+    username: core_query_user
+    password: core_query_password_strongvery
   kafka:
     bootstrap-servers: 46.29.239.208:29094
 query:
