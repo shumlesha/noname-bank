@@ -27,6 +27,9 @@ class WithdrawalUpdateEventProcessor(
                     is AtmService.WithdrawalResult.Error.NotEnoughMoney ->
                         EventProcessor.ProcessResult.Error(IllegalStateException("Not enough money on account"))
 
+                    is AtmService.WithdrawalResult.Error.AccountClosedOrBlocked ->
+                        EventProcessor.ProcessResult.Error(IllegalStateException("Account closed or blocked"))
+
                     is AtmService.WithdrawalResult.Error.Unexpected ->
                         EventProcessor.ProcessResult.Error(withdrawalResult.cause)
                 }

@@ -22,6 +22,7 @@ sealed interface AtmService {
     sealed interface DepositResult {
         data class Success(val transaction: Transaction) : DepositResult
         sealed interface Error : DepositResult {
+            data object AccountClosedOrBlocked : Error
             data object AccountNotFound : Error
             data class Unexpected(val cause: Throwable) : Error
         }
@@ -30,6 +31,7 @@ sealed interface AtmService {
     sealed interface WithdrawalResult {
         data class Success(val transaction: Transaction) : WithdrawalResult
         sealed interface Error : WithdrawalResult {
+            data object AccountClosedOrBlocked : Error
             data object AccountNotFound : Error
             data object NotEnoughMoney : Error
             data class Unexpected(val cause: Throwable) : Error
@@ -79,7 +81,9 @@ class AtmServiceImpl(
         account: Account,
         withdrawal: Withdrawal
     ): Mono<WithdrawalResult> {
-        if (account.balance.value < withdrawal.amount.value) {
+        if (isClosedOrBlocked(account)) {
+            return WithdrawalResult.Error.AccountClosedOrBlocked.toMono()
+        } else if (account.balance.value < withdrawal.amount.value) {
             return WithdrawalResult.Error.NotEnoughMoney.toMono()
         }
 
@@ -99,6 +103,10 @@ class AtmServiceImpl(
     }
 
     private fun updateAccountBalanceAndCreateTransaction(account: Account, deposit: Deposit): Mono<DepositResult> {
+        if (isClosedOrBlocked(account)) {
+            return DepositResult.Error.AccountClosedOrBlocked.toMono()
+        }
+
         val updatedAccount = writeOnMoney(account, deposit.amount)
 
         return accountRepository.save(updatedAccount)
@@ -164,6 +172,9 @@ class AtmServiceImpl(
                     }
                 }
             }
+
+    private fun isClosedOrBlocked(account: Account): Boolean =
+        account.closedTimestamp != null || account.blockedTimestamp != null
 
     private fun writeOffMoney(account: Account, amount: Balance): Account =
         account.copy(balance = Balance(account.balance.value - amount.value))

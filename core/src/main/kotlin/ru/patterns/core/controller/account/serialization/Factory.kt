@@ -40,6 +40,12 @@ object Factory {
                 statusCode = 401
             )
 
+            is AccountCommandService.CloseAccountResult.Error.AccountBlocked ->
+                ErrorResponse(
+                    message = "Указанный счет заблокирован",
+                    statusCode = 400
+                )
+
             else -> ErrorResponse(
                 message = "При закрытии счета произошла ошибка",
                 statusCode = 500

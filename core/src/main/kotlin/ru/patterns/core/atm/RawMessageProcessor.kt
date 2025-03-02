@@ -18,6 +18,7 @@ abstract class RawMessageProcessor<T>(
                 when (parserResult) {
                     is MessageParser.ParseResult.Success -> {
                         eventProcessor.process(parserResult.data)
+                            .doOnSuccess { log.info("Результат обработки события: {}", it) }
                     }
 
                     is MessageParser.ParseResult.Error -> {

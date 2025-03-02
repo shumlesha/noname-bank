@@ -32,6 +32,7 @@ interface AccountCommandService {
             data class SaveErrorFromRepository(val error: AccountRepository.SaveAccountResult.Error) : Error
             data object AccountNotExists : Error
             data class AccountAlreadyClosed(val account: Account) : Error
+            data class AccountBlocked(val account: Account) : Error
             data class UnexpectedError(val cause: Throwable) : Error
         }
     }
@@ -80,14 +81,16 @@ class AccountCommandServiceImpl(
             }
             .onErrorResume { error -> CloseAccountResult.Error.UnexpectedError(error).toMono() }
 
-    private fun closeAccountIfNeed(account: Account): Mono<CloseAccountResult> =
-        Mono.fromCallable { isClosed(account) }
-            .flatMap { isClosed ->
-                when (isClosed) {
-                    true -> CloseAccountResult.Error.AccountAlreadyClosed(account).toMono()
-                    false -> closeAccount(account)
-                }
-            }
+    private fun closeAccountIfNeed(account: Account): Mono<CloseAccountResult> {
+        if (isBlocked(account)) {
+            return CloseAccountResult.Error.AccountBlocked(account).toMono()
+        }
+
+        return when (isClosed(account)) {
+            true -> CloseAccountResult.Error.AccountAlreadyClosed(account).toMono()
+            false -> closeAccount(account)
+        }
+    }
 
     private fun closeAccount(account: Account): Mono<CloseAccountResult> =
         Mono.fromCallable { createAccountWithClosedTimestamp(account) }
@@ -116,12 +119,9 @@ class AccountCommandServiceImpl(
             .doOnSuccess { account -> kafkaEventSender.sendEventToKafkaAsync(account) }
             .map(CloseAccountResult::Success)
 
-    private fun Mono<AccountRepository.SaveAccountResult>.handleSaveResult() =
-        this
-
+    private fun isBlocked(account: Account): Boolean =
+        account.blockedTimestamp != null
 
     private fun isClosed(account: Account): Boolean =
         account.closedTimestamp != null
-
-
 }

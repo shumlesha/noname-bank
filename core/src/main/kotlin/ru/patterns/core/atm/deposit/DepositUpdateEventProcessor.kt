@@ -24,6 +24,9 @@ class DepositUpdateEventProcessor(
                     is AtmService.DepositResult.Error.AccountNotFound ->
                         EventProcessor.ProcessResult.Error(IllegalStateException("Account not found"))
 
+                    is AtmService.DepositResult.Error.AccountClosedOrBlocked ->
+                        EventProcessor.ProcessResult.Error(IllegalStateException("Account closed or blocked"))
+
                     is AtmService.DepositResult.Error.Unexpected ->
                         EventProcessor.ProcessResult.Error(depositResult.cause)
                 }

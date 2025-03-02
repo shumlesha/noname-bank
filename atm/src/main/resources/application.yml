@@ -12,3 +12,8 @@ atm:
       name: "DEPOSIT"
     withdrawal-topic:
       name: "WITHDRAWAL"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://46.29.239.208:8761/eureka/
