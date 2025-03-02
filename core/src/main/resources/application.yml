@@ -1,7 +1,9 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
+  application:
+    name: core
   r2dbc:
     url: r2dbc:postgresql://postgres:5432/core-service
     username: postgres
@@ -19,4 +21,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://46.29.239.208:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
