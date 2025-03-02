@@ -56,9 +56,9 @@ body {
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #3498db;
+    border-color: #27ae60; /* изменён цвет */
     outline: none;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2); /* изменён цвет */
 }
 
 .role-options {
@@ -94,13 +94,13 @@ body {
 }
 
 .btn-primary {
-    background-color: #3498db;
+    background-color: #27ae60; /* изменён цвет */
     color: white;
     width: 100%;
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #1e8449; /* изменён цвет */
 }
 
 .btn-primary:active {
@@ -124,7 +124,7 @@ body {
 }
 
 .form-footer a {
-    color: #3498db;
+    color: #27ae60; /* изменён цвет ссылки */
     text-decoration: none;
 }
 
@@ -166,7 +166,6 @@ body {
     font-weight: 500;
 }
 
-/* Content styles */
 .main-content {
     background-color: #fff;
     border-radius: 8px;
@@ -215,7 +214,6 @@ body {
     }
 }
 
-/* Table styles */
 #accounts-table {
     width: 100%;
     border-collapse: collapse;
@@ -233,7 +231,7 @@ body {
 }
 
 #accounts-table th {
-    background: #2980b9;
+    background: #8e44ad;
     color: white;
     font-weight: bold;
     text-transform: uppercase;
@@ -259,7 +257,6 @@ body {
     border-bottom: none;
 }
 
-/* Button styles inside the table */
 #accounts-table .btn {
     padding: 6px 12px;
     font-size: 12px;
@@ -269,13 +266,13 @@ body {
 }
 
 #accounts-table .btn-primary {
-    background-color: #3498db;
+    background-color: #27ae60;
     color: white;
     border: none;
 }
 
 #accounts-table .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #1e8449;
     transform: translateY(-1px);
 }
 
@@ -290,7 +287,6 @@ body {
     transform: translateY(-1px);
 }
 
-/* Responsive table */
 @media (max-width: 768px) {
     #accounts-table {
         display: block;

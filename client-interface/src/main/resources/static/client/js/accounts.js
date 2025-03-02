@@ -22,11 +22,14 @@ async function loadAccounts() {
             <tr>
                 <td>${account.number}</td>
                 <td>${account.balance} ₽</td>
+                <td>${account.isCredit ? 'Кредитный' : 'Дебетовый'}</td>
                 <td>${account.closedTimestamp ? 'Закрыт' : 'Активен'}</td>
                 <td>
-                    ${!account.closedTimestamp ?
-            `<button onclick="closeAccount('${account.id}')" class="btn btn-danger">Закрыть</button>`
-            : '—'}
+                    ${!account.closedTimestamp ? `
+                        <button onclick="depositMoney('${account.id}')" class="btn btn-success">Пополнить</button>
+                        <button onclick="withdrawMoney('${account.id}')" class="btn btn-warning">Снять</button>
+                        <button onclick="closeAccount('${account.id}')" class="btn btn-danger">Закрыть</button>
+                    ` : '—'}
                 </td>
             </tr>
         `).join('');
@@ -79,5 +82,48 @@ async function closeAccount(accountId) {
     } catch (error) {
         console.error("Ошибка при закрытии счета:", error);
         alert("Ошибка при закрытии счета");
+    }
+}
+
+async function depositMoney(accountId) {
+    const amount = prompt("Введите сумму для пополнения:");
+    if (!amount || isNaN(amount) || amount <= 0) {
+        alert("Некорректная сумма");
+        return;
+    }
+
+    try {
+        await apiService.fetch('/api/atm/deposit', {
+            method: 'POST',
+            body: JSON.stringify({ amount, accountId })
+        });
+
+        alert(`Счет пополнен на ${amount} ₽`);
+        await loadAccounts();
+    } catch (error) {
+        console.error("Ошибка при пополнении счета:", error);
+        alert("Ошибка при пополнении счета");
+    }
+}
+
+
+async function withdrawMoney(accountId) {
+    const amount = prompt("Введите сумму для снятия:");
+    if (!amount || isNaN(amount) || amount <= 0) {
+        alert("Некорректная сумма");
+        return;
+    }
+
+    try {
+        await apiService.fetch('/api/atm/withdraw', {
+            method: 'POST',
+            body: JSON.stringify({ amount, accountId })
+        });
+
+        alert(`Со счета снято ${amount} ₽`);
+        await loadAccounts();
+    } catch (error) {
+        console.error("Ошибка при снятии денег:", error);
+        alert("Ошибка при снятии денег");
     }
 }

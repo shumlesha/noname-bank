@@ -66,10 +66,12 @@ const apiService = {
 
         try {
             const response = await fetch(url, fetchOptions);
-            const data = await response.json();
+
+            const text = await response.text();
+            const data = text.length > 0 ? JSON.parse(text) : null;
 
             if (!response.ok) {
-                throw new Error(data.message || 'Произошла ошибка при выполнении запроса');
+                throw new Error(data?.message || `Ошибка ${response.status}: ${response.statusText}`);
             }
 
             return data;
