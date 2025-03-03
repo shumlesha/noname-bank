@@ -17,6 +17,7 @@ import java.util.UUID;
 public class CreditDto {
     private UUID id;
     private UUID clientId;
+    private UUID accountId;
     private BigDecimal amount;
     private BigDecimal paidAmount;
     private String tariffName;

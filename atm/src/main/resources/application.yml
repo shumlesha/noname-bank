@@ -2,6 +2,8 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: atm
   kafka:
     bootstrap-servers: 46.29.239.208:29094
 
@@ -16,4 +18,4 @@ atm:
 eureka:
   client:
     service-url:
-      defaultZone: http://46.29.239.208:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/

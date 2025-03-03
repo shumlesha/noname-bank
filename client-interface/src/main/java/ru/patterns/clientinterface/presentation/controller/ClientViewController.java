@@ -22,6 +22,11 @@ public class ClientViewController {
         return "home";
     }
 
+    @GetMapping("/account")
+    public String accountPage() {
+        return "account";
+    }
+
     @GetMapping("/")
     public String indexPage() {
         return "redirect:/client/home";

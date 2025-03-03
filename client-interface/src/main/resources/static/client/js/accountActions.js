@@ -16,7 +16,7 @@ async function loadAccounts() {
         accountsTableBody.innerHTML = response.data.length
             ? response.data.map(account => `
                 <tr>
-                    <td><a href="#" onclick="redirectToAccountDetails('${account.id}')" class="account-link">${account.number}</a></td>
+                    <td><a href="#" onclick="loadAccountDetails('${account.id}')" class="account-link">${account.number}</a></td>
                     <td>${account.balance} ₽</td>
                     <td>${account.isCredit ? 'Кредитный' : 'Дебетовый'}</td>
                     <td>${account.closedTimestamp ? 'Закрыт' : 'Активен'}</td>
@@ -35,8 +35,6 @@ async function loadAccounts() {
         accountsTableBody.innerHTML = `<tr><td colspan="5">Ошибка загрузки данных</td></tr>`;
     }
 }
-
-document.addEventListener('DOMContentLoaded', loadAccountDetails);
 
 async function createAccount() {
     const userId = storageService.getUserData()?.userId;
@@ -125,3 +123,56 @@ async function withdrawMoney(accountId) {
         alert("Ошибка при снятии денег");
     }
 }
+
+async function loadAccountDetails(accountId) {
+    const userId = storageService.getUserData()?.userId;
+    const accountDetailsContainer = document.getElementById("account-details");
+    const transactionsTableBody = document.getElementById("transactions-list");
+
+    if (!userId) {
+        alert("Ошибка: Пользователь не найден");
+        return;
+    }
+
+    try {
+        const accountResponse = await apiService.fetch('/api/query/account', {
+            method: 'POST',
+            body: JSON.stringify({ clientId: userId, accountId })
+        });
+
+        const transactionsResponse = await apiService.fetch('/api/query/transaction/account', {
+            method: 'POST',
+            body: JSON.stringify({ accountId })
+        });
+
+        accountDetailsContainer.innerHTML = `
+            <h3>Детали счета</h3>
+            <p><strong>Номер:</strong> ${accountResponse.number}</p>
+            <p><strong>Баланс:</strong> ${accountResponse.balance} ₽</p>
+            <p><strong>Тип:</strong> ${accountResponse.isCredit ? 'Кредитный' : 'Дебетовый'}</p>
+            <p><strong>Статус:</strong> ${accountResponse.closedTimestamp ? 'Закрыт' : 'Активен'}</p>
+        `;
+
+        transactionsTableBody.innerHTML = transactionsResponse.transactions.length
+            ? transactionsResponse.transactions.map(tx => `
+                <tr>
+                    <td>${tx.transactionTimestamp}</td>
+                    <td>${tx.accountFrom === accountId ? '-' : '+'} ${tx.amount} ₽</td>
+                    <td>${tx.accountFrom === accountId ? 'Списание' : 'Пополнение'}</td>
+                </tr>
+            `).join('')
+            : `<tr><td colspan="3">Нет транзакций</td></tr>`;
+
+        document.getElementById("accounts-section").style.display = "none";
+        document.getElementById("account-details-section").style.display = "block";
+    } catch (error) {
+        console.error("Ошибка загрузки данных о счете:", error);
+        alert("Ошибка загрузки данных о счете");
+    }
+}
+
+function showAccountsList() {
+    document.getElementById("account-details-section").style.display = "none";
+    document.getElementById("accounts-section").style.display = "block";
+}
+

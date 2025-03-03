@@ -8,6 +8,7 @@ public class CreditMapper {
         return new CreditDto(
                 credit.getId(),
                 credit.getClientId(),
+                credit.getAccountId(),
                 credit.getAmount(),
                 credit.getPaidAmount(),
                 credit.getTariff() != null ? credit.getTariff().getName() : null,

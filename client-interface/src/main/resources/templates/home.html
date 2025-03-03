@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="content-section">
+        <div class="content-section" id="accounts-section">
             <h3>Ваши счета</h3>
             <button onclick="createAccount()" class="btn btn-primary">Создать счёт</button>
             <table id="accounts-table">
@@ -48,6 +48,25 @@
                 <tr>
                     <td colspan="5">Загрузка данных...</td>
                 </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content-section" id="account-details-section" style="display: none;">
+            <button onclick="showAccountsList()" class="btn btn-secondary">Назад</button>
+            <div id="account-details">Выберите счет для просмотра информации.</div>
+
+            <h3>История транзакций</h3>
+            <table id="transactions-table">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                    <th>Тип</th>
+                </tr>
+                </thead>
+                <tbody id="transactions-list">
+                <tr><td colspan="3">Выберите счет для загрузки транзакций</td></tr>
                 </tbody>
             </table>
         </div>

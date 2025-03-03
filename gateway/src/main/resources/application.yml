@@ -3,6 +3,10 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -45,7 +49,7 @@ spring:
             - Path=/employee/**
 eureka:
   client:
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 3
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
