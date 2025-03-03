@@ -36,9 +36,7 @@ public class CreditPaymentService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void processPayment(UUID creditId, BigDecimal amount) {
-        var credit = getCredit(creditId);
-
+    public void processPayment(Credit credit, BigDecimal amount) {
         try {
             var payCreditRequest = new PayCreditRequest(credit.getAccountId(), amount);
             var response = eventPublisher.publishPaymentRequest(payCreditRequest);
@@ -75,34 +73,6 @@ public class CreditPaymentService {
         } else {
             throw new PaymentProcessingException("Ошибка платежа");
         }
-    }
-
-    public BigDecimal calculateAutoPayment(Credit credit) {
-        var remainingAmount = credit.getAmountRemainingToPay();
-        if (remainingAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            return BigDecimal.ZERO;
-        }
-
-        var annualRate = credit.getTariff().getInterestRate().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-        var daysUntilNextPayment = ChronoUnit.DAYS.between(LocalDate.now(), credit.getNextPaymentDate());
-
-        if (daysUntilNextPayment <= 0) {
-            throw new IllegalStateException("Некорректная дата следующего платежа");
-        }
-
-        var periodRate = annualRate.multiply(BigDecimal.valueOf(daysUntilNextPayment))
-                .divide(BigDecimal.valueOf(365), RoundingMode.HALF_UP);
-
-        var interest = remainingAmount.multiply(periodRate);
-        var principalPayment = remainingAmount.divide(BigDecimal.valueOf(daysUntilNextPayment), RoundingMode.HALF_UP);
-        var totalPayment = principalPayment.add(interest);
-
-        return totalPayment.min(remainingAmount.add(interest));
-    }
-
-    private Credit getCredit(UUID creditId) {
-        return creditRepository.findById(creditId)
-                .orElseThrow(() -> new ResourceNotFoundException("Кредит не найден"));
     }
 }
 

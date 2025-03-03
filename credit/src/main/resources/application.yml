@@ -7,9 +7,9 @@ spring:
         format_sql: true
         ddl-auto: validate
   datasource:
-    url: jdbc:postgresql://localhost:5430/creditdb
-    username: ${POSTGRES_USER:creditdb}
-    password: ${POSTGRES_PASSWORD:creditdb}
+    url: jdbc:postgresql://46.29.239.208:5429/credit
+    username: ${POSTGRES_USER:credit_user}
+    password: ${POSTGRES_PASSWORD:credit_password_strongvery}
   flyway:
     enabled: true
     locations:

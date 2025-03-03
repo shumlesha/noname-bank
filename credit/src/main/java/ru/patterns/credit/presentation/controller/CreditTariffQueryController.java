@@ -1,5 +1,7 @@
 package ru.patterns.credit.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,12 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/credit/tariff/query")
+@Tag(name = "Чтение данных по кредитным тарифам")
 public class CreditTariffQueryController {
     private final CreditTariffQueryHandler creditTariffQueryHandler;
 
     @GetMapping("/all")
+    @Operation(summary = "Получить все кредитные тарифы")
     public ResponseEntity<DefaultResponse<List<CreditTariffDto>>> getAllTariffs() {
         var query = new GetAllCreditTariffsQuery();
         var tariffs = creditTariffQueryHandler.handle(query);
@@ -29,6 +33,7 @@ public class CreditTariffQueryController {
     }
 
     @GetMapping("/{tariffId}")
+    @Operation(summary = "Получить данные по кредитному тарифу по ID")
     public ResponseEntity<DefaultResponse<CreditTariffDto>> getTariffById(@PathVariable UUID tariffId) {
         var query = new GetCreditTariffByIdQuery(tariffId);
         var tariff = creditTariffQueryHandler.handle(query);
