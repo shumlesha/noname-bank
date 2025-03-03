@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои кредиты</title>
+    <link rel="stylesheet" th:href="@{/client/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <header class="main-header">
+        <div class="logo">
+            <h1>NoName Банк</h1>
+        </div>
+        <div class="user-info">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="btn btn-logout">Выйти</button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <button onclick="goBack()" class="btn btn-secondary">Назад</button>
+
+        <div class="content-section" id="credits-section">
+            <h3>Ваши кредиты</h3>
+            <button onclick="fetchCreditTariffs()" class="btn btn-primary">Оформить кредит</button>
+            <table id="credits-table">
+                <thead>
+                <tr>
+                    <th>ID кредита</th>
+                    <th>Сумма</th>
+                    <th>Оплачено</th>
+                    <th>Тариф</th>
+                    <th>Ставка</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody id="credits-list">
+                <tr><td colspan="7">Загрузка данных...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="tariff-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Выбрать тариф</h3>
+        <table id="tariffs-table">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Ставка</th>
+                <th>Действие</th>
+            </tr>
+            </thead>
+            <tbody id="tariffs-list">
+            <tr><td colspan="3">Загрузка...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script th:src="@{/client/js/storageService.js}"></script>
+<script th:src="@{/client/js/apiService.js}"></script>
+<script th:src="@{/client/js/auth.js}"></script>
+<script th:src="@{/client/js/creditActions.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadCredits();
+    });
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>

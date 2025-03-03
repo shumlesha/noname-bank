@@ -176,3 +176,6 @@ function showAccountsList() {
     document.getElementById("accounts-section").style.display = "block";
 }
 
+function goToCredits() {
+    window.location.href = "/client/credit";
+}

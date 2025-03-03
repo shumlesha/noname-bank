@@ -22,9 +22,9 @@ public class ClientViewController {
         return "home";
     }
 
-    @GetMapping("/account")
+    @GetMapping("/credit")
     public String accountPage() {
-        return "account";
+        return "credit";
     }
 
     @GetMapping("/")
