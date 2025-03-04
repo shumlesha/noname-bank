@@ -1,14 +1,14 @@
-import { storageService } from '../storage/storageService.js';
+import { storageService } from '../core/storageService.js';
 
-export const apiService = {
-    async fetch(url, options = {}) {
+export class HttpClient {
+    static async fetch(url, options = {}, skipAuth = false) {
         const tokenData = storageService.getTokens();
 
         const defaultOptions = {
             headers: { 'Content-Type': 'application/json' }
         };
 
-        if (tokenData?.accessToken && !options.skipAuth) {
+        if (tokenData?.accessToken && !skipAuth) {
             defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
         }
 
@@ -27,4 +27,4 @@ export const apiService = {
             throw error;
         }
     }
-};
+}
