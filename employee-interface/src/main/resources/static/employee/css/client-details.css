@@ -143,6 +143,11 @@
     color: #721c24;
 }
 
+.credit-status.paid-off {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
 .no-data {
     text-align: center;
     color: #757575;

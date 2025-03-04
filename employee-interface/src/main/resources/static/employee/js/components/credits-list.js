@@ -49,6 +49,8 @@ const getStatusClass = (status) => {
             return 'active';
         case 'CLOSED':
             return 'closed';
+        case 'PAID_OFF':
+            return 'paid-off';
         case 'OVERDUE':
             return 'overdue';
         default:
@@ -64,6 +66,8 @@ const getStatusText = (status) => {
             return 'Активен';
         case 'CLOSED':
             return 'Закрыт';
+        case 'PAID_OFF':
+            return 'Погашен';
         case 'OVERDUE':
             return 'Просрочен';
         default:
