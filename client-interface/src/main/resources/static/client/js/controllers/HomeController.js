@@ -58,6 +58,24 @@ export class HomeController {
             DomUtils.find('#accounts-section').style.display = 'block';
             DomUtils.find('#account-details-section').style.display = 'none';
         });
+
+        DomUtils.on('#close-account-modal-btn', 'click', () => {
+            DomUtils.hideModal('account-modal');
+        });
+
+        DomUtils.on('#account-modal-submit', 'click', () => {
+            const amount = DomUtils.find('#amount').value;
+            const accountId = DomUtils.find('#account-modal-submit').dataset.accountId;
+            const action = DomUtils.find('#account-modal-submit').dataset.action;
+            
+            if (action === 'deposit') {
+                this.processDeposit(amount, accountId);
+            } else if (action === 'withdraw') {
+                this.processWithdraw(amount, accountId);
+            }
+            
+            DomUtils.hideModal('account-modal');
+        });
     }
     
     async createAccount() {
@@ -70,50 +88,56 @@ export class HomeController {
         try {
             await accountService.createAccount(userData.userId);
             await this.loadAccounts();
+            alert("Счет создан!");
         } catch (error) {
             alert("Ошибка при создании счета.");
         }
     }
-    
+
     async loadAccounts() {
         const userData = authService.getCurrentUser();
         if (!userData) {
             alert("Ошибка: не удалось получить данные пользователя.");
             return;
         }
-        
+
         try {
             const data = await accountService.loadAccounts(userData.userId);
             let accountsList = DomUtils.find("#accounts-list");
             accountsList.innerHTML = "";
-            
+
             if (data.data.length === 0) {
                 accountsList.innerHTML = "<tr><td colspan='5'>У вас нет счетов</td></tr>";
                 return;
             }
-            
+
             data.data.forEach(account => {
+                let actions = account.isActive()
+                    ? `<div class="account-actions">
+                    <button class="btn btn-primary deposit-btn" data-id="${account.id}">Пополнить</button>
+                    <button class="btn btn-secondary withdraw-btn" data-id="${account.id}">Снять</button>
+                    <button class="btn btn-danger close-btn" data-id="${account.id}">Закрыть</button>
+                </div>`
+                    : `<span>Нет доступных действий</span>`;
+
                 let row = `<tr>
-                    <td><a href="#" class="account-link" data-id="${account.id}">${account.id}</a></td>
-                    <td>${account.getFormattedBalance()}</td>
-                    <td>${account.getType()}</td>
-                    <td>${account.getStatus()}</td>
-                    <td>
-                        <button class="btn btn-primary deposit-btn" data-id="${account.id}">Пополнить</button>
-                        <button class="btn btn-secondary withdraw-btn" data-id="${account.id}">Снять</button>
-                        <button class="btn btn-danger close-btn" data-id="${account.id}">Закрыть</button>
-                    </td>
-                </tr>`;
+                <td><a href="#" class="account-link" data-id="${account.id}">${account.number}</a></td>
+                <td>${account.getFormattedBalance()}</td>
+                <td>${account.getType()}</td>
+                <td>${account.getStatus()}</td>
+                <td>${actions}</td>
+            </tr>`;
+
                 accountsList.innerHTML += row;
             });
-            
+
             this.bindAccountLinks();
-            
+
         } catch (error) {
             console.error("Ошибка загрузки счетов:", error);
         }
     }
-    
+
     bindAccountLinks() {
         DomUtils.findAll(".account-link").forEach(link => {
             link.addEventListener("click", (e) => {
@@ -156,7 +180,7 @@ export class HomeController {
             
             accountDetailsEl.innerHTML = `
                 <h3>Детали счета</h3>
-                <p><strong>Номер счета:</strong> ${data.account.id}</p>
+                <p><strong>Номер счета:</strong> ${data.account.number}</p>
                 <p><strong>Баланс:</strong> ${data.account.getFormattedBalance()}</p>
                 <p><strong>Тип:</strong> ${data.account.getType()}</p>
                 <p><strong>Статус:</strong> ${data.account.getStatus()}</p>
@@ -186,27 +210,21 @@ export class HomeController {
     }
     
     async depositMoney(accountId) {
-        let amount = prompt("Введите сумму пополнения:");
-        if (!amount) return;
-        
-        try {
-            await accountService.depositMoney(amount, accountId);
-            await this.loadAccounts();
-        } catch (error) {
-            alert("Ошибка при пополнении счета.");
-        }
+        DomUtils.find('#account-modal-title').textContent = 'Пополнение счета';
+        DomUtils.find('#amount').value = '';
+        const submitBtn = DomUtils.find('#account-modal-submit');
+        submitBtn.dataset.accountId = accountId;
+        submitBtn.dataset.action = 'deposit';
+        DomUtils.showModal('account-modal');
     }
     
     async withdrawMoney(accountId) {
-        let amount = prompt("Введите сумму снятия:");
-        if (!amount) return;
-        
-        try {
-            await accountService.withdrawMoney(amount, accountId);
-            await this.loadAccounts();
-        } catch (error) {
-            alert("Ошибка при снятии средств.");
-        }
+        DomUtils.find('#account-modal-title').textContent = 'Снятие со счета';
+        DomUtils.find('#amount').value = '';
+        const submitBtn = DomUtils.find('#account-modal-submit');
+        submitBtn.dataset.accountId = accountId;
+        submitBtn.dataset.action = 'withdraw';
+        DomUtils.showModal('account-modal');
     }
     
     async closeAccount(accountId) {
@@ -225,6 +243,24 @@ export class HomeController {
             await this.loadAccounts();
         } catch (error) {
             alert("Ошибка при закрытии счета.");
+        }
+    }
+    
+    async processDeposit(amount, accountId) {
+        try {
+            await accountService.depositMoney(amount, accountId);
+            await this.loadAccounts();
+        } catch (error) {
+            alert("Ошибка при пополнении счета.");
+        }
+    }
+    
+    async processWithdraw(amount, accountId) {
+        try {
+            await accountService.withdrawMoney(amount, accountId);
+            await this.loadAccounts();
+        } catch (error) {
+            alert("Ошибка при снятии средств.");
         }
     }
 }

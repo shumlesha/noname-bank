@@ -1,0 +1,155 @@
+#accounts-table, #credits-table, #tariffs-table, #transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+#accounts-table th, #credits-table th, #tariffs-table th, #transactions-table th {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+    background: #8e44ad;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+#accounts-table td, #credits-table td, #tariffs-table td, #transactions-table td {
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#accounts-table tr:nth-child(even), 
+#credits-table tr:nth-child(even), 
+#tariffs-table tr:nth-child(even),
+#transactions-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#accounts-table tr:hover, 
+#credits-table tr:hover, 
+#tariffs-table tr:hover,
+#transactions-table tr:hover {
+    background-color: #eaf4ff;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#accounts-table tr:last-child td, 
+#credits-table tr:last-child td, 
+#tariffs-table tr:last-child td,
+#transactions-table tr:last-child td {
+    border-bottom: none;
+}
+
+.account-actions {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+#accounts-table .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    width: auto;
+}
+
+#accounts-table .btn-primary {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    width: auto;
+}
+
+#accounts-table .btn-primary:hover {
+    background-color: #1e8449;
+    transform: translateY(-1px);
+}
+
+#accounts-table .btn-secondary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+#accounts-table .btn-secondary:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+#accounts-table .btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+#accounts-table .btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+#account-details-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#account-details {
+    padding: 15px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    border-left: 4px solid #8e44ad;
+}
+
+#account-details p {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+#account-details p:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    #accounts-table, #credits-table, #tariffs-table, #transactions-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #accounts-table th,
+    #accounts-table td,
+    #credits-table th,
+    #credits-table td,
+    #tariffs-table th,
+    #tariffs-table td,
+    #transactions-table th,
+    #transactions-table td {
+        min-width: 120px;
+    }
+    
+    .account-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    #accounts-table .btn {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+}

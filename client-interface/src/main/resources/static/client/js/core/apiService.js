@@ -1,8 +1,4 @@
-/**
- * Сервис для работы с API
- */
 import { HttpClient } from '../utils/httpClient.js';
-import { config } from '../config/config.js';
 
 class ApiService {
     async request(endpoint, options = {}, skipAuth = false) {
