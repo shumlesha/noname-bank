@@ -1,6 +1,6 @@
 import API_CONFIG from '../config/api-config.js';
 import storageService from './storage-service.js';
-import { logout } from '../auth.js';
+import { logout as authLogout } from '../auth.js';
 
 const apiService = {
     fetch: async (url, options = {}) => {
@@ -44,7 +44,7 @@ const apiService = {
 
                 if (response.status === 401 && !options.skipAuth) {
                     console.log('Токен просрочен или недействителен. Выполняется автоматический выход...');
-                    logout();
+                    authLogout();
                     return;
                 }
                 
@@ -87,7 +87,18 @@ const apiService = {
 
 
     logout: async () => {
-        const options = { method: 'POST' };
+        const tokenData = storageService.getTokens();
+        if (!tokenData || !tokenData.refreshToken) {
+            console.error('Отсутствует refresh token для выхода из системы');
+            return;
+        }
+        
+        const options = { 
+            method: 'POST',
+            body: JSON.stringify({
+                refreshToken: tokenData.refreshToken
+            })
+        };
         return apiService.fetch(API_CONFIG.ENDPOINTS.logout, options);
     },
 
