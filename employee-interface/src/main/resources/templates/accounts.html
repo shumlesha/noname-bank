@@ -24,6 +24,7 @@
         <div class="tab-navigation">
             <a href="/employee/me" class="tab-button">Профиль</a>
             <a href="/employee/accounts" class="tab-button active">Счета клиентов</a>
+            <a href="/employee/users" class="tab-button">Управление пользователями</a>
         </div>
 
         <section class="accounts-section">
@@ -62,7 +63,6 @@
     </footer>
 </div>
 
-<script th:src="@{/employee/js/auth.js}"></script>
-<script th:src="@{/employee/js/accounts.js}"></script>
+<script type="module" th:src="@{/employee/js/init.js}"></script>
 </body>
 </html>

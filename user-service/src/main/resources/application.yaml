@@ -76,4 +76,9 @@ springdoc:
     show-extensions: true
     validator-url: null
 
-
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG

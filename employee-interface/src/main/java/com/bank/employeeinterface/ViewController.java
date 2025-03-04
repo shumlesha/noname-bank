@@ -37,6 +37,11 @@ public class ViewController {
     public String accountsPage() {
         return "accounts";
     }
+    
+    @GetMapping("/users")
+    public String usersPage() {
+        return "users";
+    }
 
     @GetMapping("/")
     public String indexPage() {

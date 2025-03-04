@@ -9,6 +9,11 @@ import com.bank.userservice.service.UserService;
 import com.bank.userservice.util.ResponseBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -53,6 +58,22 @@ public class UserController {
                 ResponseBuilder.success(
                         "User details fetched successfully",
                         user
+                )
+        );
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @Operation(summary = "Get all users", description = "Get all users")
+    public ResponseEntity<DefaultResponse<Page<UserDto>>> getAllUsers(
+            @ParameterObject @PageableDefault(sort = "fullName",
+                    direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<UserDto> users = userService.getAllUsers(pageable);
+
+        return ResponseEntity.ok(
+                ResponseBuilder.success(
+                        "Users fetched successfully",
+                        users
                 )
         );
     }
