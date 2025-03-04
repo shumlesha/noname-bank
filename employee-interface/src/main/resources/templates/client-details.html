@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Детальная информация о клиенте банка NoName">
+    <title>Информация о клиенте | Банк NoName</title>
+    <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/employee/css/accounts.css}">
+    <link rel="stylesheet" th:href="@{/employee/css/client-details.css}">
+</head>
+<body>
+<div class="container">
+    <header class="main-header">
+        <div class="logo">
+            <h1>Банк NoName</h1>
+        </div>
+        <div class="user-info">
+            <span id="user-email" class="user-email"></span>
+            <button id="logout-btn" class="btn btn-logout">Выйти</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="tab-navigation">
+            <a href="/employee/me" class="tab-button">Профиль</a>
+            <a href="/employee/accounts" class="tab-button">Счета клиентов</a>
+            <a href="/employee/users" class="tab-button">Управление пользователями</a>
+        </div>
+
+        <section class="client-details-section">
+            <div class="client-header">
+                <h2>Информация о клиенте</h2>
+            </div>
+
+            <div id="messages-container"></div>
+
+            <div id="client-loading" class="loading-indicator">
+                <span class="loading-text">Загрузка информации о клиенте...</span>
+            </div>
+
+            <div id="client-info-container"></div>
+            
+            <!-- Контейнер для сводной информации -->
+            <div id="client-summary-container" class="client-summary-container"></div>
+            
+            <div class="client-data-sections">
+                <div class="section-header">
+                    <h3>Счета клиента</h3>
+                </div>
+                <div id="client-accounts-loading" class="loading-indicator">
+                    <span class="loading-text">Загрузка счетов клиента...</span>
+                </div>
+                <div id="client-accounts-container"></div>
+
+                <div class="section-header">
+                    <h3>Кредиты клиента</h3>
+                </div>
+                <div id="client-credits-loading" class="loading-indicator">
+                    <span class="loading-text">Загрузка кредитов клиента...</span>
+                </div>
+                <div id="client-credits-container"></div>
+            </div>
+
+            <div id="account-details-container" style="display: none;"></div>
+            <div id="account-details-loading" class="loading-indicator" style="display: none;">
+                <span class="loading-text">Загрузка деталей счета...</span>
+            </div>
+            <div id="transactions-container" style="display: none;"></div>
+            <div id="transactions-loading" class="loading-indicator" style="display: none;">
+                <span class="loading-text">Загрузка транзакций...</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Банк NoName. Все права защищены.</p>
+    </footer>
+</div>
+
+<script type="module" th:src="@{/employee/js/init.js}"></script>
+</body>
+</html>

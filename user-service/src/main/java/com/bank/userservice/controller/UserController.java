@@ -77,4 +77,18 @@ public class UserController {
                 )
         );
     }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @Operation(summary = "Get user by id", description = "Get user details by providing the user id")
+    public ResponseEntity<DefaultResponse<UserDto>> getUserById(@PathVariable UUID userId) {
+        UserDto user = userService.getUserById(userId);
+
+        return ResponseEntity.ok(
+                ResponseBuilder.success(
+                        "User details fetched successfully",
+                        user
+                )
+        );
+    }
 }

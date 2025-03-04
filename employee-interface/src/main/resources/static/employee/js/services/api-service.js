@@ -112,6 +112,15 @@ const apiService = {
     },
 
 
+    getUserById: async (userId) => {
+        const options = {
+            method: 'GET'
+        };
+        
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.userById}/${userId}`, options);
+    },
+
+
     banUser: async (userId, reason) => {
         const options = {
             method: 'POST',
@@ -166,6 +175,13 @@ const apiService = {
         return apiService.fetch(API_CONFIG.ENDPOINTS.transaction, {
             method: 'POST',
             body: JSON.stringify({ transactionId, clientId })
+        });
+    },
+
+
+    getClientCredits: async (clientId) => {
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditsByClient}/${clientId}`, {
+            method: 'GET'
         });
     }
 };

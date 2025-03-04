@@ -3,6 +3,7 @@ import { initLoginPage } from './pages/login-page.js';
 import { initRegisterPage } from './pages/register-page.js';
 import { initProfilePage } from './pages/profile-page.js';
 import { initUsersPage } from './pages/users-page.js';
+import { initClientDetailsPage } from './pages/client-details-page.js';
 import { initCommonUI } from './components/common-ui.js';
 import { checkAuth } from './auth.js';
 
@@ -36,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
 
         default:
-            if (currentPath.startsWith('/employee/')) {
+            if (currentPath.startsWith('/employee/client/')) {
+                initClientDetailsPage();
+            } else if (currentPath.startsWith('/employee/')) {
                 checkAuth();
             }
             break;

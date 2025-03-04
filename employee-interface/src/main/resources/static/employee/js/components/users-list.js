@@ -37,9 +37,13 @@ export const renderUsersList = (users, container, onViewDetails, onBanUser) => {
             actionsHTML += `<button class="btn btn-ban" data-user-id="${user.id}">Заблокировать</button>`;
         }
 
+        const userNameLink = user.roles && user.roles.some(role => role.name === 'CLIENT') 
+            ? `<a href="/employee/client/${user.id}" class="user-name-link">${user.fullName}</a>`
+            : user.fullName;
+
         return `
             <tr>
-                <td>${user.fullName}</td>
+                <td>${userNameLink}</td>
                 <td>${user.email}</td>
                 <td><div class="user-roles">${rolesHTML}</div></td>
                 <td>${statusHTML}</td>
@@ -81,7 +85,15 @@ export const renderUserDetails = (user, container, onBanUser) => {
 
     const header = document.createElement('div');
     header.className = 'user-details-header';
-    header.innerHTML = `<h3>Информация о пользователе: ${user.fullName}</h3>`;
+    
+    const isClient = user.roles && user.roles.some(role => role.name === 'CLIENT');
+    let headerContent = `<h3>Информация о пользователе: ${user.fullName}</h3>`;
+    
+    if (isClient) {
+        headerContent += `<a href="/employee/client/${user.id}" class="btn btn-view">Открыть страницу клиента</a>`;
+    }
+    
+    header.innerHTML = headerContent;
     detailsContainer.appendChild(header);
 
     const content = document.createElement('div');

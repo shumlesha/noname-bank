@@ -29,10 +29,14 @@ export const renderAccountsList = (accounts, container, onAccountSelect) => {
         const number = account.number || 'Нет данных';
         const clientId = account.clientId || 'Нет данных';
         const balance = formatCurrency(account.balance);
+        
+        const clientIdDisplay = account.clientId 
+            ? `<a href="/employee/client/${account.clientId}" class="client-id-link">${account.clientId}</a>` 
+            : 'Нет данных';
 
         return `<tr>
           <td>${number}</td>
-          <td>${clientId}</td>
+          <td>${clientIdDisplay}</td>
           <td>${balance}</td>
           <td>${accountType}</td>
           <td>${status}</td>

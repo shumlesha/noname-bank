@@ -3,6 +3,7 @@ const API_CONFIG = {
     AUTH_ENDPOINT: '/api/auth',
     USERS_ENDPOINT: '/api/users',
     QUERY_ENDPOINT: '/api/query',
+    CREDIT_ENDPOINT: '/api/credit',
 
     STORAGE_KEYS: {
         TOKEN: 'auth_tokens',
@@ -16,12 +17,14 @@ const API_CONFIG = {
         me: '/api/users/me',
         usersAll: '/api/users/all',
         userBan: '/api/users/ban',
+        userById: '/api/users',
         accountAll: '/api/query/account/all',
         accountDetails: '/api/query/account',
         accountList: '/api/query/account/list',
         transactionClient: '/api/query/transaction/client',
         transactionAccount: '/api/query/transaction/account',
-        transaction: '/api/query/transaction'
+        transaction: '/api/query/transaction',
+        creditsByClient: '/api/credit/query'
     },
 
     PAGINATION: {

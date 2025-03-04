@@ -26,7 +26,23 @@ export const formatDate = (timestamp) => {
 
 export const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return 'Нет данных';
-    return amount.toLocaleString('ru-RU') + ' ₽';
+    
+
+    let numAmount = amount;
+    if (typeof amount === 'string') {
+        numAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
+    }
+    
+
+    if (isNaN(numAmount)) return 'Нет данных';
+    
+
+    return numAmount.toLocaleString('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 };
 
 
