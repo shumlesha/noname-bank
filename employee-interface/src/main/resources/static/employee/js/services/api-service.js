@@ -1,5 +1,6 @@
 import API_CONFIG from '../config/api-config.js';
 import storageService from './storage-service.js';
+import { logout } from '../auth.js';
 
 const apiService = {
     fetch: async (url, options = {}) => {
@@ -39,6 +40,14 @@ const apiService = {
 
             if (!response.ok) {
                 console.error('Ошибка API:', data);
+                
+
+                if (response.status === 401 && !options.skipAuth) {
+                    console.log('Токен просрочен или недействителен. Выполняется автоматический выход...');
+                    logout();
+                    return;
+                }
+                
                 throw new Error(data.message || `Ошибка сервера: ${response.status}`);
             }
 
