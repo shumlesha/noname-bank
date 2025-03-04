@@ -24,6 +24,7 @@ export const authService = {
             body: JSON.stringify(userData),
             skipAuth: true
         });
+        console.log(response.data);
         return response.data;
     },
 

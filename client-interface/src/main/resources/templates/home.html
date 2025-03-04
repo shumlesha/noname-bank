@@ -79,5 +79,11 @@
 <script type="module" th:src="@{/client/js/service/authService.js}"></script>
 <script type="module" th:src="@{/client/js/pages/home.js}"></script>
 
+<script>
+    document.getElementById('credits-btn').addEventListener('click', function () {
+        window.location.href = '/client/credit';
+    });
+</script>
+
 </body>
 </html>

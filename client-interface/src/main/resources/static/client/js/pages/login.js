@@ -1,5 +1,4 @@
 import { authService } from '../service/authService.js';
-import { storageService } from "../storage/storageService.js";
 
 document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('login-form');

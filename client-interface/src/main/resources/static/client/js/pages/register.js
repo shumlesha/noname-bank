@@ -43,10 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const response = await authService.register(userData);
-
             storageService.saveUserData({
-                userId: response.data.userId,
-                email: response.data.email
+                userId: response.userId,
+                email: response.email
             });
 
             window.location.href = '/client/login';
