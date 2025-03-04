@@ -1,0 +1,13 @@
+.user-details {
+    background-color: #f5f7fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.user-details p {
+    margin-bottom: 10px;
+}
+
+.user-details p:last-child {
+    margin-bottom: 0;
+}
