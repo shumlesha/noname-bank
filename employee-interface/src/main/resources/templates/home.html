@@ -23,8 +23,10 @@
             <div class="tab-navigation">
                 <a href="/employee/me" class="tab-button active">Профиль</a>
                 <a href="/employee/accounts" class="tab-button">Счета клиентов</a>
+                <a href="/employee/users" class="tab-button">Управление пользователями</a>
+                <a href="/employee/credit-tariffs" class="tab-button">Тарифы кредитов</a>
             </div>
-            
+
             <section class="welcome-section">
                 <h2>Личный кабинет сотрудника</h2>
                 <p>Добро пожаловать в систему управления банком NoName.</p>
@@ -45,11 +47,6 @@
         </footer>
     </div>
 
-    <script th:src="@{/employee/js/auth.js}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initHomePage();
-        });
-    </script>
+    <script type="module" th:src="@{/employee/js/init.js}"></script>
 </body>
 </html>

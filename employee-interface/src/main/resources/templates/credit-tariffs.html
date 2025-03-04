@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Управление тарифами кредитов банка NoName">
+    <title>Тарифы кредитов | Банк NoName</title>
+    <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/employee/css/credit-tariffs.css}">
+</head>
+<body>
+<div class="container">
+    <header class="main-header">
+        <div class="logo">
+            <h1>Банк NoName</h1>
+        </div>
+        <div class="user-info">
+            <span id="user-email" class="user-email"></span>
+            <button id="logout-btn" class="btn btn-logout">Выйти</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="tab-navigation">
+            <a href="/employee/me" class="tab-button">Профиль</a>
+            <a href="/employee/accounts" class="tab-button">Счета клиентов</a>
+            <a href="/employee/users" class="tab-button">Управление пользователями</a>
+            <a href="/employee/credit-tariffs" class="tab-button active">Тарифы кредитов</a>
+        </div>
+
+        <section class="credit-tariffs-section">
+            <div class="section-header">
+                <h2>Управление тарифами кредитов</h2>
+            </div>
+            
+            <button id="create-tariff-btn" class="btn btn-primary" style="margin-bottom: 20px;">Создать новый тариф</button>
+
+            <div id="messages-container"></div>
+
+            <div id="tariffs-loading" class="loading-indicator">
+                <span class="loading-text">Загрузка тарифов...</span>
+            </div>
+
+            <div id="tariffs-container" class="tariffs-container"></div>
+
+            <div id="tariff-form-container" class="tariff-form-container" style="display: none;">
+                <div class="form-header">
+                    <h3 id="form-title">Создание нового тарифа</h3>
+                    <button id="close-form-btn" class="btn btn-close">&times;</button>
+                </div>
+                <form id="tariff-form">
+                    <input type="hidden" id="tariff-id">
+                    <div class="form-group">
+                        <label for="tariff-name">Название тарифа</label>
+                        <input type="text" id="tariff-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tariff-interest-rate">Процентная ставка (%)</label>
+                        <input type="number" id="tariff-interest-rate" name="interestRate" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-btn" class="btn btn-secondary">Отмена</button>
+                        <button type="submit" id="save-btn" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="confirmation-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Подтверждение удаления</h3>
+                        <button id="close-modal-btn" class="btn btn-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Вы уверены, что хотите удалить тариф <span id="delete-tariff-name"></span>?</p>
+                        <p class="warning-text">Это действие невозможно отменить.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancel-delete-btn" class="btn btn-secondary">Отмена</button>
+                        <button id="confirm-delete-btn" class="btn btn-danger">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Банк NoName. Все права защищены.</p>
+    </footer>
+</div>
+
+<script type="module" th:src="@{/employee/js/init.js}"></script>
+</body>
+</html>

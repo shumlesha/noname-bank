@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Управление счетами клиентов банка NoName">
-    <title>Счета клиентов | Банк NoName</title>
+    <meta name="description" content="Детальная информация о клиенте банка NoName">
+    <title>Информация о клиенте | Банк NoName</title>
     <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
     <link rel="stylesheet" th:href="@{/employee/css/accounts.css}">
+    <link rel="stylesheet" th:href="@{/employee/css/client-details.css}">
 </head>
 <body>
 <div class="container">
@@ -23,31 +24,45 @@
     <main class="main-content">
         <div class="tab-navigation">
             <a href="/employee/me" class="tab-button">Профиль</a>
-            <a href="/employee/accounts" class="tab-button active">Счета клиентов</a>
+            <a href="/employee/accounts" class="tab-button">Счета клиентов</a>
             <a href="/employee/users" class="tab-button">Управление пользователями</a>
             <a href="/employee/credit-tariffs" class="tab-button">Тарифы кредитов</a>
         </div>
 
-        <section class="accounts-section">
-            <div class="accounts-header">
-                <h2>Счета клиентов</h2>
+        <section class="client-details-section">
+            <div class="client-header">
+                <h2>Информация о клиенте</h2>
             </div>
-
-            <form id="search-form" class="search-form">
-                <input type="text" id="search-input" placeholder="Введите ID клиента для поиска счетов">
-                <button type="submit" class="btn btn-primary">Найти</button>
-            </form>
-
-            <button id="back-to-list-btn" class="btn back-button" style="display: none;">Вернуться к списку всех счетов</button>
 
             <div id="messages-container"></div>
 
-            <div id="accounts-loading" class="loading-indicator">
-                <span class="loading-text">Загрузка счетов...</span>
+            <div id="client-loading" class="loading-indicator">
+                <span class="loading-text">Загрузка информации о клиенте...</span>
             </div>
 
-            <div id="accounts-container"></div>
-            <div id="pagination-container" class="pagination-container"></div>
+            <div id="client-info-container"></div>
+            
+
+            <div id="client-summary-container" class="client-summary-container"></div>
+            
+            <div class="client-data-sections">
+                <div class="section-header">
+                    <h3>Счета клиента</h3>
+                </div>
+                <div id="client-accounts-loading" class="loading-indicator">
+                    <span class="loading-text">Загрузка счетов клиента...</span>
+                </div>
+                <div id="client-accounts-container"></div>
+
+                <div class="section-header">
+                    <h3>Кредиты клиента</h3>
+                </div>
+                <div id="client-credits-loading" class="loading-indicator">
+                    <span class="loading-text">Загрузка кредитов клиента...</span>
+                </div>
+                <div id="client-credits-container"></div>
+            </div>
+
             <div id="account-details-container" style="display: none;"></div>
             <div id="account-details-loading" class="loading-indicator" style="display: none;">
                 <span class="loading-text">Загрузка деталей счета...</span>

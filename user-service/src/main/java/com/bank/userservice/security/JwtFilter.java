@@ -8,12 +8,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
 
+@Slf4j
 @AllArgsConstructor
 public class JwtFilter extends GenericFilterBean {
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -39,9 +41,11 @@ public class JwtFilter extends GenericFilterBean {
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails((HttpServletRequest) servletRequest));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.info(authToken.getAuthorities().toString());
                 }
 
             } catch (Exception e) {
+                log.error(e.getMessage(), e);
                 SecurityContextHolder.clearContext();
             }
         } else {

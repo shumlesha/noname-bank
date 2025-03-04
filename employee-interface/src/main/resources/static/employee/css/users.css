@@ -1,0 +1,220 @@
+.users-section {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.users-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-lg);
+}
+
+.users-list th,
+.users-list td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.users-list th {
+    background-color: var(--header-bg);
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.users-list tr:hover {
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.users-list .user-roles {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+}
+
+
+.users-list .user-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    margin: 0;
+}
+
+.user-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.user-status.active {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+}
+
+.user-status.banned {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: var(--danger-color);
+}
+
+.user-roles {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.user-role {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background-color: var(--light-bg);
+    color: var(--text-muted);
+}
+
+.user-role.admin {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: var(--primary-color);
+}
+
+.user-role.employee {
+    background-color: rgba(155, 89, 182, 0.2);
+    color: #8e44ad;
+}
+
+.user-role.client {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: var(--warning-color);
+}
+
+.user-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.btn-view {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+.btn-view:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-ban {
+    background-color: var(--danger-color);
+    color: var(--white);
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+.btn-ban:hover {
+    background-color: var(--danger-dark);
+}
+
+.btn-unban {
+    background-color: var(--success-color);
+    color: var(--white);
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+.btn-unban:hover {
+    background-color: #27ae60;
+}
+
+.user-details {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.user-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-details-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.user-detail-item {
+    margin-bottom: var(--spacing-md);
+}
+
+.user-detail-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.user-detail-value {
+    font-size: 1.1rem;
+}
+
+.ban-form {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--light-bg);
+}
+
+.ban-form h3 {
+    margin-bottom: var(--spacing-md);
+}
+
+.ban-form textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 100px;
+    margin-bottom: var(--spacing-md);
+}
+
+.ban-form textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.loading-text {
+    color: var(--text-muted);
+    font-style: italic;
+}
