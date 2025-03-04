@@ -48,6 +48,11 @@ public class ViewController {
     public String clientDetailsPage(@PathVariable String clientId) {
         return "client-details";
     }
+    
+    @GetMapping("/credit-tariffs")
+    public String creditTariffsPage() {
+        return "credit-tariffs";
+    }
 
     @GetMapping("/")
     public String indexPage() {

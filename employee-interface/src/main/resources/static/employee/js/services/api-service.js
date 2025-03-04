@@ -183,6 +183,45 @@ const apiService = {
         return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditsByClient}/${clientId}`, {
             method: 'GET'
         });
+    },
+    
+
+    getAllCreditTariffs: async () => {
+        return apiService.fetch(API_CONFIG.ENDPOINTS.creditTariffsAll, {
+            method: 'GET'
+        });
+    },
+    
+    getCreditTariffById: async (tariffId) => {
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditTariffById}/${tariffId}`, {
+            method: 'GET'
+        });
+    },
+    
+    createCreditTariff: async (tariffData) => {
+        return apiService.fetch(API_CONFIG.ENDPOINTS.creditTariffCreate, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tariffData)
+        });
+    },
+    
+    updateCreditTariff: async (tariffData) => {
+        return apiService.fetch(API_CONFIG.ENDPOINTS.creditTariffUpdate, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tariffData)
+        });
+    },
+    
+    deleteCreditTariff: async (tariffId) => {
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditTariffDelete}/${tariffId}`, {
+            method: 'DELETE'
+        });
     }
 };
 

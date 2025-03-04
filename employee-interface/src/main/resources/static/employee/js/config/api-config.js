@@ -24,7 +24,12 @@ const API_CONFIG = {
         transactionClient: '/api/query/transaction/client',
         transactionAccount: '/api/query/transaction/account',
         transaction: '/api/query/transaction',
-        creditsByClient: '/api/credit/query'
+        creditsByClient: '/api/credit/query',
+        creditTariffsAll: '/api/credit/tariff/query/all',
+        creditTariffById: '/api/credit/tariff/query',
+        creditTariffCreate: '/api/credit/tariff/command/create',
+        creditTariffUpdate: '/api/credit/tariff/command/update',
+        creditTariffDelete: '/api/credit/tariff/command/delete'
     },
 
     PAGINATION: {

@@ -245,6 +245,7 @@ legend {
     display: inline-block;
     position: relative;
     padding-right: 24px;
+    font-style: normal;
 }
 
 .loading-text::after {

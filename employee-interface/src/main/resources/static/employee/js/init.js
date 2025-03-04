@@ -5,6 +5,7 @@ import { initProfilePage } from './pages/profile-page.js';
 import { initUsersPage } from './pages/users-page.js';
 import { initClientDetailsPage } from './pages/client-details-page.js';
 import { initCommonUI } from './components/common-ui.js';
+import { initCreditTariffsPage } from './pages/credit-tariffs-page.js';
 import { checkAuth } from './auth.js';
 
 
@@ -34,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
         case '/employee/users':
             initUsersPage();
+            break;
+
+        case '/employee/credit-tariffs':
+            initCreditTariffsPage();
             break;
 
         default:
