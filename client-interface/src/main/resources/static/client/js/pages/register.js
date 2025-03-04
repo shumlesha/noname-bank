@@ -1,4 +1,7 @@
-function initRegisterPage() {
+import { authService } from '../service/authService.js';
+import { storageService } from "../storage/storageService.js";
+
+document.addEventListener('DOMContentLoaded', function () {
     const registerForm = document.getElementById('register-form');
     const errorMessageEl = document.getElementById('error-message');
 
@@ -39,7 +42,7 @@ function initRegisterPage() {
         };
 
         try {
-            const response = await apiService.register(userData);
+            const response = await authService.register(userData);
 
             storageService.saveUserData({
                 userId: response.data.userId,
@@ -52,32 +55,6 @@ function initRegisterPage() {
             errorMessageEl.style.display = 'block';
         }
     });
-}
+});
 
-function initLoginPage() {
-    const loginForm = document.getElementById('login-form');
-    const errorMessageEl = document.getElementById('error-message');
 
-    if (!loginForm) return;
-
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorMessageEl.style.display = 'none';
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const response = await apiService.login({ email, password });
-            storageService.saveTokens(response.data);
-            storageService.saveUserData({
-                userId: response.data.userId,
-                email: email
-            });
-            window.location.href = '/client/home';
-        } catch (error) {
-            errorMessageEl.textContent = error.message || 'Неверный email или пароль';
-            errorMessageEl.style.display = 'block';
-        }
-    });
-}

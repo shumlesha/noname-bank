@@ -19,11 +19,11 @@
     </header>
 
     <div class="main-content">
-        <button onclick="goBack()" class="btn btn-secondary">Назад</button>
+        <button id="back-btn" class="btn btn-secondary">Назад</button>
 
         <div class="content-section" id="credits-section">
             <h3>Ваши кредиты</h3>
-            <button onclick="fetchCreditTariffs()" class="btn btn-primary">Оформить кредит</button>
+            <button id="fetch-tariffs-btn" class="btn btn-primary">Оформить кредит</button>
             <table id="credits-table">
                 <thead>
                 <tr>
@@ -46,7 +46,7 @@
 
 <div id="tariff-modal" class="modal" style="display: none;">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span id="close-modal-btn" class="close">&times;</span>
         <h3>Выбрать тариф</h3>
         <table id="tariffs-table">
             <thead>
@@ -63,20 +63,10 @@
     </div>
 </div>
 
-<script th:src="@{/client/js/storageService.js}"></script>
-<script th:src="@{/client/js/apiService.js}"></script>
-<script th:src="@{/client/js/auth.js}"></script>
-<script th:src="@{/client/js/creditActions.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        loadCredits();
-    });
-
-    function goBack() {
-        window.history.back();
-    }
-</script>
+<script type="module" th:src="@{/client/js/storage/storageService.js}"></script>
+<script type="module" th:src="@{/client/js/api/apiService.js}"></script>
+<script type="module" th:src="@{/client/js/service/authService.js}"></script>
+<script type="module" th:src="@{/client/js/pages/credits.js}"></script>
 
 </body>
 </html>

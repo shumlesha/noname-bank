@@ -35,7 +35,7 @@
                         <input type="checkbox" name="roles" value="CLIENT" checked> Клиент
                     </label>
                     <label class="role-option">
-                        <input type="checkbox" name="roles" value="client"> Сотрудник
+                        <input type="checkbox" name="roles" value="EMPLOYEE"> Сотрудник
                     </label>
                 </div>
             </div>
@@ -57,14 +57,6 @@
     </div>
 </div>
 
-<script th:src="@{/client/js/storageService.js}"></script>
-<script th:src="@{/client/js/apiService.js}"></script>
-<script th:src="@{/client/js/auth.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initRegisterPage();
-    });
-</script>
+<script th:src="@{/client/js/pages/register.js}"></script>
 </body>
 </html>

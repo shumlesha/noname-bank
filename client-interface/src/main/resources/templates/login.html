@@ -30,15 +30,10 @@
     </div>
 </div>
 
-<script th:src="@{/client/js/storageService.js}"></script>
-<script th:src="@{/client/js/apiService.js}"></script>
-<script th:src="@{/client/js/auth.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initLoginPage();
-    });
-</script>
+<script type="module" th:src="@{/client/js/storage/storageService.js}"></script>
+<script type="module" th:src="@{/client/js/api/apiService.js}"></script>
+<script type="module" th:src="@{/client/js/service/authService.js}"></script>
+<script type="module" th:src="@{/client/js/pages/login.js}"></script>
 
 </body>
 </html>

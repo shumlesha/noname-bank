@@ -13,7 +13,7 @@
             <h1>NoName Банк</h1>
         </div>
         <div class="user-info">
-            <button onclick="goToCredits()" class="btn btn-secondary">Мои кредиты</button>
+            <button id="credits-btn" class="btn btn-secondary">Мои кредиты</button>
             <span id="user-email"></span>
             <button id="logout-btn" class="btn btn-logout">Выйти</button>
         </div>
@@ -34,7 +34,7 @@
 
         <div class="content-section" id="accounts-section">
             <h3>Ваши счета</h3>
-            <button onclick="createAccount()" class="btn btn-primary">Создать счёт</button>
+            <button id="create-account-btn" class="btn btn-primary">Создать счёт</button>
             <table id="accounts-table">
                 <thead>
                 <tr>
@@ -54,7 +54,7 @@
         </div>
 
         <div class="content-section" id="account-details-section" style="display: none;">
-            <button onclick="showAccountsList()" class="btn btn-secondary">Назад</button>
+            <button id="back-to-accounts-btn" class="btn btn-secondary">Назад</button>
             <div id="account-details">Выберите счет для просмотра информации.</div>
 
             <h3>История транзакций</h3>
@@ -74,19 +74,10 @@
     </div>
 </div>
 
-<script th:src="@{/client/js/storageService.js}"></script>
-<script th:src="@{/client/js/apiService.js}"></script>
-<script th:src="@{/client/js/accountActions.js}"></script>
-<script th:src="@{/client/js/auth.js}"></script>
-<script th:src="@{/client/js/home.js}"></script>
-<script th:src="@{/client/js/main.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        initHomePage();
-        loadAccounts();
-    });
-</script>
+<script type="module" th:src="@{/client/js/storage/storageService.js}"></script>
+<script type="module" th:src="@{/client/js/api/apiService.js}"></script>
+<script type="module" th:src="@{/client/js/service/authService.js}"></script>
+<script type="module" th:src="@{/client/js/pages/home.js}"></script>
 
 </body>
 </html>
