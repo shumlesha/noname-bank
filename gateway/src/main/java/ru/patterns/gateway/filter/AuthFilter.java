@@ -1,5 +1,6 @@
 package ru.patterns.gateway.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.context.annotation.Lazy;
@@ -10,11 +11,13 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import ru.patterns.gateway.client.AuthServiceClient;
-
-import java.util.List;
+import ru.patterns.gateway.model.DefaultResponse;
+import ru.patterns.gateway.model.TokenVerificationDto;
 
 @Component
+@Slf4j
 public class AuthFilter implements GatewayFilter {
 
     private final AuthServiceClient authServiceClient;
@@ -32,23 +35,40 @@ public class AuthFilter implements GatewayFilter {
         }
 
         var token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (token != null && token.length() > 7) {
+            token = token.substring(7);
+        }
+        log.warn("Authorization header is {}", token);
 
-        ResponseEntity<String> response = authServiceClient.validateToken(token);
-
-        if (response.getStatusCode() != HttpStatus.OK) {
+        if (token == null || token.isEmpty()) {
             return onError(exchange, HttpStatus.UNAUTHORIZED);
-        } else {
-            response.getBody();
         }
 
-        var userId = response.getBody();
+        String finalToken = token;
+        return Mono.fromCallable(() -> authServiceClient.validateToken(finalToken))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(response -> {
+                    log.warn(response.getBody().getData().toString());
+                    if (response.getStatusCode() != HttpStatus.OK ||
+                            response.getBody() == null ||
+                            response.getBody().getData() == null ||
+                            !response.getBody().getData().isVerified()) {
+                        return onError(exchange, HttpStatus.UNAUTHORIZED);
+                    }
 
-        ServerHttpRequest modifiedRequest = exchange.getRequest()
-                .mutate()
-                .header("X-User-Id", userId)
-                .build();
+                    var userId = response.getBody().getData().getUserId().toString();
 
-        return chain.filter(exchange.mutate().request(modifiedRequest).build());
+                    var modifiedRequest = exchange.getRequest()
+                            .mutate()
+                            .header("X-User-Id", userId)
+                            .build();
+
+                    return chain.filter(exchange.mutate().request(modifiedRequest).build());
+                })
+                .onErrorResume(e -> {
+                    log.error("Ошибка: ", e);
+                    return onError(exchange, HttpStatus.UNAUTHORIZED);
+                });
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, HttpStatus status) {
@@ -56,5 +76,4 @@ public class AuthFilter implements GatewayFilter {
         return exchange.getResponse().setComplete();
     }
 }
-
 
