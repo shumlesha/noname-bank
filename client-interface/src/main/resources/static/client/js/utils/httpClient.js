@@ -1,4 +1,5 @@
 import { storageService } from '../core/storageService.js';
+import { config } from '../config/config.js';
 
 export class HttpClient {
     static async fetch(url, options = {}, skipAuth = false) {
@@ -18,6 +19,12 @@ export class HttpClient {
             const data = text ? JSON.parse(text) : null;
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Не авторизован. Редирект на страницу логина');
+                    storageService.removeTokens();
+                    storageService.removeUserData();
+                    window.location.href = config.routes.login;
+                }
                 throw new Error(data?.message || `Ошибка ${response.status}`);
             }
 

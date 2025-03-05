@@ -67,7 +67,7 @@ public class AuthFilter implements GatewayFilter {
                 })
                 .onErrorResume(e -> {
                     log.error("Ошибка: ", e);
-                    return onError(exchange, HttpStatus.UNAUTHORIZED);
+                    return onError(exchange, HttpStatus.SERVICE_UNAVAILABLE);
                 });
     }
 
