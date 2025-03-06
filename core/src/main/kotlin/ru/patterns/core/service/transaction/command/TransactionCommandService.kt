@@ -29,6 +29,7 @@ sealed interface TransactionCommandService {
         sealed interface Error : CreditPaymentResult {
             data class AccountNotFound(val accountId: UUID) : Error
             data object ZeroBalance : Error
+            data class AccountClosedOrBlocked(val accountId: UUID) : Error
             data class Unexpected(val cause: Throwable) : Error
         }
     }
@@ -93,8 +94,12 @@ class TransactionCommandServiceImpl(
                 }
             }
 
-    private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> =
-        Mono.fromCallable {
+    private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> {
+        if (isAccountClosedOrBlocked(account)) {
+            return CreditPaymentResult.Error.AccountClosedOrBlocked(account.id.value).toMono()
+        }
+
+        return Mono.fromCallable {
             val currentAccountBalance = account.balance.value
 
             if (currentAccountBalance < paymentAmount) {
@@ -122,6 +127,7 @@ class TransactionCommandServiceImpl(
                         }
                     }
             }
+    }
 
     private fun createCreditTransaction(
         account: Account,

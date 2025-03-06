@@ -44,6 +44,15 @@ class MqCreditPaymentListener(
                         is TransactionCommandService.CreditPaymentResult.Success ->
                             CreditPaymentResponseMessage(creditPaymentResult.debt)
 
+                        is TransactionCommandService.CreditPaymentResult.Error.AccountNotFound ->
+                            CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} не найден")
+
+                        is TransactionCommandService.CreditPaymentResult.Error.ZeroBalance ->
+                            CreditPaymentErrorMessage("На счете недостаточно средств")
+
+                        is TransactionCommandService.CreditPaymentResult.Error.AccountClosedOrBlocked ->
+                            CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} закрыт или заблокирован")
+
                         is TransactionCommandService.CreditPaymentResult.Error ->
                             CreditPaymentErrorMessage("Во время списания произошла ошибка")
                     }
