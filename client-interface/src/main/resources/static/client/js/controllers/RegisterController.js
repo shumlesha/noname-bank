@@ -2,6 +2,7 @@ import { authService } from '../core/authService.js';
 import { storageService } from '../core/storageService.js';
 import { DomUtils } from '../utils/domUtils.js';
 import { config } from '../config/config.js';
+import { showError, showSuccess } from '../utils/modalUtils.js';
 
 export class RegisterController {
     constructor() {
@@ -35,7 +36,10 @@ export class RegisterController {
             const confirmPassword = DomUtils.find('#confirmPassword').value;
             
             if (password !== confirmPassword) {
-                errorMessageEl.textContent = 'Пароли не совпадают';
+                const errorMessage = 'Пароли не совпадают';
+                showError(errorMessage);
+
+                errorMessageEl.textContent = errorMessage;
                 errorMessageEl.style.display = 'block';
                 return;
             }
@@ -44,7 +48,10 @@ export class RegisterController {
             const roles = Array.from(roleCheckboxes).map(cb => cb.value);
             
             if (roles.length === 0) {
-                errorMessageEl.textContent = 'Выберите хотя бы одну роль';
+                const errorMessage = 'Выберите хотя бы одну роль';
+                showError(errorMessage);
+
+                errorMessageEl.textContent = errorMessage;
                 errorMessageEl.style.display = 'block';
                 return;
             }
@@ -64,9 +71,16 @@ export class RegisterController {
                     email: response.email
                 });
                 
-                window.location.href = config.routes.login;
+                showSuccess('Регистрация успешно завершена! Перенаправление на страницу входа...');
+
+                setTimeout(() => {
+                    window.location.href = config.routes.login;
+                }, 1500);
             } catch (error) {
-                errorMessageEl.textContent = error.message || 'Произошла ошибка при регистрации';
+                const errorMessage = error.message || 'Произошла ошибка при регистрации';
+                showError(errorMessage);
+
+                errorMessageEl.textContent = errorMessage;
                 errorMessageEl.style.display = 'block';
             }
         });

@@ -68,6 +68,17 @@
     </footer>
 </div>
 
+<div id="message-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-message-modal-btn" class="close">&times;</span>
+        <h3 id="message-modal-title">Сообщение</h3>
+        <div id="message-modal-content">
+            <p id="message-modal-text"></p>
+            <button id="message-modal-ok" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+</div>
+
 <script type="module" th:src="@{/client/js/config/config.js}"></script>
 <script type="module" th:src="@{/client/js/utils/httpClient.js}"></script>
 <script type="module" th:src="@{/client/js/utils/domUtils.js}"></script>

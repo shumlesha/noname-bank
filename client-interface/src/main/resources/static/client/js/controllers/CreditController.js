@@ -2,6 +2,7 @@ import { authService } from '../core/authService.js';
 import { creditService } from '../core/creditService.js';
 import { DomUtils } from '../utils/domUtils.js';
 import { config } from '../config/config.js';
+import { showError, showSuccess, showMessage } from '../utils/modalUtils.js';
 
 export class CreditController {
     constructor() {
@@ -37,7 +38,7 @@ export class CreditController {
                 window.location.href = config.routes.login;
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
-                alert("Произошла ошибка при выходе из системы.");
+                showError("Произошла ошибка при выходе из системы.");
             }
         });
         
@@ -57,7 +58,7 @@ export class CreditController {
     async loadCredits() {
         const clientId = authService.getCurrentUser()?.userId;
         if (!clientId) {
-            alert("Ошибка: не удалось получить идентификатор клиента.");
+            showError("Ошибка: не удалось получить идентификатор клиента.");
             return;
         }
 
@@ -98,20 +99,54 @@ export class CreditController {
 
         } catch (error) {
             console.error("Ошибка загрузки кредитов:", error);
+            showError("Ошибка при загрузке кредитов.");
         }
     }
 
-
     async payCredit(creditId) {
-        let amount = prompt("Введите сумму оплаты:");
-        if (!amount) return;
+        const modal = document.createElement('div');
+        modal.className = 'modal show';
+        modal.id = 'payment-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span id="close-payment-modal-btn" class="close">&times;</span>
+                <h3>Оплата кредита</h3>
+                <div class="modal-form">
+                    <div class="form-group">
+                        <label for="payment-amount">Введите сумму оплаты:</label>
+                        <input type="number" id="payment-amount" class="form-control" min="1" step="1">
+                    </div>
+                    <button id="confirm-payment-btn" class="btn btn-primary">Оплатить</button>
+                </div>
+            </div>
+        `;
         
-        try {
-            await creditService.payCredit(creditId, amount);
-            this.loadCredits();
-        } catch (error) {
-            alert("Ошибка при оплате кредита.");
-        }
+        document.body.appendChild(modal);
+        
+        const closeBtn = document.getElementById('close-payment-modal-btn');
+        const confirmBtn = document.getElementById('confirm-payment-btn');
+        const amountInput = document.getElementById('payment-amount');
+        
+        const closeModal = () => {
+            document.body.removeChild(modal);
+        };
+        
+        closeBtn.addEventListener('click', closeModal);
+        
+        confirmBtn.addEventListener('click', async () => {
+            const amount = amountInput.value;
+            if (!amount) return;
+            
+            closeModal();
+            
+            try {
+                await creditService.payCredit(creditId, amount);
+                showSuccess("Платеж успешно выполнен");
+                this.loadCredits();
+            } catch (error) {
+                showError("Ошибка при оплате кредита.");
+            }
+        });
     }
     
     async fetchCreditTariffs() {
@@ -147,25 +182,60 @@ export class CreditController {
             DomUtils.showModal('tariff-modal');
         } catch (error) {
             console.error("Ошибка загрузки тарифов:", error);
+            showError("Ошибка при загрузке тарифов.");
         }
     }
     
     async takeCredit(tariffId) {
         const clientId = authService.getCurrentUser()?.userId;
         if (!clientId) {
-            alert("Ошибка: не удалось получить идентификатор клиента.");
+            showError("Ошибка: не удалось получить идентификатор клиента.");
             return;
         }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal show';
+        modal.id = 'credit-amount-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span id="close-credit-amount-modal-btn" class="close">&times;</span>
+                <h3>Оформление кредита</h3>
+                <div class="modal-form">
+                    <div class="form-group">
+                        <label for="credit-amount">Введите сумму кредита:</label>
+                        <input type="number" id="credit-amount" class="form-control" min="1000" step="1000">
+                    </div>
+                    <button id="confirm-credit-btn" class="btn btn-primary">Оформить</button>
+                </div>
+            </div>
+        `;
         
-        let amount = prompt("Введите сумму кредита:");
-        if (!amount) return;
+        document.body.appendChild(modal);
         
-        try {
-            await creditService.takeCredit(clientId, tariffId, amount);
-            await this.loadCredits();
-            DomUtils.hideModal('tariff-modal');
-        } catch (err) {
-            alert("Ошибка при создании кредита: " + err.message);
-        }
+        const closeBtn = document.getElementById('close-credit-amount-modal-btn');
+        const confirmBtn = document.getElementById('confirm-credit-btn');
+        const amountInput = document.getElementById('credit-amount');
+        
+        const closeModal = () => {
+            document.body.removeChild(modal);
+        };
+        
+        closeBtn.addEventListener('click', closeModal);
+        
+        confirmBtn.addEventListener('click', async () => {
+            const amount = amountInput.value;
+            if (!amount) return;
+            
+            closeModal();
+            
+            try {
+                await creditService.takeCredit(clientId, tariffId, amount);
+                showSuccess("Кредит успешно оформлен");
+                await this.loadCredits();
+                DomUtils.hideModal('tariff-modal');
+            } catch (err) {
+                showError("Ошибка при создании кредита: " + (err.message || "неизвестная ошибка"));
+            }
+        });
     }
 }

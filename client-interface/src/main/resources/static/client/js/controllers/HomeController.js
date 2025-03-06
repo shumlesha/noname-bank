@@ -2,6 +2,7 @@ import { authService } from '../core/authService.js';
 import { accountService } from '../core/accountService.js';
 import { DomUtils } from '../utils/domUtils.js';
 import { config } from '../config/config.js';
+import { showError, showSuccess, showConfirm } from '../utils/modalUtils.js';
 
 export class HomeController {
     constructor() {
@@ -47,7 +48,7 @@ export class HomeController {
                 window.location.href = config.routes.login;
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
-                alert("Произошла ошибка при выходе из системы.");
+                showError("Произошла ошибка при выходе из системы.");
             }
         });
         
@@ -68,21 +69,20 @@ export class HomeController {
             DomUtils.hideModal('account-modal');
         });
 
-        DomUtils.on('#account-modal-submit', 'click', () => {
+        DomUtils.on('#account-modal-submit', 'click', async () => {
             const amount = DomUtils.find('#amount').value;
             const accountId = DomUtils.find('#account-modal-submit').dataset.accountId;
             const action = DomUtils.find('#account-modal-submit').dataset.action;
             
-            if (action === 'deposit') {
-                this.processDeposit(amount, accountId);
-            } else if (action === 'withdraw') {
-                this.processWithdraw(amount, accountId);
-            }
-            
             DomUtils.hideModal('account-modal');
+            
+            if (action === 'deposit') {
+                await this.processDeposit(amount, accountId);
+            } else if (action === 'withdraw') {
+                await this.processWithdraw(amount, accountId);
+            }
         });
 
-        // Add event listeners for filters
         DomUtils.on('#account-type-filter', 'change', (e) => {
             this.filters.type = e.target.value;
         });
@@ -99,16 +99,16 @@ export class HomeController {
     async createAccount() {
         const userData = authService.getCurrentUser();
         if (!userData) {
-            alert("Ошибка: не удалось получить данные пользователя.");
+            showError("Ошибка: не удалось получить данные пользователя.");
             return;
         }
         
         try {
             await accountService.createAccount(userData.userId);
-            alert("Счет создан!");
+            showSuccess("Счет успешно создан!");
             this.loadAccounts();
         } catch (error) {
-            alert("Ошибка при создании счета.");
+            showError("Ошибка при создании счета.");
         }
     }
 
@@ -116,7 +116,7 @@ export class HomeController {
         console.log("Вызов загрузки счетов");
         const userData = authService.getCurrentUser();
         if (!userData) {
-            alert("Ошибка: не удалось получить данные пользователя.");
+            showError("Ошибка: не удалось получить данные пользователя.");
             return;
         }
 
@@ -210,7 +210,7 @@ export class HomeController {
     async loadAccountDetails(accountId) {
         const userData = authService.getCurrentUser();
         if (!userData) {
-            alert("Ошибка: не удалось получить данные пользователя.");
+            showError("Ошибка: не удалось получить данные пользователя.");
             return;
         }
         
@@ -247,7 +247,7 @@ export class HomeController {
             DomUtils.find('#account-details-section').style.display = 'block';
         } catch (error) {
             console.error("Ошибка загрузки деталей счета:", error);
-            alert("Ошибка загрузки деталей счета.");
+            showError("Ошибка загрузки деталей счета.");
         }
     }
     
@@ -270,39 +270,49 @@ export class HomeController {
     }
     
     async closeAccount(accountId) {
-        if (!confirm("Вы уверены, что хотите закрыть счет?")) {
+        const confirmed = await showConfirm("Вы уверены, что хотите закрыть счет?");
+        if (!confirmed) {
             return;
         }
         
         const userData = authService.getCurrentUser();
         if (!userData) {
-            alert("Ошибка: не удалось получить данные пользователя.");
+            showError("Ошибка: не удалось получить данные пользователя.");
             return;
         }
         
         try {
             await accountService.closeAccount(userData.userId, accountId);
-            this.loadAccounts();
+            showSuccess("Счет успешно закрыт");
+            setTimeout(async () => {
+                await this.loadAccounts();
+            }, 1000);
         } catch (error) {
-            alert("Ошибка при закрытии счета.");
+            showError("Ошибка при закрытии счета.");
         }
     }
     
     async processDeposit(amount, accountId) {
         try {
             await accountService.depositMoney(amount, accountId);
-            this.loadAccounts();
+            showSuccess("Счет успешно пополнен");
+            setTimeout(async () => {
+                await this.loadAccounts();
+            }, 1000);
         } catch (error) {
-            alert("Ошибка при пополнении счета.");
+            showError("Ошибка при пополнении счета.");
         }
     }
     
     async processWithdraw(amount, accountId) {
         try {
             await accountService.withdrawMoney(amount, accountId);
-            this.loadAccounts();
+            showSuccess("Средства успешно сняты");
+            setTimeout(async () => {
+                await this.loadAccounts();
+            }, 1000);
         } catch (error) {
-            alert("Ошибка при снятии средств.");
+            showError("Ошибка при снятии средств.");
         }
     }
 }

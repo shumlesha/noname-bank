@@ -1,6 +1,7 @@
 import { authService } from '../core/authService.js';
 import { DomUtils } from '../utils/domUtils.js';
 import { config } from '../config/config.js';
+import { showError, showSuccess } from '../utils/modalUtils.js';
 
 export class LoginController {
     constructor() {
@@ -33,7 +34,10 @@ export class LoginController {
                 await authService.login({ email, password });
                 window.location.href = config.routes.home;
             } catch (error) {
-                errorMessageEl.textContent = error.message || 'Неверный email или пароль';
+                const errorMessage = error.message || 'Неверный email или пароль';
+                showError(errorMessage);
+
+                errorMessageEl.textContent = errorMessage;
                 errorMessageEl.style.display = 'block';
             }
         });
