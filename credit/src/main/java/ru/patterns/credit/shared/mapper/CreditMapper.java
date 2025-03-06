@@ -11,6 +11,7 @@ public class CreditMapper {
                 credit.getAccountId(),
                 credit.getAmount(),
                 credit.getPaidAmount(),
+                credit.getNextPaymentDate(),
                 credit.getTariff() != null ? credit.getTariff().getName() : null,
                 credit.getTariff() != null ? credit.getTariff().getInterestRate() : null,
                 credit.getStatus()

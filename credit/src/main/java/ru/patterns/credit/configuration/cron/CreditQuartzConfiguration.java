@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import ru.patterns.credit.infrastructure.cron.AutoPaymentJob;
+import ru.patterns.credit.infrastructure.cron.PaymentRetryJob;
 
 @Configuration
 public class CreditQuartzConfiguration {
@@ -30,7 +31,24 @@ public class CreditQuartzConfiguration {
         return TriggerBuilder.newTrigger()
                 .forJob(paymentJobDetail())
                 .withIdentity("autoPaymentTrigger")
-                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 * * * * ?"))
+                .build();
+    }
+    
+    @Bean
+    public JobDetail retryPaymentJobDetail() {
+        return JobBuilder.newJob(PaymentRetryJob.class)
+                .withIdentity("retryPaymentJob")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger retryPaymentJobTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(retryPaymentJobDetail())
+                .withIdentity("retryPaymentTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */4 * * ?"))
                 .build();
     }
 
@@ -38,12 +56,14 @@ public class CreditQuartzConfiguration {
     public SchedulerFactoryBean schedulerFactoryBean(
             SpringBeanJobFactory jobFactory,
             JobDetail paymentJobDetail,
-            Trigger paymentJobTrigger
+            Trigger paymentJobTrigger,
+            JobDetail retryPaymentJobDetail,
+            Trigger retryPaymentJobTrigger
     ) {
         var factoryBean = new SchedulerFactoryBean();
         factoryBean.setJobFactory(jobFactory);
-        factoryBean.setJobDetails(paymentJobDetail);
-        factoryBean.setTriggers(paymentJobTrigger);
+        factoryBean.setJobDetails(paymentJobDetail, retryPaymentJobDetail);
+        factoryBean.setTriggers(paymentJobTrigger, retryPaymentJobTrigger);
         return factoryBean;
     }
 

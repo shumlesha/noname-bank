@@ -78,7 +78,8 @@ export class CreditController {
                     <td>${credit.getFormattedPaidAmount()}</td>
                     <td>${credit.tariffName}</td>
                     <td>${credit.getFormattedInterestRate()}</td>
-                    <td>${credit.status}</td>
+                    <td>${credit.getStatusLabel()}</td>
+                    <td>${credit.nextPaymentDate}</td>
                     <td>
                         <button class="btn btn-primary pay-btn" data-id="${credit.id}">Оплатить</button>
                     </td>

@@ -8,6 +8,7 @@ import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -20,6 +21,7 @@ public class CreditDto {
     private UUID accountId;
     private BigDecimal amount;
     private BigDecimal paidAmount;
+    private LocalDate nextPaymentDate;
     private String tariffName;
     private BigDecimal interestRate;
     private CreditStatus status;
