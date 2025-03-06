@@ -33,12 +33,14 @@ export const clearMessages = () => {
 
 
 export const showElement = (element, displayStyle = 'block') => {
-    if (element) element.style.display = displayStyle;
+    const el = typeof element === 'string' ? document.getElementById(element) : element;
+    if (el) el.style.display = displayStyle;
 };
 
 
 export const hideElement = (element) => {
-    if (element) element.style.display = 'none';
+    const el = typeof element === 'string' ? document.getElementById(element) : element;
+    if (el) el.style.display = 'none';
 };
 
 

@@ -13,6 +13,8 @@ export const renderTariffsList = (tariffs, container, onEditTariff, onDeleteTari
             <th>ID тарифа</th>
             <th>Название</th>
             <th>Процентная ставка</th>
+            <th>Ставка автоплатежа</th>
+            <th>Штрафная ставка</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -23,6 +25,8 @@ export const renderTariffsList = (tariffs, container, onEditTariff, onDeleteTari
                 <td>${tariff.id}</td>
                 <td>${tariff.name}</td>
                 <td>${tariff.interestRate}%</td>
+                <td>${tariff.autoPaymentRate ? tariff.autoPaymentRate + '%' : '-'}</td>
+                <td>${tariff.penaltyRate ? tariff.penaltyRate + '%' : '-'}</td>
                 <td>
                     <div class="tariff-actions">
                         <button class="btn btn-edit" data-tariff-id="${tariff.id}">Редактировать</button>

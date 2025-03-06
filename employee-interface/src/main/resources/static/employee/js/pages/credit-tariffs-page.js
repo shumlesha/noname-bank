@@ -116,26 +116,30 @@ const initEventHandlers = () => {
 };
 
 const showTariffForm = (tariffData = null) => {
-    const formContainer = document.getElementById('tariff-form-container');
     const formTitle = document.getElementById('form-title');
     const tariffIdInput = document.getElementById('tariff-id');
     const tariffNameInput = document.getElementById('tariff-name');
     const tariffInterestRateInput = document.getElementById('tariff-interest-rate');
-
-    tariffIdInput.value = '';
-    tariffNameInput.value = '';
-    tariffInterestRateInput.value = '';
+    const tariffAutoPaymentRateInput = document.getElementById('tariff-autopayment-rate');
+    const tariffPenaltyRateInput = document.getElementById('tariff-penalty-rate');
 
     if (tariffData) {
         formTitle.textContent = 'Редактирование тарифа';
         tariffIdInput.value = tariffData.id;
         tariffNameInput.value = tariffData.name;
         tariffInterestRateInput.value = tariffData.interestRate;
+        tariffAutoPaymentRateInput.value = tariffData.autoPaymentRate || 0;
+        tariffPenaltyRateInput.value = tariffData.penaltyRate || 0;
     } else {
         formTitle.textContent = 'Создание нового тарифа';
+        tariffIdInput.value = '';
+        tariffNameInput.value = '';
+        tariffInterestRateInput.value = '';
+        tariffAutoPaymentRateInput.value = '';
+        tariffPenaltyRateInput.value = '';
     }
 
-    showElement(formContainer);
+    showElement('tariff-form-container');
 };
 
 const hideTariffForm = () => {
@@ -163,10 +167,14 @@ const saveTariff = async () => {
     const tariffIdInput = document.getElementById('tariff-id');
     const tariffNameInput = document.getElementById('tariff-name');
     const tariffInterestRateInput = document.getElementById('tariff-interest-rate');
+    const tariffAutoPaymentRateInput = document.getElementById('tariff-autopayment-rate');
+    const tariffPenaltyRateInput = document.getElementById('tariff-penalty-rate');
 
     const tariffId = tariffIdInput.value.trim();
     const name = tariffNameInput.value.trim();
     const interestRate = parseFloat(tariffInterestRateInput.value);
+    const autoPaymentRate = parseFloat(tariffAutoPaymentRateInput.value);
+    const penaltyRate = parseFloat(tariffPenaltyRateInput.value);
 
     if (!name) {
         showMessage('Название тарифа не может быть пустым', 'error');
@@ -178,6 +186,16 @@ const saveTariff = async () => {
         return;
     }
 
+    if (isNaN(autoPaymentRate) || autoPaymentRate < 0) {
+        showMessage('Автоматический платеж должен быть положительным числом', 'error');
+        return;
+    }
+
+    if (isNaN(penaltyRate) || penaltyRate < 0) {
+        showMessage('Штрафная ставка должна быть положительным числом', 'error');
+        return;
+    }
+
     try {
         let response;
         
@@ -185,13 +203,17 @@ const saveTariff = async () => {
             response = await apiService.updateCreditTariff({
                 tariffId,
                 name,
-                interestRate
+                interestRate,
+                autoPaymentRate,
+                penaltyRate
             });
             showMessage('Тариф успешно обновлен', 'success');
         } else {
             response = await apiService.createCreditTariff({
                 name,
-                interestRate
+                interestRate,
+                autoPaymentRate,
+                penaltyRate
             });
             showMessage('Тариф успешно создан', 'success');
         }

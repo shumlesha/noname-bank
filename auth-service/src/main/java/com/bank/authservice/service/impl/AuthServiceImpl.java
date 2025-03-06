@@ -72,6 +72,8 @@ public class AuthServiceImpl implements AuthService {
         GetUserRequest getUserRequest = authMapper.toGetUserRequest(loginUserRequest);
         UserDto user = userServiceClient.getUserByEmail(getUserRequest);
 
+        userCredentialsValidator.checkUserBanned(user);
+
         return createTokenDto(user);
     }
 
