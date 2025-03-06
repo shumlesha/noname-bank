@@ -22,11 +22,14 @@ public class CreditFactory {
         var tariff = creditTariffRepository.findById(command.tariffId())
                 .orElseThrow(() -> new ResourceNotFoundException("Кредитный тариф не найден"));
 
+        var interestMultiplier = BigDecimal.ONE.add(tariff.getInterestRate().divide(BigDecimal.valueOf(100)));
+        var finalAmount = command.amount().multiply(interestMultiplier);
+
         return new Credit(
                 UUID.randomUUID(),
                 command.clientId(),
                 accountData.id(),
-                command.amount(),
+                finalAmount,
                 BigDecimal.ZERO,
                 tariff,
                 CreditStatus.ACTIVE,

@@ -40,6 +40,11 @@ public class CreditPaymentService {
     @Transactional
     public boolean processPayment(Credit credit, BigDecimal amount) {
         try {
+            var remainingAmount = credit.getAmountRemainingToPay();
+            if (amount.compareTo(remainingAmount) > 0) {
+                amount = remainingAmount;
+            }
+
             var payCreditRequest = new PayCreditRequest(credit.getAccountId(), amount);
             var response = eventPublisher.publishPaymentRequest(payCreditRequest);
 

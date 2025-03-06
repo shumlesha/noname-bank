@@ -41,7 +41,7 @@ public class AutoPaymentCommandHandler {
                 return;
             }
 
-            boolean success = creditPaymentService.processPayment(credit, currentAmount);
+            var success = creditPaymentService.processPayment(credit, currentAmount);
             
             if (success) {
                 log.info("Автоплатеж для кредита {} успешно выполнен", credit.getId());
@@ -58,7 +58,7 @@ public class AutoPaymentCommandHandler {
     }
 
     private void scheduleRetryPayment(Credit credit) {
-        LocalDate nextAttemptDate = LocalDate.now().plusDays(1);
+        var nextAttemptDate = LocalDate.now().plusDays(1);
         credit.setNextPaymentDate(nextAttemptDate);
         creditRepository.save(credit);
         log.info("Запланирована повторная попытка автоплатежа для кредита {} на {}", credit.getId(), nextAttemptDate);
