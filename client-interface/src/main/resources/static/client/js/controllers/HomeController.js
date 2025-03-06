@@ -5,6 +5,11 @@ import { config } from '../config/config.js';
 
 export class HomeController {
     constructor() {
+        this.accounts = [];
+        this.filters = {
+            type: 'all',
+            status: 'all'
+        };
         this.init();
     }
     
@@ -76,6 +81,19 @@ export class HomeController {
             
             DomUtils.hideModal('account-modal');
         });
+
+        // Add event listeners for filters
+        DomUtils.on('#account-type-filter', 'change', (e) => {
+            this.filters.type = e.target.value;
+        });
+
+        DomUtils.on('#account-status-filter', 'change', (e) => {
+            this.filters.status = e.target.value;
+        });
+
+        DomUtils.on('#apply-filters-btn', 'click', () => {
+            this.renderAccounts();
+        });
     }
     
     async createAccount() {
@@ -104,39 +122,62 @@ export class HomeController {
 
         try {
             const data = await accountService.loadAccounts(userData.userId);
-            let accountsList = DomUtils.find("#accounts-list");
-            accountsList.innerHTML = "";
-
-            if (data.data.length === 0) {
-                accountsList.innerHTML = "<tr><td colspan='5'>У вас нет счетов</td></tr>";
-                return;
-            }
-
-            data.data.forEach(account => {
-                let actions = account.isActive()
-                    ? `<div class="account-actions">
-                    <button class="btn btn-primary deposit-btn" data-id="${account.id}">Пополнить</button>
-                    <button class="btn btn-secondary withdraw-btn" data-id="${account.id}">Снять</button>
-                    <button class="btn btn-danger close-btn" data-id="${account.id}">Закрыть</button>
-                </div>`
-                    : `<span>Нет доступных действий</span>`;
-
-                let row = `<tr>
-                <td><a href="#" class="account-link" data-id="${account.id}">${account.number}</a></td>
-                <td>${account.getFormattedBalance()}</td>
-                <td>${account.getType()}</td>
-                <td>${account.getStatus()}</td>
-                <td>${actions}</td>
-            </tr>`;
-
-                accountsList.innerHTML += row;
-            });
-
-            this.bindAccountLinks();
-
+            this.accounts = data.data;
+            this.renderAccounts();
         } catch (error) {
             console.error("Ошибка загрузки счетов:", error);
         }
+    }
+
+    renderAccounts() {
+        let accountsList = DomUtils.find("#accounts-list");
+        accountsList.innerHTML = "";
+
+        if (this.accounts.length === 0) {
+            accountsList.innerHTML = "<tr><td colspan='5'>У вас нет счетов</td></tr>";
+            return;
+        }
+
+        const filteredAccounts = this.accounts.filter(account => {
+            if (this.filters.type !== 'all') {
+                if (this.filters.type === 'credit' && !account.isCredit) return false;
+                if (this.filters.type === 'debit' && account.isCredit) return false;
+            }
+
+            if (this.filters.status !== 'all') {
+                if (this.filters.status === 'active' && !account.isActive()) return false;
+                if (this.filters.status === 'closed' && account.isActive()) return false;
+            }
+            
+            return true;
+        });
+
+        if (filteredAccounts.length === 0) {
+            accountsList.innerHTML = "<tr><td colspan='5'>Нет счетов, соответствующих выбранным фильтрам</td></tr>";
+            return;
+        }
+
+        filteredAccounts.forEach(account => {
+            let actions = account.isActive()
+                ? `<div class="account-actions">
+                <button class="btn btn-primary deposit-btn" data-id="${account.id}">Пополнить</button>
+                <button class="btn btn-secondary withdraw-btn" data-id="${account.id}">Снять</button>
+                <button class="btn btn-danger close-btn" data-id="${account.id}">Закрыть</button>
+            </div>`
+                : `<span>Нет доступных действий</span>`;
+
+            let row = `<tr>
+            <td><a href="#" class="account-link" data-id="${account.id}">${account.number}</a></td>
+            <td>${account.getFormattedBalance()}</td>
+            <td>${account.getType()}</td>
+            <td>${account.getStatus()}</td>
+            <td>${actions}</td>
+        </tr>`;
+
+            accountsList.innerHTML += row;
+        });
+
+        this.bindAccountLinks();
     }
 
     bindAccountLinks() {
@@ -204,9 +245,9 @@ export class HomeController {
             
             DomUtils.find('#accounts-section').style.display = 'none';
             DomUtils.find('#account-details-section').style.display = 'block';
-            
         } catch (error) {
             console.error("Ошибка загрузки деталей счета:", error);
+            alert("Ошибка загрузки деталей счета.");
         }
     }
     

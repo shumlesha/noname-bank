@@ -21,6 +21,8 @@ public class CreditTariffCommandHandler {
         var creditTariff = new CreditTariff();
         creditTariff.setName(command.name());
         creditTariff.setInterestRate(command.interestRate());
+        creditTariff.setAutoPaymentRate(command.autoPaymentRate());
+        creditTariff.setPenaltyRate(command.penaltyRate());
         var newCreditTariff = creditTariffRepository.save(creditTariff);
         return newCreditTariff.getId();
     }
@@ -31,6 +33,8 @@ public class CreditTariffCommandHandler {
                 .orElseThrow(() -> new ResourceNotFoundException("Тариф не найден"));
         creditTariff.setName(command.name());
         creditTariff.setInterestRate(command.interestRate());
+        creditTariff.setAutoPaymentRate(command.autoPaymentRate());
+        creditTariff.setPenaltyRate(command.penaltyRate());
         creditTariffRepository.save(creditTariff);
     }
 
