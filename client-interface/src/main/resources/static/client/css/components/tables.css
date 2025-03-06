@@ -2,11 +2,11 @@
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     font-size: 15px;
 }
 
@@ -14,7 +14,7 @@
     padding: 16px 20px;
     text-align: left;
     border-bottom: 1px solid #e5e5e5;
-    background: #8e44ad;
+    background: #27ae60;
     color: #fff;
     font-weight: 600;
     font-size: 14px;
@@ -40,7 +40,7 @@
 #credits-table tr:hover, 
 #tariffs-table tr:hover,
 #transactions-table tr:hover {
-    background-color: #eaf4ff;
+    background-color: #edf7ed;
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -53,72 +53,77 @@
 
 .account-actions {
     display: flex;
-    gap: 5px;
+    gap: 8px;
     flex-wrap: wrap;
+    justify-content: flex-start;
 }
 
-#accounts-table .btn {
-    padding: 6px 12px;
-    font-size: 12px;
-    border-radius: 4px;
+#accounts-table .btn, #credits-table .btn, #tariffs-table .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 6px;
     transition: all 0.3s ease;
     width: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#accounts-table .btn-primary {
+#accounts-table .btn-primary, #credits-table .btn-primary, #tariffs-table .btn-primary {
     background-color: #27ae60;
     color: white;
     border: none;
     width: auto;
 }
 
-#accounts-table .btn-primary:hover {
-    background-color: #1e8449;
-    transform: translateY(-1px);
+#accounts-table .btn-primary:hover, #credits-table .btn-primary:hover, #tariffs-table .btn-primary:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-#accounts-table .btn-secondary {
-    background-color: #3498db;
+#accounts-table .btn-secondary, #credits-table .btn-secondary, #tariffs-table .btn-secondary {
+    background-color: #2ecc71;
     color: white;
     border: none;
 }
 
-#accounts-table .btn-secondary:hover {
-    background-color: #2980b9;
-    transform: translateY(-1px);
+#accounts-table .btn-secondary:hover, #credits-table .btn-secondary:hover, #tariffs-table .btn-secondary:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-#accounts-table .btn-danger {
+#accounts-table .btn-danger, #credits-table .btn-danger, #tariffs-table .btn-danger {
     background-color: #e74c3c;
     color: white;
     border: none;
 }
 
-#accounts-table .btn-danger:hover {
+#accounts-table .btn-danger:hover, #credits-table .btn-danger:hover, #tariffs-table .btn-danger:hover {
     background-color: #c0392b;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 #account-details-section {
     background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
 }
 
 #account-details {
-    padding: 15px;
+    padding: 20px;
     background: white;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    border-left: 4px solid #8e44ad;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border-left: 4px solid #27ae60;
 }
 
 #account-details p {
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
 }
 
 #account-details p:last-child {
@@ -148,7 +153,7 @@
         gap: 5px;
     }
     
-    #accounts-table .btn {
+    #accounts-table .btn, #credits-table .btn, #tariffs-table .btn {
         margin-bottom: 5px;
         width: 100%;
     }
