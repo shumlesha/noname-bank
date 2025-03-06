@@ -129,6 +129,8 @@ export class CreditController {
                 let row = `<tr>
                     <td>${tariff.name}</td>
                     <td>${tariff.getFormattedInterestRate()}</td>
+                    <td>${tariff.getFormattedAutoPaymentRate()}</td>
+                    <td>${tariff.getFormattedPenaltyRate()}</td>
                     <td>
                         <button class="btn btn-success take-credit-btn" data-id="${tariff.id}">Выбрать</button>
                     </td>
