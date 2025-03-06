@@ -87,14 +87,15 @@ export class HomeController {
         
         try {
             await accountService.createAccount(userData.userId);
-            await this.loadAccounts();
             alert("Счет создан!");
+            this.loadAccounts();
         } catch (error) {
             alert("Ошибка при создании счета.");
         }
     }
 
     async loadAccounts() {
+        console.log("Вызов загрузки счетов");
         const userData = authService.getCurrentUser();
         if (!userData) {
             alert("Ошибка: не удалось получить данные пользователя.");
@@ -240,7 +241,7 @@ export class HomeController {
         
         try {
             await accountService.closeAccount(userData.userId, accountId);
-            await this.loadAccounts();
+            this.loadAccounts();
         } catch (error) {
             alert("Ошибка при закрытии счета.");
         }
@@ -249,7 +250,7 @@ export class HomeController {
     async processDeposit(amount, accountId) {
         try {
             await accountService.depositMoney(amount, accountId);
-            await this.loadAccounts();
+            this.loadAccounts();
         } catch (error) {
             alert("Ошибка при пополнении счета.");
         }
@@ -258,7 +259,7 @@ export class HomeController {
     async processWithdraw(amount, accountId) {
         try {
             await accountService.withdrawMoney(amount, accountId);
-            await this.loadAccounts();
+            this.loadAccounts();
         } catch (error) {
             alert("Ошибка при снятии средств.");
         }

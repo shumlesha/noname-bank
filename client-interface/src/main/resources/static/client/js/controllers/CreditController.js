@@ -53,51 +53,55 @@ export class CreditController {
             DomUtils.hideModal('tariff-modal');
         });
     }
-    
+
     async loadCredits() {
         const clientId = authService.getCurrentUser()?.userId;
         if (!clientId) {
             alert("Ошибка: не удалось получить идентификатор клиента.");
             return;
         }
-        
+
         try {
             const data = await creditService.loadCredits(clientId);
             let creditsList = DomUtils.find("#credits-list");
             creditsList.innerHTML = "";
-            
+
             if (data.data.length === 0) {
                 creditsList.innerHTML = "<tr><td colspan='7'>Нет активных кредитов</td></tr>";
                 return;
             }
-            
-            data.data.forEach(credit => {
-                let row = `<tr>
-                    <td>${credit.id}</td>
-                    <td>${credit.getFormattedAmount()}</td>
-                    <td>${credit.getFormattedPaidAmount()}</td>
-                    <td>${credit.tariffName}</td>
-                    <td>${credit.getFormattedInterestRate()}</td>
-                    <td>${credit.getStatusLabel()}</td>
-                    <td>${credit.nextPaymentDate}</td>
-                    <td>
-                        <button class="btn btn-primary pay-btn" data-id="${credit.id}">Оплатить</button>
-                    </td>
-                </tr>`;
-                creditsList.innerHTML += row;
-            });
-            
+
+            let rows = data.data.map(credit => {
+                let actions = credit.status === "PAID_OFF"
+                    ? "<span>Нет доступных действий</span>"
+                    : `<button class="btn btn-primary pay-btn" data-id="${credit.id}">Оплатить</button>`;
+
+                return `<tr>
+                <td>${credit.id}</td>
+                <td>${credit.getFormattedAmount()}</td>
+                <td>${credit.getFormattedPaidAmount()}</td>
+                <td>${credit.tariffName}</td>
+                <td>${credit.getFormattedInterestRate()}</td>
+                <td>${credit.getStatusLabel()}</td>
+                <td>${credit.nextPaymentDate}</td>
+                <td>${actions}</td>
+            </tr>`;
+            }).join("");
+
+            creditsList.innerHTML = rows;
+
             DomUtils.findAll(".pay-btn").forEach(button => {
                 button.addEventListener("click", () => {
                     this.payCredit(button.dataset.id);
                 });
             });
-            
+
         } catch (error) {
             console.error("Ошибка загрузки кредитов:", error);
         }
     }
-    
+
+
     async payCredit(creditId) {
         let amount = prompt("Введите сумму оплаты:");
         if (!amount) return;

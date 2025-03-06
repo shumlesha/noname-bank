@@ -16,4 +16,6 @@ public class CreditTariffDto {
     private UUID id;
     private String name;
     private BigDecimal interestRate;
+    private BigDecimal autoPaymentRate;
+    private BigDecimal penaltyRate;
 }

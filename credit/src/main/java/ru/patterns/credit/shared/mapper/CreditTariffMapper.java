@@ -8,15 +8,9 @@ public class CreditTariffMapper {
         return new CreditTariffDto(
                 creditTariff.getId(),
                 creditTariff.getName(),
-                creditTariff.getInterestRate()
-        );
-    }
-
-    public static CreditTariff toEntity(CreditTariffDto dto) {
-        return new CreditTariff(
-                dto.getId(),
-                dto.getName(),
-                dto.getInterestRate()
+                creditTariff.getInterestRate(),
+                creditTariff.getAutoPaymentRate(),
+                creditTariff.getPenaltyRate()
         );
     }
 }

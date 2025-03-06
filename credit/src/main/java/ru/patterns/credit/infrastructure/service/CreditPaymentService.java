@@ -51,7 +51,6 @@ public class CreditPaymentService {
             return handlePaymentResponse(response, credit, amount);
         } catch (InsufficientFundsException e) {
             log.error("Недостаточно средств для оплаты кредита {}: {}", credit.getId(), e.getMessage());
-            markCreditAsOverdue(credit);
             return false;
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
@@ -98,12 +97,5 @@ public class CreditPaymentService {
         }
         
         creditRepository.save(credit);
-    }
-    
-    private void markCreditAsOverdue(Credit credit) {
-        if (credit.getStatus() != CreditStatus.OVERDUE) {
-            credit.setStatus(CreditStatus.OVERDUE);
-            creditRepository.save(credit);
-        }
     }
 }
