@@ -58,6 +58,14 @@
                         <label for="tariff-interest-rate">Процентная ставка (%)</label>
                         <input type="number" id="tariff-interest-rate" name="interestRate" step="0.01" min="0" required>
                     </div>
+                    <div class="form-group">
+                        <label for="tariff-autopayment-rate">Ставка автоплатежа (%)</label>
+                        <input type="number" id="tariff-autopayment-rate" name="autoPaymentRate" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tariff-penalty-rate">Штрафная ставка (%)</label>
+                        <input type="number" id="tariff-penalty-rate" name="penaltyRate" step="0.01" min="0" required>
+                    </div>
                     <div class="form-actions">
                         <button type="button" id="cancel-btn" class="btn btn-secondary">Отмена</button>
                         <button type="submit" id="save-btn" class="btn btn-primary">Сохранить</button>
