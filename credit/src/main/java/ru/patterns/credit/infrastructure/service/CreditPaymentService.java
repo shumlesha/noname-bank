@@ -52,11 +52,12 @@ public class CreditPaymentService {
         } catch (InsufficientFundsException e) {
             log.error("Недостаточно средств для оплаты кредита {}: {}", credit.getId(), e.getMessage());
             return false;
+        } catch (PaymentProcessingException e) {
+            log.error("Ошибка при оплате {}: {}", credit.getId(), e.getMessage());
+            return false;
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
-        } catch (PaymentProcessingException e) {
-            throw new PaymentProcessingException("Ошибка обработки ответа платежа");
-        }catch (Exception e) {
+        }  catch (Exception e) {
             throw new InternalServerException("Не удалось обработать платеж", e);
         }
     }

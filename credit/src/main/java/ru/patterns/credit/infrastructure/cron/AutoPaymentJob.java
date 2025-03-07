@@ -32,7 +32,7 @@ public class AutoPaymentJob implements Job {
                 try {
                     autoPaymentCommandHandler.handle(command);
                 } catch (Exception e) {
-                    log.error("Ошибка при обработке автоплатежа для кредита {}: {}", credit.getId(), e.getMessage());
+                    log.error("Ошибка при обработке автоплатежа для кредита {}", credit.getId());
                 }
             }
         }
