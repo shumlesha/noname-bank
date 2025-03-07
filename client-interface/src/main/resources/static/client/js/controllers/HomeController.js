@@ -106,7 +106,9 @@ export class HomeController {
         try {
             await accountService.createAccount(userData.userId);
             showSuccess("Счет успешно создан!");
-            this.loadAccounts();
+            setTimeout(async () => {
+                await this.loadAccounts();
+            }, 1000);
         } catch (error) {
             showError("Ошибка при создании счета.");
         }
