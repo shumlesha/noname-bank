@@ -235,6 +235,31 @@ legend {
     border: 1px solid #f5c6cb;
 }
 
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: var(--spacing-md);
+    border-radius: 4px;
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid #c3e6cb;
+}
+
+.info-message {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: var(--spacing-md);
+    border-radius: 4px;
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid #bee5eb;
+}
+
+.error-message-container,
+.success-message-container,
+.info-message-container {
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
 .loading-indicator {
     text-align: center;
     color: var(--text-muted);

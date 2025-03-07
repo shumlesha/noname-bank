@@ -31,6 +31,7 @@
         <section class="users-section">
             <div class="users-header">
                 <h2>Управление пользователями</h2>
+                <button id="create-user-btn" class="btn btn-primary">Создать пользователя</button>
             </div>
 
             <div id="messages-container"></div>
@@ -44,6 +45,70 @@
             <div id="user-details-container" style="display: none;"></div>
             <div id="user-details-loading" class="loading-indicator" style="display: none;">
                 <span class="loading-text">Загрузка информации о пользователе...</span>
+            </div>
+
+            <div id="create-user-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Создание нового пользователя</h3>
+                        <button id="close-create-user-modal-btn" class="btn btn-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="create-user-error" class="error-message" style="display: none;"></div>
+                        
+                        <form id="create-user-form" class="auth-form">
+                            <div class="form-group">
+                                <label for="create-email">Email:</label>
+                                <input type="email" id="create-email" name="email" required autocomplete="email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="create-fullName">Полное имя:</label>
+                                <input type="text" id="create-fullName" name="fullName" required autocomplete="name">
+                            </div>
+                            
+                            <fieldset class="form-group">
+                                <legend>Пол:</legend>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="create-gender" value="MALE" required> Мужской
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="create-gender" value="FEMALE"> Женский
+                                    </label>
+                                </div>
+                            </fieldset>
+                            
+                            <fieldset class="form-group">
+                                <legend>Роль:</legend>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="create-roles" value="CLIENT" checked> Клиент
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="create-roles" value="EMPLOYEE"> Сотрудник
+                                    </label>
+                                </div>
+                            </fieldset>
+                            
+                            <div class="form-group">
+                                <label for="create-password">Пароль:</label>
+                                <input type="password" id="create-password" name="password" required autocomplete="new-password" 
+                                       minlength="8" aria-describedby="password-hint">
+                                <small id="password-hint" class="form-hint">Пароль должен содержать не менее 8 символов</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="create-confirmPassword">Подтвердите пароль:</label>
+                                <input type="password" id="create-confirmPassword" name="confirmPassword" required autocomplete="new-password">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancel-create-user-btn" class="btn btn-secondary">Отмена</button>
+                        <button id="submit-create-user-btn" class="btn btn-primary">Создать</button>
+                    </div>
+                </div>
             </div>
         </section>
     </main>

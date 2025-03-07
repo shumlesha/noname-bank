@@ -76,7 +76,6 @@ export const renderUsersList = (users, container, onViewDetails, onBanUser) => {
     });
 };
 
-
 export const renderUserDetails = (user, container, onBanUser) => {
     container.innerHTML = '';
 
