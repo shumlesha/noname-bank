@@ -3,7 +3,6 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      url: http://localhost:8080
       discovery:
         locator:
           enabled: true
@@ -39,15 +38,36 @@ spring:
           predicates:
             - Path=/api/atm/**
 
+        - id: client-root-redirect
+          uri: http://localhost:8080
+          predicates:
+            - Path=/client, /client/
+          filters:
+            - RedirectTo=302, /client/login
+
         - id: client-interface
           uri: lb://client-interface
           predicates:
             - Path=/client/**
 
+        - id: employee-root-redirect
+          uri: http://localhost:8080
+          predicates:
+            - Path=/employee, /employee/
+          filters:
+            - RedirectTo=302, /employee/login
+
         - id: employee-interface
           uri: lb://employee-interface
           predicates:
             - Path=/employee/**
+
+        - id: root-redirect
+          uri: http://localhost:8080
+          predicates:
+            - Path=/
+          filters:
+            - RedirectTo=302, /client/login
 eureka:
   client:
     registry-fetch-interval-seconds: 3

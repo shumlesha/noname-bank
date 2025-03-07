@@ -26,9 +26,4 @@ public class ClientViewController {
     public String accountPage() {
         return "credit";
     }
-
-    @GetMapping("/")
-    public String indexPage() {
-        return "redirect:/client/home";
-    }
 }

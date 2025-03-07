@@ -54,7 +54,9 @@ public class CreditPaymentService {
             return false;
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
-        } catch (Exception e) {
+        } catch (PaymentProcessingException e) {
+            throw new PaymentProcessingException("Ошибка обработки ответа платежа");
+        }catch (Exception e) {
             throw new InternalServerException("Не удалось обработать платеж", e);
         }
     }

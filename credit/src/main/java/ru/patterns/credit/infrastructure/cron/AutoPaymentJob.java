@@ -1,6 +1,7 @@
 package ru.patterns.credit.infrastructure.cron;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AutoPaymentJob implements Job {
 
     private final CreditRepository creditRepository;
@@ -26,8 +28,14 @@ public class AutoPaymentJob implements Job {
         for (var credit : creditsToPay) {
             if (!credit.isPaidOff()) {
                 var command = new AutoPaymentCommand(credit.getId());
-                autoPaymentCommandHandler.handle(command);
+
+                try {
+                    autoPaymentCommandHandler.handle(command);
+                } catch (Exception e) {
+                    log.error("Ошибка при обработке автоплатежа для кредита {}: {}", credit.getId(), e.getMessage());
+                }
             }
         }
     }
 }
+
