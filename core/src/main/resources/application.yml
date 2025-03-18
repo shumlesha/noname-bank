@@ -18,6 +18,24 @@ spring:
     hibernate:
       ddl-auto: validate
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+
+core:
+  currency:
+    api:
+      valute:
+        url: "https://cbr.ru/scripts/XML_valFull.asp"
+      currency:
+        url: "https://www.cbr.ru/scripts/XML_daily.asp"
+
 eureka:
   client:
     service-url:

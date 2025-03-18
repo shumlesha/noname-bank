@@ -14,3 +14,6 @@ value class ClientId(val value: UUID)
 
 @JvmInline
 value class Balance(val value: BigDecimal)
+
+@JvmInline
+value class CurrencyCode(val value: String)

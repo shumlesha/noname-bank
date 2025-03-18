@@ -17,6 +17,7 @@ object Factory {
             number = AccountNumber(accountEntity.number),
             balance = Balance(accountEntity.balance),
             isCredit = accountEntity.isCredit,
-            closedTimestamp = accountEntity.closedTimestamp
+            closedTimestamp = accountEntity.closedTimestamp,
+            currency = accountEntity.currency
         )
 }

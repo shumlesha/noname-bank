@@ -18,7 +18,8 @@ object Serializer {
             creationTimestamp = LocalDateTime.now(),
             blockedTimestamp = null,
             closedTimestamp = null,
-            balance = BigDecimal.ZERO
+            balance = BigDecimal.ZERO,
+            currency = createAccountCommand.currency
         )
 
     fun AccountEntity(createCreditAccountCommand: CreateCreditAccountCommand) =
@@ -30,7 +31,8 @@ object Serializer {
             creationTimestamp = LocalDateTime.now(),
             blockedTimestamp = null,
             closedTimestamp = null,
-            balance = BigDecimal.ZERO
+            balance = BigDecimal.ZERO,
+            currency = "RUR"
         )
 
     fun AccountEntity(account: Account) =
@@ -43,6 +45,7 @@ object Serializer {
             blockedTimestamp = account.blockedTimestamp,
             closedTimestamp = account.closedTimestamp,
             balance = account.balance.value,
+            currency = account.currency
         )
 
     private fun generate16DigitNumber(): String {

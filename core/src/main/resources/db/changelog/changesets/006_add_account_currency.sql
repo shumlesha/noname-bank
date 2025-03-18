@@ -1,0 +1,2 @@
+ALTER TABLE accounts
+    ADD COLUMN currency VARCHAR(5) NOT NULL DEFAULT 'RUR';

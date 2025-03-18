@@ -34,7 +34,8 @@ class MasterAccountInitializer(
                 clientId = BANK_ID,
                 number = MASTER_ACCOUNT_NUMBER,
                 balance = BigDecimal.ZERO,
-                isCredit = false
+                isCredit = false,
+                currency = "RUR"
             )
 
             repository.saveMasterAccount(newMasterAccount)

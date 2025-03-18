@@ -37,5 +37,9 @@ data class Account(
     /**
      * Является ли счет кредитным
      */
-    val isCredit: Boolean
+    val isCredit: Boolean,
+    /**
+     * Тип валюты счета
+     */
+    val currency: String
 )

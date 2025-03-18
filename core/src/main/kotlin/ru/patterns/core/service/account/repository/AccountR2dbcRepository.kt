@@ -17,7 +17,7 @@ interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
 
     @Query("""
     INSERT INTO accounts 
-        (id, creation_timestamp, blocked_timestamp, client_id, number, balance, is_credit, closed_timestamp) 
+        (id, creation_timestamp, blocked_timestamp, client_id, number, balance, is_credit, closed_timestamp, currency) 
     VALUES 
         (:#{#entity.id}, 
          :#{#entity.creationTimestamp}, 
@@ -26,7 +26,8 @@ interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
          :#{#entity.number}, 
          :#{#entity.balance}, 
          :#{#entity.isCredit},
-         :#{#entity.closedTimestamp})
+         :#{#entity.closedTimestamp},
+         :#{#entity.currency})
     ON CONFLICT (id) DO UPDATE SET 
         creation_timestamp = EXCLUDED.creation_timestamp,
         blocked_timestamp = EXCLUDED.blocked_timestamp,
@@ -34,7 +35,8 @@ interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
         number = EXCLUDED.number,
         balance = EXCLUDED.balance,
         is_credit = EXCLUDED.is_credit,
-        closed_timestamp = EXCLUDED.closed_timestamp
+        closed_timestamp = EXCLUDED.closed_timestamp,
+        currency = EXCLUDED.currency
     RETURNING *
 """)
     fun saveMasterAccount(entity: AccountEntity): Mono<AccountEntity>

@@ -19,17 +19,39 @@ class RabbitMqConfiguration(
     fun topicExchange() = TopicExchange(mqProperties.exchange)
 
     @Bean
-    fun queues(): Map<String, Queue> =
-        mqProperties.queues.entries
-            .associate { entry -> entry.key to Queue(entry.value) }
+    fun creditPaymentRequestQueue() = Queue(mqProperties.creditPaymentRequest.name, true)
 
     @Bean
-    fun bindings(exchange: TopicExchange, queues: Map<String, Queue>): Map<String, Binding> =
-        mqProperties.routingKeys.entries
-            .associate { entry ->
-                entry.key to BindingBuilder
-                    .bind(queues[entry.key])
-                    .to(exchange)
-                    .with(entry.value)
-            }
+    fun creditPaymentResponseQueue() = Queue(mqProperties.creditPaymentResponse.name, true)
+
+    @Bean
+    fun creditCreateRequestQueue() = Queue(mqProperties.creditCreateRequest.name, true)
+
+    @Bean
+    fun creditCreateResponseQueue() = Queue(mqProperties.creditCreateResponse.name, true)
+
+    @Bean
+    fun bindingCreditCreateRequest(): Binding =
+        BindingBuilder
+            .bind(creditCreateRequestQueue())
+            .to(topicExchange())
+            .with(mqProperties.creditCreateRequest.name)
+
+    @Bean
+    fun bindingCreditCreateResponse(): Binding =
+        BindingBuilder.bind(creditCreateResponseQueue())
+            .to(topicExchange())
+            .with(mqProperties.creditCreateResponse.name)
+
+    @Bean
+    fun bindingCreditPaymentRequest(): Binding =
+        BindingBuilder.bind(creditPaymentRequestQueue())
+            .to(topicExchange())
+            .with(mqProperties.creditPaymentRequest.name)
+
+    @Bean
+    fun bindingCreditPaymentResponse(): Binding =
+        BindingBuilder.bind(creditPaymentResponseQueue())
+            .to(topicExchange())
+            .with(mqProperties.creditPaymentResponse.name)
 }

@@ -24,5 +24,7 @@ data class AccountEntity(
     @Column("balance")
     val balance: BigDecimal = BigDecimal.ZERO,
     @Column("is_credit")
-    val isCredit: Boolean
+    val isCredit: Boolean,
+    @Column("currency")
+    val currency: String
 )
