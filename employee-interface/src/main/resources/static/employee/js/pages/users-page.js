@@ -1,9 +1,9 @@
 import API_CONFIG from '../config/api-config.js';
 import apiService from '../services/api-service.js';
-import { checkAuth } from '../auth.js';
-import { renderUsersList, renderUserDetails } from '../components/users-list.js';
-import { renderPagination } from '../components/pagination.js';
-import { showMessage, clearMessages, showElement, hideElement } from '../utils/ui-utils.js';
+import {checkAuth} from '../auth.js';
+import {renderUserDetails, renderUsersList} from '../components/users-list.js';
+import {renderPagination} from '../components/pagination.js';
+import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
 
 const USERS_PER_PAGE = API_CONFIG.PAGINATION.USERS_PER_PAGE;
 

@@ -4,6 +4,7 @@ import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
 import ru.patterns.core.domain.Deposit
 import ru.patterns.core.domain.MoneyTransfer
 import ru.patterns.core.domain.Withdrawal
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.BANK_ID
 import ru.patterns.core.service.transaction.entity.TransactionEntity
 
 object Serializer {
@@ -17,7 +18,7 @@ object Serializer {
     fun TransactionEntity(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): TransactionEntity =
         TransactionEntity(
             accountFrom = creditPaymentTransactionCommand.accountId,
-            accountTo = null,
+            accountTo = BANK_ID,
             amount = creditPaymentTransactionCommand.amount
         )
 

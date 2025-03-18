@@ -1,8 +1,7 @@
-import API_CONFIG from '../config/api-config.js';
 import apiService from '../services/api-service.js';
-import { checkAuth } from '../auth.js';
-import { renderTariffsList } from '../components/tariffs-list.js';
-import { showMessage, clearMessages, showElement, hideElement } from '../utils/ui-utils.js';
+import {checkAuth} from '../auth.js';
+import {renderTariffsList} from '../components/tariffs-list.js';
+import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
 
 export const initCreditTariffsPage = () => {
     if (window.creditTariffsPageInitialized) return;

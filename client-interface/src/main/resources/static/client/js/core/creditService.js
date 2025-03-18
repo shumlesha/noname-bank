@@ -1,6 +1,6 @@
-import { config } from "../config/config.js";
-import { Credit } from "../models/Credit.js";
-import { CreditTariff } from "../models/CreditTariff.js";
+import {config} from "../config/config.js";
+import {Credit} from "../models/Credit.js";
+import {CreditTariff} from "../models/CreditTariff.js";
 
 class CreditService {
     async loadCredits(clientId) {

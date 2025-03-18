@@ -1,6 +1,6 @@
 import apiService from '../services/api-service.js';
 import storageService from '../services/storage-service.js';
-import { checkAuth } from '../auth.js';
+import {checkAuth} from '../auth.js';
 
 
 export const initRegisterPage = () => {

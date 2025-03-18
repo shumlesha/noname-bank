@@ -8,6 +8,8 @@ import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.blocking.ClientBlockingEventProcessor.ClientAccountsBlockResult
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.ClientId
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.BANK_ID
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.MASTER_ACCOUNT_NUMBER
 import ru.patterns.core.service.account.repository.AccountRepository
 import java.time.LocalDateTime
 
@@ -54,7 +56,12 @@ class AccountBlockingEventProcessor(
 
     private fun blockClientAccounts(accounts: List<Account>): Mono<ClientAccountsBlockResult> =
         Flux.fromIterable(accounts)
-            .map { account -> account.copy(blockedTimestamp = LocalDateTime.now()) }
+            .map { account ->
+                if (!isMasterAccount(account))
+                    account.copy(blockedTimestamp = LocalDateTime.now())
+                else
+                    throw IllegalStateException("Мастер-счет не может быть заблокирован")
+            }
             .collectList()
             .flatMap { blockedAccounts -> accountRepository.saveAll(blockedAccounts) }
             .map { saveAllResult ->
@@ -67,4 +74,6 @@ class AccountBlockingEventProcessor(
                 }
             }
 
+    private fun isMasterAccount(account: Account) =
+        account.clientId.value != BANK_ID && account.number.value != MASTER_ACCOUNT_NUMBER
 }

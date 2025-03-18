@@ -1,5 +1,5 @@
-import { storageService } from '../core/storageService.js';
-import { config } from '../config/config.js';
+import {storageService} from '../core/storageService.js';
+import {config} from '../config/config.js';
 
 export class HttpClient {
     static async fetch(url, options = {}, skipAuth = false) {

@@ -1,4 +1,4 @@
-import { logout } from '../auth.js';
+import {logout} from '../auth.js';
 import storageService from '../services/storage-service.js';
 
 

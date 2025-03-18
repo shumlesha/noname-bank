@@ -1,12 +1,41 @@
 package ru.patterns.core.service.account.repository
 
+import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import ru.patterns.core.service.account.entity.AccountEntity
 import java.util.UUID
 
 @Repository
 interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
     fun findAllByClientId(clientId: UUID): Flux<AccountEntity>
+
+    @Query("SELECT * FROM accounts WHERE client_id = :clientId AND number = :number FOR UPDATE")
+    fun findMasterAccount(clientId: UUID, number: String): Mono<AccountEntity>
+
+    @Query("""
+    INSERT INTO accounts 
+        (id, creation_timestamp, blocked_timestamp, client_id, number, balance, is_credit, closed_timestamp) 
+    VALUES 
+        (:#{#entity.id}, 
+         :#{#entity.creationTimestamp}, 
+         :#{#entity.blockedTimestamp}, 
+         :#{#entity.clientId}, 
+         :#{#entity.number}, 
+         :#{#entity.balance}, 
+         :#{#entity.isCredit},
+         :#{#entity.closedTimestamp})
+    ON CONFLICT (id) DO UPDATE SET 
+        creation_timestamp = EXCLUDED.creation_timestamp,
+        blocked_timestamp = EXCLUDED.blocked_timestamp,
+        client_id = EXCLUDED.client_id,
+        number = EXCLUDED.number,
+        balance = EXCLUDED.balance,
+        is_credit = EXCLUDED.is_credit,
+        closed_timestamp = EXCLUDED.closed_timestamp
+    RETURNING *
+""")
+    fun saveMasterAccount(entity: AccountEntity): Mono<AccountEntity>
 }

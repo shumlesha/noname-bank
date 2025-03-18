@@ -1,4 +1,4 @@
-import { CreditController } from '../controllers/CreditController.js';
+import {CreditController} from '../controllers/CreditController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     new CreditController();

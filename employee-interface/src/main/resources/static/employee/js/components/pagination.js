@@ -1,4 +1,4 @@
-import { showElement, hideElement, createButton } from '../utils/ui-utils.js';
+import {createButton, hideElement, showElement} from '../utils/ui-utils.js';
 
 
 export const renderPagination = (container, currentPage, totalPages, onPageChange) => {

@@ -1,7 +1,7 @@
-import { apiService } from './apiService.js';
-import { config } from '../config/config.js';
-import { Account } from '../models/Account.js';
-import { Transaction } from '../models/Transaction.js';
+import {apiService} from './apiService.js';
+import {config} from '../config/config.js';
+import {Account} from '../models/Account.js';
+import {Transaction} from '../models/Transaction.js';
 
 class AccountService {
     async loadAccounts(userId) {

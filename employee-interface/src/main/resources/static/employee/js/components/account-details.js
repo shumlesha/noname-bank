@@ -1,4 +1,4 @@
-import { formatDate, formatCurrency, getAccountStatus, getAccountType } from '../utils/format-utils.js';
+import {formatCurrency, formatDate, getAccountStatus, getAccountType} from '../utils/format-utils.js';
 
 
 export const renderAccountDetails = (account, container) => {

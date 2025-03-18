@@ -44,6 +44,12 @@ object Serializer {
                     statusCode = 400
                 )
 
+            is TransactionCommandService.CreateTransactionResult.Error.ZeroAmountTransaction ->
+                ErrorResponse(
+                    message = "Сумма транзакции должна быть больше 0",
+                    statusCode = 400
+                )
+
             else -> ErrorResponse(
                 message = "Что-то пошло не так",
                 statusCode = 500

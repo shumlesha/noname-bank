@@ -1,4 +1,4 @@
-import { BaseModel } from './BaseModel.js';
+import {BaseModel} from './BaseModel.js';
 
 export class CreditTariff extends BaseModel {
     constructor(data = {}) {

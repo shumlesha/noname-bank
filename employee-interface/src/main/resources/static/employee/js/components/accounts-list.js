@@ -1,5 +1,4 @@
-import { formatCurrency } from '../utils/format-utils.js';
-import { getAccountStatus, getAccountType } from '../utils/format-utils.js';
+import {formatCurrency, getAccountStatus, getAccountType} from '../utils/format-utils.js';
 
 
 export const renderAccountsList = (accounts, container, onAccountSelect) => {

@@ -1,7 +1,7 @@
-import { apiService } from './apiService.js';
-import { storageService } from './storageService.js';
-import { config } from '../config/config.js';
-import { User } from '../models/User.js';
+import {apiService} from './apiService.js';
+import {storageService} from './storageService.js';
+import {config} from '../config/config.js';
+import {User} from '../models/User.js';
 
 class AuthService {
     async login(credentials) {

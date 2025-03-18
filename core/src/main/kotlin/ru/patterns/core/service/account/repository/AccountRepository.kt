@@ -3,6 +3,7 @@ package ru.patterns.core.service.account.repository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAspectSupport
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
@@ -11,6 +12,8 @@ import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.ClientId
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.BANK_ID
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.MASTER_ACCOUNT_NUMBER
 import ru.patterns.core.service.account.command.serialization.Factory
 import ru.patterns.core.service.account.command.serialization.Serializer
 import ru.patterns.core.service.account.entity.AccountEntity
@@ -22,6 +25,7 @@ import java.util.UUID
 sealed interface AccountRepository {
     fun findById(accountId: AccountId): Mono<FindAccountResult>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllAccountResult>
+    fun findMasterAccount(): Mono<FindAccountResult>
     fun saveAll(accounts: List<Account>): Mono<SaveAllAccountResult>
     fun save(createAccountCommand: CreateAccountCommand): Mono<SaveAccountResult>
     fun save(createCreditAccountCommand: CreateCreditAccountCommand): Mono<SaveAccountResult>
@@ -81,6 +85,19 @@ class AccountRepositoryImpl(
                 FindAllAccountResult.Error(error).toMono()
             }
 
+    override fun findMasterAccount(): Mono<FindAccountResult> =
+        repository.findMasterAccount(BANK_ID, MASTER_ACCOUNT_NUMBER)
+            .map(Factory::Account)
+            .map<FindAccountResult>(FindAccountResult::Success)
+            .onErrorResume { error ->
+                log.error("При поиске счета произошла ошибка", error)
+                FindAccountResult.Error.Unexpected(error).toMono()
+            }
+            .switchIfEmpty {
+                log.error("Мастер-счет не найден")
+                FindAccountResult.Error.Unexpected(IllegalArgumentException("Мастер-счет не найден")).toMono()
+            }
+
     @Transactional
     override fun saveAll(accounts: List<Account>): Mono<AccountRepository.SaveAllAccountResult> =
         Mono.fromCallable { accounts.map(Serializer::AccountEntity) }
@@ -89,7 +106,10 @@ class AccountRepositoryImpl(
                 repository.saveAll(entities)
                     .then<AccountRepository.SaveAllAccountResult>(AccountRepository.SaveAllAccountResult.Success.toMono())
             }
-            .doOnError { error -> log.error("При сохранении счета произошла ошибка", error) }
+            .doOnError { error ->
+                log.error("При сохранении счета произошла ошибка", error)
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
+            }
             .onErrorResume { error -> AccountRepository.SaveAllAccountResult.Error(error).toMono() }
 
     @Transactional
@@ -97,6 +117,7 @@ class AccountRepositoryImpl(
         Mono.fromCallable { Serializer.AccountEntity(createAccountCommand) }
             .flatMap { accountEntity -> saveEntity(accountEntity) }
 
+    @Transactional
     override fun save(createCreditAccountCommand: CreateCreditAccountCommand): Mono<SaveAccountResult> =
         Mono.fromCallable { Serializer.AccountEntity(createCreditAccountCommand) }
             .flatMap { accountEntity -> saveEntity(accountEntity) }
@@ -113,6 +134,7 @@ class AccountRepositoryImpl(
             .map<SaveAccountResult>(SaveAccountResult::Success)
             .onErrorResume { error ->
                 log.error("При сохранении счета произошла ошибка", error)
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
                 SaveAccountResult.Error(error).toMono()
             }
 }

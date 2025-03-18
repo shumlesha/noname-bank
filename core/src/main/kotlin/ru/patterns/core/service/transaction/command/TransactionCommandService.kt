@@ -2,6 +2,7 @@ package ru.patterns.core.service.transaction.command
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.transaction.CreateTransactionCommand
@@ -39,6 +40,7 @@ sealed interface TransactionCommandService {
         sealed interface Error : CreateTransactionResult {
             data class SaveErrorFromRepository(val error: TransactionRepository.SaveTransactionResult.Error) : Error
             data object NotEnoughMoney : Error
+            data object ZeroAmountTransaction: Error
             data object SameAccount : Error
             data class AccountNotFound(val accountId: UUID) : Error
             data class UnexpectedError(val cause: Throwable) : Error
@@ -55,10 +57,15 @@ class TransactionCommandServiceImpl(
 ) : TransactionCommandService {
     private val log = LoggerFactory.getLogger(this::class.java)!!
 
+    @Transactional
     override fun create(createTransactionCommand: CreateTransactionCommand): Mono<CreateTransactionResult> =
         if (createTransactionCommand.accountTo == createTransactionCommand.accountFrom) {
             CreateTransactionResult.Error.SameAccount.toMono()
-        } else {
+        }
+        else if (createTransactionCommand.amount.value == BigDecimal.ZERO) {
+            CreateTransactionResult.Error.ZeroAmountTransaction.toMono()
+        }
+        else {
             accountRepository.findById(createTransactionCommand.accountFrom)
                 .flatMap { findResult ->
                     when (findResult) {
@@ -77,6 +84,7 @@ class TransactionCommandServiceImpl(
                 }
         }
 
+    @Transactional
     override fun payCredit(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): Mono<CreditPaymentResult> =
         accountRepository.findById(AccountId(creditPaymentTransactionCommand.accountId))
             .flatMap { findResult ->
@@ -117,8 +125,12 @@ class TransactionCommandServiceImpl(
                     .flatMap { saveResult ->
                         when (saveResult) {
                             is AccountRepository.SaveAccountResult.Success -> {
-                                kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
-                                createCreditTransaction(saveResult.account, paymentAmount, debt)
+                                findMasterAndCreateCreditTransaction(saveResult.account, paymentAmount, debt)
+                                    .doOnSuccess { result ->
+                                        if (result is CreditPaymentResult.Success) {
+                                            kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
+                                        }
+                                    }
                             }
 
                             is AccountRepository.SaveAccountResult.Error -> {
@@ -129,7 +141,7 @@ class TransactionCommandServiceImpl(
             }
     }
 
-    private fun createCreditTransaction(
+    private fun findMasterAndCreateCreditTransaction(
         account: Account,
         amount: BigDecimal,
         debt: BigDecimal
@@ -143,17 +155,65 @@ class TransactionCommandServiceImpl(
             return CreditPaymentResult.Error.ZeroBalance.toMono()
         }
 
-        val command = CreditPaymentTransactionCommand(
-            accountId = account.id.value,
-            amount = paymentAmount
-        )
+        return accountRepository.findMasterAccount()
+            .flatMap { findResult ->
+                when (findResult) {
+                    is AccountRepository.FindAccountResult.Success -> {
+                        val updatedMaster = writeOnMoney(findResult.account, paymentAmount)
 
-        return transactionRepository.save(command)
+                        accountRepository.save(updatedMaster)
+                            .flatMap { saveResult ->
+                                when (saveResult) {
+                                    is AccountRepository.SaveAccountResult.Success -> {
+                                        val command = CreditPaymentTransactionCommand(
+                                            accountId = account.id.value,
+                                            amount = paymentAmount
+                                        )
+
+                                        createCreditPaymentTransaction(
+                                            command = command,
+                                            clientId = account.clientId,
+                                            debt = debt
+                                        )
+                                            .doOnSuccess { result ->
+                                                if (result is CreditPaymentResult.Success) {
+                                                    kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
+                                                }
+                                            }
+                                    }
+
+                                    is AccountRepository.SaveAccountResult.Error -> {
+                                        CreditPaymentResult.Error.Unexpected(saveResult.cause).toMono()
+                                    }
+                                }
+                            }
+                    }
+
+                    is AccountRepository.FindAccountResult.Error.Unexpected -> {
+                        CreditPaymentResult.Error.Unexpected(findResult.cause).toMono()
+                    }
+
+                    else -> {
+                        log.error("При оплате кредита произошла неизвестная ошибка")
+                        CreditPaymentResult.Error.Unexpected(IllegalArgumentException("Произошла неизвестная ошибка"))
+                            .toMono()
+                    }
+                }
+            }
+
+    }
+
+    private fun createCreditPaymentTransaction(
+        command: CreditPaymentTransactionCommand,
+        clientId: ClientId,
+        debt: BigDecimal
+    ): Mono<CreditPaymentResult> =
+        transactionRepository.save(command)
             .map { saveResult ->
                 when (saveResult) {
                     is TransactionRepository.SaveTransactionResult.Success -> {
                         kafkaEventSender.sendEventToKafkaAsync(
-                            clientId = account.clientId,
+                            clientId = clientId,
                             transaction = saveResult.transaction
                         )
                         CreditPaymentResult.Success(debt = debt)
@@ -164,7 +224,6 @@ class TransactionCommandServiceImpl(
                     }
                 }
             }
-    }
 
     private fun findAccountToAndIfFoundThenCreateTransaction(
         createTransactionCommand: CreateTransactionCommand,
@@ -225,9 +284,11 @@ class TransactionCommandServiceImpl(
             .flatMap { saveResult ->
                 when (saveResult) {
                     is TransactionRepository.SaveTransactionResult.Success -> {
-                        kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountFrom)
-                        kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountTo)
                         processSuccessSaveResult(moneyTransfer.accountFrom.clientId, saveResult.transaction)
+                            .doOnSuccess {
+                                kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountFrom)
+                                kafkaEventSender.sendEventToKafkaAsync(moneyTransfer.accountTo)
+                            }
                     }
 
                     is TransactionRepository.SaveTransactionResult.Error ->

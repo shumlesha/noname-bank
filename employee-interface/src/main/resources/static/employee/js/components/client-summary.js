@@ -1,4 +1,4 @@
-import { formatCurrency } from '../utils/format-utils.js';
+import {formatCurrency} from '../utils/format-utils.js';
 
 export const renderClientSummary = (accounts, credits, container) => {
     if (!container) return;

@@ -1,4 +1,4 @@
-import { formatDate, formatCurrency } from '../utils/format-utils.js';
+import {formatCurrency, formatDate} from '../utils/format-utils.js';
 
 
 export const renderTransactionsList = (transactions, container) => {

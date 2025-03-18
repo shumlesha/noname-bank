@@ -46,6 +46,12 @@ object Factory {
                     statusCode = 400
                 )
 
+            is AccountCommandService.CloseAccountResult.Error.MasterAccountCantBeClosed ->
+                ErrorResponse(
+                    message = "Нельзя заблокировать мастер-счет",
+                    statusCode = 403
+                )
+
             else -> ErrorResponse(
                 message = "При закрытии счета произошла ошибка",
                 statusCode = 500

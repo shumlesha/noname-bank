@@ -1,7 +1,7 @@
 import storageService from './services/storage-service.js';
 import apiService from './services/api-service.js';
-import { addCardField } from './utils/ui-utils.js';
-import { formatGenderValue } from './utils/format-utils.js';
+import {addCardField} from './utils/ui-utils.js';
+import {formatGenderValue} from './utils/format-utils.js';
 
 
 export const checkAuth = () => {

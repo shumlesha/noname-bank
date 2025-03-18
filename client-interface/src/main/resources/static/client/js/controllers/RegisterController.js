@@ -1,8 +1,8 @@
-import { authService } from '../core/authService.js';
-import { storageService } from '../core/storageService.js';
-import { DomUtils } from '../utils/domUtils.js';
-import { config } from '../config/config.js';
-import { showError, showSuccess } from '../utils/modalUtils.js';
+import {authService} from '../core/authService.js';
+import {storageService} from '../core/storageService.js';
+import {DomUtils} from '../utils/domUtils.js';
+import {config} from '../config/config.js';
+import {showError, showSuccess} from '../utils/modalUtils.js';
 
 export class RegisterController {
     constructor() {

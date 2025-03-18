@@ -30,7 +30,7 @@ object Serializer {
             creationTimestamp = LocalDateTime.now(),
             blockedTimestamp = null,
             closedTimestamp = null,
-            balance = createCreditAccountCommand.amount
+            balance = BigDecimal.ZERO
         )
 
     fun AccountEntity(account: Account) =

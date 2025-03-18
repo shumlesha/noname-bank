@@ -1,4 +1,4 @@
-import { formatCurrency } from '../utils/format-utils.js';
+import {formatCurrency} from '../utils/format-utils.js';
 
 export const renderCreditsList = (credits, container) => {
     if (!credits || credits.length === 0) {

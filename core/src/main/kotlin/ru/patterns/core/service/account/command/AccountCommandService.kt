@@ -2,27 +2,38 @@ package ru.patterns.core.service.account.command
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAspectSupport
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.BANK_ID
+import ru.patterns.core.service.account.MasterAccountInitializer.Companion.MASTER_ACCOUNT_NUMBER
 import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
+import ru.patterns.core.service.account.command.AccountCommandService.CreateCreditAccountResult
 import ru.patterns.core.service.account.repository.AccountRepository
 import ru.patterns.core.service.kafka.KafkaEventSender
 import java.time.LocalDateTime
 
 interface AccountCommandService {
     fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult>
-    fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateAccountResult>
+    fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateCreditAccountResult>
     fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult>
-
 
     sealed interface CreateAccountResult {
         data class Success(val account: Account) : CreateAccountResult
         data class Error(val cause: Throwable) : CreateAccountResult
+    }
+
+    sealed interface CreateCreditAccountResult {
+        data class Success(val account: Account) : CreateCreditAccountResult
+        sealed interface Error : CreateCreditAccountResult {
+            data object BankDontHaveSuchMoney : Error
+            data class Unexpected(val cause: Throwable? = null) : Error
+        }
     }
 
     sealed interface CloseAccountResult {
@@ -31,6 +42,7 @@ interface AccountCommandService {
             data class FindErrorFromRepository(val error: AccountRepository.FindAccountResult.Error) : Error
             data class SaveErrorFromRepository(val error: AccountRepository.SaveAccountResult.Error) : Error
             data object AccountNotExists : Error
+            data object MasterAccountCantBeClosed : Error
             data class AccountAlreadyClosed(val account: Account) : Error
             data class AccountBlocked(val account: Account) : Error
             data class UnexpectedError(val cause: Throwable) : Error
@@ -41,6 +53,7 @@ interface AccountCommandService {
 @Service
 class AccountCommandServiceImpl(
     private val accountRepository: AccountRepository,
+    private val masterAccountService: MasterAccountService,
     private val kafkaEventSender: KafkaEventSender
 ) : AccountCommandService {
     @Transactional
@@ -52,18 +65,26 @@ class AccountCommandServiceImpl(
                     is AccountRepository.SaveAccountResult.Error -> CreateAccountResult.Error(saveResult.cause).toMono()
                 }
             }
+            .doOnError { TransactionAspectSupport.currentTransactionStatus().setRollbackOnly() }
             .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
 
     @Transactional
-    override fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateAccountResult> =
-        accountRepository.save(createCreditAccountCommand)
-            .flatMap { saveResult ->
-                when (saveResult) {
-                    is AccountRepository.SaveAccountResult.Success -> processSuccessSaveResult(saveResult)
-                    is AccountRepository.SaveAccountResult.Error -> CreateAccountResult.Error(saveResult.cause).toMono()
+    override fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateCreditAccountResult> =
+        masterAccountService.giveCredit(createCreditAccountCommand)
+            .map { giveCreditResult ->
+                when (giveCreditResult) {
+                    is MasterAccountService.GiveCreditResponse.Success ->
+                        CreateCreditAccountResult.Success(giveCreditResult.creditAccount)
+
+                    is MasterAccountService.GiveCreditResponse.Error.NotEnoughMoney ->
+                        CreateCreditAccountResult.Error.BankDontHaveSuchMoney
+
+                    is MasterAccountService.GiveCreditResponse.Error ->
+                        CreateCreditAccountResult.Error.Unexpected()
                 }
             }
-            .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
+            .doOnError { TransactionAspectSupport.currentTransactionStatus().setRollbackOnly() }
+            .onErrorResume { error -> CreateCreditAccountResult.Error.Unexpected(error).toMono() }
 
     @Transactional
     override fun closeAccount(closeAccountCommand: CloseAccountCommand): Mono<CloseAccountResult> =
@@ -79,10 +100,13 @@ class AccountCommandServiceImpl(
                         CloseAccountResult.Error.AccountNotExists.toMono()
                 }
             }
+            .doOnError { TransactionAspectSupport.currentTransactionStatus().setRollbackOnly() }
             .onErrorResume { error -> CloseAccountResult.Error.UnexpectedError(error).toMono() }
 
     private fun closeAccountIfNeed(account: Account): Mono<CloseAccountResult> {
-        if (isBlocked(account)) {
+        if (isMasterAccount(account)) {
+            return CloseAccountResult.Error.MasterAccountCantBeClosed.toMono()
+        } else if (isBlocked(account)) {
             return CloseAccountResult.Error.AccountBlocked(account).toMono()
         }
 
@@ -124,4 +148,7 @@ class AccountCommandServiceImpl(
 
     private fun isClosed(account: Account): Boolean =
         account.closedTimestamp != null
+
+    private fun isMasterAccount(account: Account) =
+        account.clientId.value != BANK_ID && account.number.value != MASTER_ACCOUNT_NUMBER
 }

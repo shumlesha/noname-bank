@@ -41,10 +41,13 @@ class MqCreditAccountListener(
             .map { createAccountResult ->
                 objectMapper.writeValueAsString(
                     when (createAccountResult) {
-                        is AccountCommandService.CreateAccountResult.Success ->
+                        is AccountCommandService.CreateCreditAccountResult.Success ->
                             CreateCreditResponseMessage(createAccountResult.account)
 
-                        is AccountCommandService.CreateAccountResult.Error ->
+                        is AccountCommandService.CreateCreditAccountResult.Error.BankDontHaveSuchMoney ->
+                            CreateCreditErrorResponse("У банка нет средств для одобрения подобного кредита")
+
+                        is AccountCommandService.CreateCreditAccountResult.Error.Unexpected ->
                             CreateCreditErrorResponse("Не удалось создать кредитный счет")
                     }
                 )

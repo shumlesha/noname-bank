@@ -3,6 +3,7 @@ package ru.patterns.core.service.transaction.repository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAspectSupport
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
@@ -51,12 +52,14 @@ class TransactionRepositoryImpl(
         Mono.fromCallable { Serializer.TransactionEntity(withdrawal) }
             .saveTransaction()
 
-
     private fun Mono<TransactionEntity>.saveTransaction() =
         this
             .flatMap { entity -> repository.save(entity) }
             .map(Factory::Transaction)
             .map<SaveTransactionResult>(SaveTransactionResult::Success)
-            .doOnError { error -> log.error("При сохранении транзакции произошла ошибка", error) }
+            .doOnError { error ->
+                log.error("При сохранении транзакции произошла ошибка", error)
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
+            }
             .onErrorResume { error -> SaveTransactionResult.Error(error).toMono() }
 }

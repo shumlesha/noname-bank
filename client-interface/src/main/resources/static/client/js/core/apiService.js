@@ -1,4 +1,4 @@
-import { HttpClient } from '../utils/httpClient.js';
+import {HttpClient} from '../utils/httpClient.js';
 
 class ApiService {
     async request(endpoint, options = {}, skipAuth = false) {

@@ -1,4 +1,4 @@
-import { RegisterController } from '../controllers/RegisterController.js';
+import {RegisterController} from '../controllers/RegisterController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     new RegisterController();

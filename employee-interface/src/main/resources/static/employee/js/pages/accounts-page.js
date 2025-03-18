@@ -1,11 +1,11 @@
 import API_CONFIG from '../config/api-config.js';
 import apiService from '../services/api-service.js';
-import { checkAuth } from '../auth.js';
-import { renderAccountsList } from '../components/accounts-list.js';
-import { renderAccountDetails } from '../components/account-details.js';
-import { renderTransactionsList, normalizeTransactionsResponse } from '../components/transactions-list.js';
-import { renderPagination } from '../components/pagination.js';
-import { showMessage, clearMessages, showElement, hideElement } from '../utils/ui-utils.js';
+import {checkAuth} from '../auth.js';
+import {renderAccountsList} from '../components/accounts-list.js';
+import {renderAccountDetails} from '../components/account-details.js';
+import {normalizeTransactionsResponse, renderTransactionsList} from '../components/transactions-list.js';
+import {renderPagination} from '../components/pagination.js';
+import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
 
 const ACCOUNTS_PER_PAGE = API_CONFIG.PAGINATION.ACCOUNTS_PER_PAGE;
 
