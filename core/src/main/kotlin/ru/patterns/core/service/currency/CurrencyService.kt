@@ -49,8 +49,8 @@ class CurrencyServiceImpl(
     private val currencyProperties: CurrencyProperties
 ) : CurrencyService {
     private val log = LoggerFactory.getLogger(this::class.java)
-    private val charCodeSet: Set<String> = getValuteCodes(currencyProperties.api.valute.url).block()!!
     private val mapper: XmlMapper = XmlMapper()
+    private val charCodeSet: Set<String> = getValuteCodes(currencyProperties.api.valute.url).block()!!
 
     companion object {
         const val RUB_CODE = "RUR"
@@ -170,7 +170,7 @@ class CurrencyServiceImpl(
             mapper.readValue(xmlResponse, ValCurs::class.java)
         } catch (e: Exception) {
             log.error("Ошибка парсинга XML ответа", e)
-            throw RuntimeException("При парсинге данных что-то пошло не так")
+            throw RuntimeException("При парсинге данных что-то пошло не так", e)
         }
 
     private fun getCurrencyList(xmlResponse: String?): CurrencyList =
@@ -178,6 +178,6 @@ class CurrencyServiceImpl(
             mapper.readValue(xmlResponse, CurrencyList::class.java)
         } catch (e: Exception) {
             log.error("Ошибка парсинга XML ответа", e)
-            throw RuntimeException("При парсинге данных что-то пошло не так")
+            throw RuntimeException("При парсинге данных что-то пошло не так", e)
         }
 }
