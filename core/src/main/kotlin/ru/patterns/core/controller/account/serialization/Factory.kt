@@ -13,10 +13,17 @@ object Factory {
                 )
             }
 
-            is AccountCommandService.CreateAccountResult.Error -> ErrorResponse(
-                message = "При создании счета произошла ошибка",
-                statusCode = 500
-            )
+            is AccountCommandService.CreateAccountResult.Error.NonExistentCurrency ->
+                ErrorResponse(
+                    message = "Валюты с указанным кодом не существует",
+                    statusCode = 400
+                )
+
+            is AccountCommandService.CreateAccountResult.Error.Unexpected ->
+                ErrorResponse(
+                    message = "При создании счета произошла ошибка",
+                    statusCode = 500
+                )
         }
 
     fun AccountCloseResponse(closeResult: AccountCommandService.CloseAccountResult): ApiResponse =

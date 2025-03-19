@@ -50,9 +50,16 @@ object Serializer {
                     statusCode = 400
                 )
 
-            else -> ErrorResponse(
-                message = "Что-то пошло не так",
-                statusCode = 500
-            )
+            is TransactionCommandService.CreateTransactionResult.Error.ConvertationUnavailable ->
+                ErrorResponse(
+                    message = "Служба конвертации валют в данный момент недоступна",
+                    statusCode = 500
+                )
+
+            is TransactionCommandService.CreateTransactionResult.Error.SaveErrorFromRepository ->
+                ErrorResponse(
+                    message = "Не удалось обработать транзакцию",
+                    statusCode = 500
+                )
         }
 }

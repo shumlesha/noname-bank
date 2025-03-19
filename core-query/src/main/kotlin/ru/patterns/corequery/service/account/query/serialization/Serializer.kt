@@ -12,6 +12,7 @@ object Serializer {
             clientId = account.clientId.value,
             number = account.number.value,
             isCredit = account.isCredit,
-            balance = account.balance.value
+            balance = account.balance.value,
+            currency = account.currency
         )
 }

@@ -17,6 +17,7 @@ object Factory {
             clientId = ClientId(accountEntity.clientId),
             number = AccountNumber(accountEntity.number),
             balance = Balance(accountEntity.balance),
-            isCredit = accountEntity.isCredit
+            isCredit = accountEntity.isCredit,
+            currency = accountEntity.currency
         )
 }

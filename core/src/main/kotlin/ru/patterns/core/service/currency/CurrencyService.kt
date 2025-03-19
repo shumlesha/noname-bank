@@ -3,7 +3,6 @@ package ru.patterns.core.service.currency
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
-import jakarta.ws.rs.BadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -38,6 +37,7 @@ interface CurrencyService {
         data class Success(val currencyWithRate: CurrencyWithRate) : GetCurrencyRateResult
         sealed interface Error : GetCurrencyRateResult {
             data object BankUnavailable : Error
+            data object NonExistentCurrency : Error
             data class Unexpected(val cause: Throwable) : Error
         }
     }
@@ -75,7 +75,7 @@ class CurrencyServiceImpl(
 
                 val convertedAmount = convertCurrency.amount
                     .multiply(fromRate.currencyWithRate.rate)
-                    .divide(toRate.currencyWithRate.rate, 4, RoundingMode.HALF_UP)
+                    .divide(toRate.currencyWithRate.rate, 2, RoundingMode.HALF_DOWN)
 
                 log.info(
                     "Конвертация завершена: {} {} = {} {}",
@@ -105,7 +105,7 @@ class CurrencyServiceImpl(
     override fun getCurrencyRate(code: String): Mono<GetCurrencyRateResult> {
         log.info("Получен запрос на получение валюты с кодом: {}", code)
         if (!charCodeSet.contains(code) || isInvalidCurrency(code)) {
-            throw BadRequestException("Валюты с указанным кодом не существует:$code")
+            return GetCurrencyRateResult.Error.NonExistentCurrency.toMono()
         }
 
         return fetchCurrencyData(currencyProperties.api.currency.url)

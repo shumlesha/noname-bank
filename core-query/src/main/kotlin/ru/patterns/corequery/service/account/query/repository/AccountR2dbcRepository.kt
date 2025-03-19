@@ -31,8 +31,8 @@ interface AccountR2dbcRepository : R2dbcRepository<AccountEntity, UUID> {
          :#{#entity.balance}, 
          :#{#entity.isCredit},
          :#{#entity.closedTimestamp},
-         :#{entity.currency})
-         ON CONFLICT (id) DO UPDATE SET 
+         :#{#entity.currency})
+    ON CONFLICT (id) DO UPDATE SET 
         creation_timestamp = EXCLUDED.creation_timestamp,
         blocked_timestamp = EXCLUDED.blocked_timestamp,
         client_id = EXCLUDED.client_id,

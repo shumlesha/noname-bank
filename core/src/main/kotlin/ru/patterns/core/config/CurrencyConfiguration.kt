@@ -17,6 +17,7 @@ class CurrencyConfiguration {
 
 @ConfigurationProperties("core.currency")
 data class CurrencyProperties(
+    val taxCoefficient: Long = 5,
     val api: ApiProperties,
     private val cacheLifetimeHours: Long = 1
 ) {

@@ -24,7 +24,8 @@
   "clientId": "225ff63f-6cb4-4b66-9f76-dcb187462670",
   "number": "3966930656874947",
   "balance": 0,
-  "isCredit": false
+  "isCredit": false,
+  "currency": "RUR"
 }
 ```
 
@@ -60,7 +61,8 @@
       "clientId": "225ff63f-6cb4-4b66-9f76-dcb187462670",
       "number": "3966930656874947",
       "balance": 0,
-      "isCredit": false
+      "isCredit": false,
+      "currency": "RUR"
     }
   ]
 }
@@ -78,9 +80,10 @@
 3. POST `/api/query/transaction/client` (все операции клиента)
 
 **body**
+
 ```json
 {
-    "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+  "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
 }
 ```
 
@@ -129,6 +132,7 @@
 4. POST `/api/query/transaction`
 
 **body**
+
 ```json
 {
   "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0",
@@ -161,10 +165,11 @@
 5. POST `/api/query/account/all` (получение всех счетов для сотрудника)
 
 **body**
+
 ```json
 {
-   "size": 1,
-   "offset": 0
+  "size": 1,
+  "offset": 0
 }
 ```
 
@@ -172,19 +177,20 @@
 
 ```json
 {
-   "data": [
-      {
-         "id": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
-         "blockedTimestamp": null,
-         "closedTimestamp": null,
-         "clientId": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
-         "number": "5440613954528454",
-         "balance": 2203,
-         "isCredit": false
-      }
-   ],
-   "page": 0,
-   "pageSize": 1
+  "data": [
+    {
+      "id": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "blockedTimestamp": null,
+      "closedTimestamp": null,
+      "clientId": "0d3ef08c-b2eb-4c28-9788-8715225e1a04",
+      "number": "5440613954528454",
+      "balance": 2203,
+      "isCredit": false,
+      "currency": "RUR"
+    }
+  ],
+  "page": 0,
+  "pageSize": 1
 }
 ```
 
@@ -192,14 +198,15 @@
 
 ```json
 {
-   "message": "Произошла ошибка",
-   "statusCode": 500
+  "message": "Произошла ошибка",
+  "statusCode": 500
 }
 ```
 
 6. POST `/api/query/transaction/account` (получение всех транзакций счета)
 
 **body**
+
 ```json
 {
   "accountId": "0d3ef08c-b2eb-4c28-9788-8715225e1a04"
@@ -243,7 +250,7 @@
 
 ```json
 {
-   "message": "Произошла ошибка",
-   "statusCode": 500
+  "message": "Произошла ошибка",
+  "statusCode": 500
 }
 ```

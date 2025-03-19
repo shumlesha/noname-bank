@@ -11,7 +11,8 @@
 
 ```json
 {
-  "clientId": "3fe0f380-37f5-4bef-b732-d624ee45eff0"
+  "clientId": "3fe0f380-37f5-4bef-b732-d624ee45eff0",
+  "currency": "RUR"
 }
 ```
 

@@ -15,6 +15,7 @@ import ru.patterns.core.service.account.command.AccountCommandService.CloseAccou
 import ru.patterns.core.service.account.command.AccountCommandService.CreateAccountResult
 import ru.patterns.core.service.account.command.AccountCommandService.CreateCreditAccountResult
 import ru.patterns.core.service.account.repository.AccountRepository
+import ru.patterns.core.service.currency.CurrencyService
 import ru.patterns.core.service.kafka.KafkaEventSender
 import java.time.LocalDateTime
 
@@ -25,7 +26,10 @@ interface AccountCommandService {
 
     sealed interface CreateAccountResult {
         data class Success(val account: Account) : CreateAccountResult
-        data class Error(val cause: Throwable) : CreateAccountResult
+        sealed interface Error : CreateAccountResult {
+            data object NonExistentCurrency : Error
+            data class Unexpected(val cause: Throwable) : Error
+        }
     }
 
     sealed interface CreateCreditAccountResult {
@@ -53,20 +57,39 @@ interface AccountCommandService {
 @Service
 class AccountCommandServiceImpl(
     private val accountRepository: AccountRepository,
+    private val currencyService: CurrencyService,
     private val masterAccountService: MasterAccountService,
     private val kafkaEventSender: KafkaEventSender
 ) : AccountCommandService {
     @Transactional
     override fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult> =
-        accountRepository.save(createAccountCommand)
-            .flatMap { saveResult ->
-                when (saveResult) {
-                    is AccountRepository.SaveAccountResult.Success -> processSuccessSaveResult(saveResult)
-                    is AccountRepository.SaveAccountResult.Error -> CreateAccountResult.Error(saveResult.cause).toMono()
+        currencyService.getCurrencyRate(createAccountCommand.currency)
+            .flatMap { getCurrencyResult ->
+                when (getCurrencyResult) {
+                    is CurrencyService.GetCurrencyRateResult.Success ->
+                        accountRepository.save(createAccountCommand)
+                            .flatMap { saveResult ->
+                                when (saveResult) {
+                                    is AccountRepository.SaveAccountResult.Success ->
+                                        processSuccessSaveResult(saveResult)
+
+                                    is AccountRepository.SaveAccountResult.Error ->
+                                        CreateAccountResult.Error.Unexpected(saveResult.cause).toMono()
+                                }
+                            }
+
+                    is CurrencyService.GetCurrencyRateResult.Error.NonExistentCurrency ->
+                        CreateAccountResult.Error.NonExistentCurrency.toMono()
+
+                    is CurrencyService.GetCurrencyRateResult.Error.Unexpected ->
+                        CreateAccountResult.Error.Unexpected(getCurrencyResult.cause).toMono()
+
+                    CurrencyService.GetCurrencyRateResult.Error.BankUnavailable ->
+                        CreateAccountResult.Error.Unexpected(IllegalArgumentException("Банк недоступен")).toMono()
                 }
             }
             .doOnError { TransactionAspectSupport.currentTransactionStatus().setRollbackOnly() }
-            .onErrorResume { error -> CreateAccountResult.Error(error).toMono() }
+            .onErrorResume { error -> CreateAccountResult.Error.Unexpected(error).toMono() }
 
     @Transactional
     override fun createCreditAccount(createCreditAccountCommand: CreateCreditAccountCommand): Mono<CreateCreditAccountResult> =
