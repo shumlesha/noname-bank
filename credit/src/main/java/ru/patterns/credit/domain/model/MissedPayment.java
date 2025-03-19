@@ -26,5 +26,7 @@ public class MissedPayment {
 
     private LocalDate missedDate;
 
-    private BigDecimal debtAmount;
+    private BigDecimal debt;
+
+    private BigDecimal amount;
 }

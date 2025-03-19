@@ -11,94 +11,93 @@ import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditPayEventPublisher;
+import ru.patterns.credit.shared.dto.PaymentResult;
 import ru.patterns.credit.shared.exception.InsufficientFundsException;
 import ru.patterns.credit.shared.exception.InternalServerException;
 import ru.patterns.credit.shared.exception.PaymentProcessingException;
-import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 import ru.patterns.credit.shared.request.credit.pay.PayCreditRequest;
-import ru.patterns.credit.shared.response.credit.pay.PayCreditErrorResponse;
 import ru.patterns.credit.shared.response.credit.pay.PayCreditResponse;
 import ru.patterns.credit.shared.response.credit.pay.PayCreditResponseRaw;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CreditPaymentService {
+    private static final int NEXT_PAYMENT_DELAY_DAYS = 1;
     private final CreditRepository creditRepository;
     private final CreditPayEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public boolean processPayment(Credit credit, BigDecimal amount) {
+    public PaymentResult processPayment(Credit credit, BigDecimal amount) {
         try {
-            var remainingAmount = credit.getAmountRemainingToPay();
-            if (amount.compareTo(remainingAmount) > 0) {
-                amount = remainingAmount;
-            }
-
+            amount = adjustPaymentAmount(credit, amount);
             var payCreditRequest = new PayCreditRequest(credit.getAccountId(), amount);
             var response = eventPublisher.publishPaymentRequest(payCreditRequest);
-
             return handlePaymentResponse(response, credit, amount);
         } catch (InsufficientFundsException e) {
-            log.error("Недостаточно средств для оплаты кредита {}: {}", credit.getId(), e.getMessage());
-            return false;
+            return handlePaymentError("Недостаточно средств для оплаты кредита", credit, amount, e);
         } catch (PaymentProcessingException e) {
-            log.error("Ошибка при оплате {}: {}", credit.getId(), e.getMessage());
-            return false;
+            return handlePaymentError("Ошибка при оплате", credit, amount, e);
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new InternalServerException("Не удалось обработать платеж", e);
         }
     }
 
-    private boolean handlePaymentResponse(Message response, Credit credit, BigDecimal amount)
-            throws IOException {
+    private BigDecimal adjustPaymentAmount(Credit credit, BigDecimal amount) {
+        return amount.min(credit.getAmountRemainingToPay());
+    }
 
+    private PaymentResult handlePaymentResponse(Message response, Credit credit, BigDecimal amount) throws IOException {
         if (response == null) {
             throw new PaymentProcessingException("Ответ с подтверждением оплаты не получен");
         }
 
-        var responseString = new String(response.getBody(), StandardCharsets.UTF_8);
+        String responseString = new String(response.getBody(), StandardCharsets.UTF_8);
         log.info("Ответ от оплаты для кредита {}: {}", credit.getId(), responseString);
-        
+
         var payCreditResponse = objectMapper.readValue(response.getBody(), PayCreditResponseRaw.class);
 
         if (payCreditResponse instanceof PayCreditResponse creditResponse) {
-           if (creditResponse.debt().compareTo(BigDecimal.ZERO) == 0) {
-               processSuccessfulPayment(credit, amount);
-               return true;
-           } else {
-               throw new InsufficientFundsException("Недостаточно средств для оплаты кредита");
-           }
+            return processResponseBasedOnDebt(creditResponse, credit, amount);
         } else {
-            throw new PaymentProcessingException("Ошибка платежа");
+            throw new PaymentProcessingException("Некорректный формат ответа платежа");
         }
     }
-    
+
+    private PaymentResult processResponseBasedOnDebt(PayCreditResponse creditResponse, Credit credit, BigDecimal amount) {
+        if (creditResponse.debt().compareTo(BigDecimal.ZERO) == 0) {
+            processSuccessfulPayment(credit, amount);
+            return new PaymentResult("success", creditResponse.debt());
+        }
+        return new PaymentResult("error", creditResponse.debt());
+    }
+
     private void processSuccessfulPayment(Credit credit, BigDecimal amount) {
         credit.addPayment(amount);
-        credit.setNextPaymentDate(LocalDate.now().plusDays(1));
-        
+        credit.setNextPaymentDate(LocalDate.now().plusDays(NEXT_PAYMENT_DELAY_DAYS));
+
         if (credit.getStatus() == CreditStatus.OVERDUE) {
             credit.setStatus(CreditStatus.ACTIVE);
         }
-        
+
         if (credit.isPaidOff()) {
             credit.setStatus(CreditStatus.PAID_OFF);
             log.info("Кредит {} полностью погашен", credit.getId());
         }
-        
+
         creditRepository.save(credit);
+    }
+
+    private PaymentResult handlePaymentError(String errorMessage, Credit credit, BigDecimal amount, Exception e) {
+        log.error("{} {}: {}", errorMessage, credit.getId(), e.getMessage());
+        return new PaymentResult("error", amount);
     }
 }
