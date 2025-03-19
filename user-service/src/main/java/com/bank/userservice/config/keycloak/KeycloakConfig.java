@@ -21,7 +21,7 @@ public class KeycloakConfig {
 
         return KeycloakBuilder.builder()
                 .serverUrl(keycloakProperties.getAuthServerUrl())
-                .realm(keycloakProperties.getRealm())
+                .realm(adminProperties.getRealm())
                 .username(adminProperties.getUsername())
                 .password(adminProperties.getPassword())
                 .clientId(adminProperties.getClientId())

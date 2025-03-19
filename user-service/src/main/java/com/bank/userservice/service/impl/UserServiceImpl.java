@@ -9,6 +9,8 @@ import com.bank.userservice.entity.User;
 import com.bank.userservice.mapper.UserMapper;
 import com.bank.userservice.repository.RoleRepository;
 import com.bank.userservice.repository.UserRepository;
+import com.bank.userservice.security.CurrentUser;
+import com.bank.userservice.service.IdentityProvider;
 import com.bank.userservice.service.UserService;
 import com.bank.userservice.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final UserMapper userMapper;
+    private final IdentityProvider identityProvider;
 
     @Override
     @Transactional
@@ -44,33 +47,30 @@ public class UserServiceImpl implements UserService {
     @PublishBanEvent(topics = {"user_blocked"})
     @Transactional
     public UserDto banUser(UUID userId, BanUserRequest banUserRequest, UUID currentUserId) {
-        User user = userValidator.validateBan(userId, currentUserId);
-
-        user.ban();
-
-        return userMapper.toDto(userRepository.save(user));
+        return identityProvider.banUser(userId, banUserRequest);
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public UserDto getByEmail(String email) {
-        User user = userRepository.findByEmailReadOnly(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return userMapper.toDto(user);
+        return identityProvider.getByEmail(email);
+    }
+
+    @Override
+    public UserDto convertAndGet(CurrentUser currentUser) {
+        return userMapper.toSelfEntity(currentUser);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDto getUserById(UUID id) {
-        return userMapper.toDto(userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+        return identityProvider.getById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<UserDto> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::toDto);
+        return identityProvider.getAllUsers(pageable);
     }
 }

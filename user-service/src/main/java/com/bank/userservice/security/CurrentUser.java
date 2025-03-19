@@ -1,11 +1,13 @@
 package com.bank.userservice.security;
 
+import com.bank.userservice.enumeration.Gender;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,10 +29,22 @@ public class CurrentUser implements Principal, OAuth2AuthenticatedPrincipal {
         return attributes;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getFullName() {
+        return attributes.get("fullName").toString();
     }
 
+    public Gender getGender() {
+        return Gender.valueOf(attributes.get("gender").toString());
+    }
 
+    public boolean isBanned() {
+        return !((boolean) attributes.get("user_enabled"));
+    }
+
+    public List<String> getRoles() {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .map(role -> role.substring(5))
+                .toList();
+    }
 }
