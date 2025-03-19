@@ -2,6 +2,8 @@ package ru.patterns.core.service.account
 
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import ru.patterns.core.service.account.command.serialization.Factory
 import ru.patterns.core.service.account.entity.AccountEntity
@@ -23,7 +25,7 @@ class MasterAccountInitializer(
         val BANK_ID: UUID = UUID.fromString(BANK_ID_STR)
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent::class)
     fun init() {
         val masterAccount = repository.findMasterAccount(BANK_ID, MASTER_ACCOUNT_NUMBER).block()
 

@@ -15,6 +15,15 @@ spring:
     hibernate:
       ddl-auto: validate
 
+query:
+  websocket:
+    transaction:
+      enabled: true
+      client:
+        path: "/ws/client/transaction"
+      employee:
+        path: "/ws/employee/transaction"
+
 eureka:
   client:
     service-url:

@@ -15,7 +15,7 @@ import ru.patterns.corequery.service.transaction.repository.TransactionRepositor
 import ru.patterns.corequery.service.transaction.serialization.Factory
 import ru.patterns.corequery.service.transaction.serialization.Serializer
 
-sealed interface TransactionRepository {
+interface TransactionRepository {
     fun save(transaction: Transaction): Mono<SaveTransactionResult>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllTransactionResult>
     fun findById(transactionInfo: TransactionInfo): Mono<FindTransactionResult>
@@ -88,5 +88,4 @@ class TransactionRepositoryImpl(
                 log.error("При получении транзакций счета: {} произошла ошибка", accountId, error)
                 FindAllTransactionResult.Error(error).toMono()
             }
-
 }
