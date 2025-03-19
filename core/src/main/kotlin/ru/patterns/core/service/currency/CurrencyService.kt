@@ -2,7 +2,10 @@ package ru.patterns.core.service.currency
 
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.circuitbreaker.CircuitBreaker
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
+import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -20,6 +23,7 @@ import ru.patterns.core.service.currency.serialization.ValCurs
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Currency
+import java.util.function.Predicate
 
 interface CurrencyService {
     fun convertCurrency(convertCurrency: ConvertCurrencyRequest): Mono<ConvertCurrencyResult>
@@ -46,10 +50,13 @@ interface CurrencyService {
 @Service
 class CurrencyServiceImpl(
     private val webClient: WebClient,
-    private val currencyProperties: CurrencyProperties
+    private val currencyProperties: CurrencyProperties,
+    circuitBreakerRegistry: CircuitBreakerRegistry
 ) : CurrencyService {
     private val log = LoggerFactory.getLogger(this::class.java)
     private val mapper: XmlMapper = XmlMapper()
+    private val circuitBreaker = circuitBreakerRegistry
+        .createCircuitBreaker("currencyService") { error -> error is Exception }
     private val charCodeSet: Set<String> = getValuteCodes(currencyProperties.api.valute.url).block()!!
 
     companion object {
@@ -57,7 +64,6 @@ class CurrencyServiceImpl(
         private val RUB_RATE = CurrencyWithRate(CurrencyCode(RUB_CODE), BigDecimal.ONE)
     }
 
-    @CircuitBreaker(name = "currencyService", fallbackMethod = "fallbackConvertCurrency")
     override fun convertCurrency(convertCurrency: ConvertCurrencyRequest): Mono<ConvertCurrencyResult> {
         log.info("Получен запрос на конвертацию валюты: {}", convertCurrency)
 
@@ -96,12 +102,6 @@ class CurrencyServiceImpl(
             .onErrorResume { error -> ConvertCurrencyResult.Error.Unexpected(error).toMono() }
     }
 
-    fun fallbackConvertCurrency(dto: ConvertCurrencyResponse?, throwable: Throwable?): Mono<ConvertCurrencyResult> {
-        log.error("Сработал fallback на метод конвертации валюты", throwable)
-        return ConvertCurrencyResult.Error.BankUnavailable.toMono()
-    }
-
-    @CircuitBreaker(name = "currencyService", fallbackMethod = "fallbackGetCurrency")
     override fun getCurrencyRate(code: String): Mono<GetCurrencyRateResult> {
         log.info("Получен запрос на получение валюты с кодом: {}", code)
         if (!charCodeSet.contains(code) || isInvalidCurrency(code)) {
@@ -114,16 +114,12 @@ class CurrencyServiceImpl(
             .onErrorResume { error -> GetCurrencyRateResult.Error.Unexpected(error).toMono() }
     }
 
-    fun fallbackGetCurrency(code: String?, throwable: Throwable?): Mono<GetCurrencyRateResult> {
-        log.error("Сработал fallback на метод получения курса", throwable)
-        return GetCurrencyRateResult.Error.BankUnavailable.toMono()
-    }
-
     private fun fetchCurrencyData(url: String): Mono<String> =
         webClient.get()
             .uri(url)
             .retrieve()
             .bodyToMono(String::class.java)
+            .setCircuitBreaker(circuitBreaker)
             .doOnError { error -> log.error("Ошибка при получении курсов от ЦБ", error) }
             .cache(currencyProperties.cacheLifeTimeDuration)
 
@@ -180,4 +176,27 @@ class CurrencyServiceImpl(
             log.error("Ошибка парсинга XML ответа", e)
             throw RuntimeException("При парсинге данных что-то пошло не так", e)
         }
+
+    /**
+     * Установить circuit breaker в реактивную цепочку.
+     */
+    private fun <T> Mono<T>.setCircuitBreaker(cb: CircuitBreaker): Mono<T> =
+        this.transformDeferred(CircuitBreakerOperator.of(cb))
+
+    private fun CircuitBreakerRegistry.createCircuitBreaker(
+        configName: String,
+        errorPredicate: Predicate<Throwable>
+    ): CircuitBreaker {
+        val baseConfig = this
+            .getConfiguration(configName)
+            .orElseThrow { NullPointerException("не найдена конфигурация $configName") }
+
+        val configWithErrorPredicate = CircuitBreakerConfig
+            .from(baseConfig)
+            .recordException(errorPredicate)
+            .build()
+
+        return this
+            .circuitBreaker(configName, configWithErrorPredicate)
+    }
 }

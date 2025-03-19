@@ -20,8 +20,8 @@ spring:
 
 resilience4j:
   circuitbreaker:
-    instances:
-      default:
+    configs:
+      currencyService:
         registerHealthIndicator: true
         slidingWindowSize: 10
         failureRateThreshold: 50
