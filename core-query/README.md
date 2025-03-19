@@ -254,3 +254,27 @@
   "statusCode": 500
 }
 ```
+
+## WebSocket
+
+Подключение возможно по следующим путям:
+
+- /ws/employee/transaction
+- /ws/client/transaction
+
+**Пример сообщения** 
+```plain
+511585ef-34e2-4aa8-a862-f949fc9925c6   <---- id счета
+```
+
+**Пример ответа**
+```json
+{
+  "id": "cb62c65e-2312-408c-9a34-edcf1f193743",
+  "transactionTimestamp": "2025-03-19T18:20:33.210875",
+  "accountFrom": "d9d24990-ba49-444c-8db7-fd559f737061",
+  "accountTo": "511585ef-34e2-4aa8-a862-f949fc9925c6",
+  "amount": 1,
+  "clientId": "1eaef959-bf10-40b2-80d9-9faacfdb13e0"
+}
+```
