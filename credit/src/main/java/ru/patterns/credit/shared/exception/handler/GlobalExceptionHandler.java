@@ -15,7 +15,6 @@ import ru.patterns.credit.shared.exception.ValidationException;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<DefaultResponse<Void>> handleNotFound(ResourceNotFoundException ex) {
         log.error("Ошибка 404: {}", ex.getMessage());
