@@ -44,7 +44,7 @@ public class CreditPaymentService {
             var response = eventPublisher.publishPaymentRequest(payCreditRequest);
             return handlePaymentResponse(response, credit, amount);
         } catch (InsufficientFundsException e) {
-            return handlePaymentError("Недостаточно средств для оплаты кредита", credit, amount, e);
+            throw new PaymentProcessingException(e.getMessage());
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
         } catch (Exception e) {
@@ -101,10 +101,5 @@ public class CreditPaymentService {
         }
 
         creditRepository.save(credit);
-    }
-
-    private PaymentResult handlePaymentError(String errorMessage, Credit credit, BigDecimal amount, Exception e) {
-        log.error("{} {}: {}", errorMessage, credit.getId(), e.getMessage());
-        return new PaymentResult("error", amount);
     }
 }

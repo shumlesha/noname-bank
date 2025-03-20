@@ -35,6 +35,7 @@ public class CreditPayEventPublisher {
         var messageProperties = new MessageProperties();
         messageProperties.setReplyTo(properties.getQueues().get("paymentResponse"));
         messageProperties.setCorrelationId(UUID.randomUUID().toString());
+        log.info("Оплата кредита: {}", request);
 
         var message = new Message(ObjectMapperUtils.writeValueAsAString(request).getBytes(), messageProperties);
 
