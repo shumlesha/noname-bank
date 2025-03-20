@@ -31,10 +31,13 @@ import java.util.stream.Stream;
 @EnableReactiveMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final KeycloakProperties keycloakProperties;
+
     private static final String[] PUBLIC_ROUTES = {
             "/api/auth/**",
-            "/client/login",
-            "/employee/login",
+            "/client/login", "/client/logout", "/client/callback",
+            "/employee/login", "/employee/logout", "/employee/callback",
+            "/actuator/**"
     };
 
     @Bean
@@ -60,7 +63,6 @@ public class SecurityConfig {
                 ).build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -68,6 +70,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Total-Count"));
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -81,8 +84,9 @@ public class SecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
 
-            Collection<String> resourceRoles = extractResourceRoles(resourceAccess, "spring-app");
+            String clientId = (String) jwt.getClaims().getOrDefault("azp", "app-client");
 
+            Collection<String> resourceRoles = extractResourceRoles(resourceAccess, clientId);
             Collection<String> realmRoles = extractRealmRoles(jwt);
 
             Set<String> allRoles = Stream.concat(

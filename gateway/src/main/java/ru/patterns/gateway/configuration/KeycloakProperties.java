@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "keycloak")
 public class KeycloakProperties {
-
     private String issuerUri;
     private String jwkSetUri;
-
+    private String clientId;
+    private String clientSecret;
+    private String authorizationGrantType;
+    private String redirectUri;
+    private String scope;
 }

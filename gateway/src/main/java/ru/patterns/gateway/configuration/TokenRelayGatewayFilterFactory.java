@@ -9,15 +9,20 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("customTokenRelayFactory")
 @Slf4j
-public class TokenRelayGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
+public class TokenRelayGatewayFilterFactory extends AbstractGatewayFilterFactory<TokenRelayGatewayFilterFactory.Config> {
+
     public TokenRelayGatewayFilterFactory() {
-        super(Object.class);
+        super(Config.class);
+        log.info("Custom TokenRelayGatewayFilterFactory initialized");
+    }
+
+    public static class Config {
     }
 
     @Override
-    public GatewayFilter apply(Object config) {
+    public GatewayFilter apply(Config config) {
         return (exchange, chain) -> ReactiveSecurityContextHolder.getContext()
                 .filter(c -> c.getAuthentication() != null)
                 .map(SecurityContext::getAuthentication)
@@ -26,14 +31,16 @@ public class TokenRelayGatewayFilterFactory extends AbstractGatewayFilterFactory
                 .cast(Jwt.class)
                 .map(jwt -> {
                     String token = jwt.getTokenValue();
-
-                    exchange.getRequest().mutate()
-                            .header("Authorization", "Bearer " + token)
+                    log.debug("Relaying token to downstream service");
+                    return exchange.mutate()
+                            .request(r -> r.header("Authorization", "Bearer " + token))
                             .build();
-
-                    return exchange;
                 })
                 .defaultIfEmpty(exchange)
                 .flatMap(chain::filter);
+    }
+
+    public GatewayFilter apply() {
+        return apply(new Config());
     }
 }

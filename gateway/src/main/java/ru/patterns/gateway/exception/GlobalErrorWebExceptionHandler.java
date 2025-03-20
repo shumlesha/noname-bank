@@ -1,7 +1,9 @@
 package ru.patterns.gateway.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.NotFoundException;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
@@ -18,37 +20,40 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Component
 @Order(-2)
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler {
-
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, @NonNull Throwable ex) {
         ServerHttpResponse response = exchange.getResponse();
-
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
         HttpStatus status;
         String errorMessage;
 
         if (ex instanceof ResponseStatusException statusException) {
-            status = (HttpStatus) statusException.getStatusCode();
-            errorMessage = ex.getMessage();
-        } else if (ex instanceof NotFoundException) {
+            status = HttpStatus.valueOf(statusException.getStatusCode().value());
+            errorMessage = statusException.getReason();
+        } else if (ex instanceof NoSuchElementException) {
             status = HttpStatus.NOT_FOUND;
             errorMessage = "Requested resource not found";
+        } else if (ex instanceof IllegalArgumentException) {
+            status = HttpStatus.BAD_REQUEST;
+            errorMessage = ex.getMessage();
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             errorMessage = "Internal server error";
+            log.error("Unhandled exception in gateway", ex);
         }
 
         response.setStatusCode(status);
-
-        log.error("Gateway error: {}", ex.getMessage(), ex);
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now().format(FORMATTER));
@@ -60,21 +65,10 @@ public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler 
         return response.writeWith(Mono.fromSupplier(() -> {
             DataBufferFactory bufferFactory = response.bufferFactory();
             try {
-                StringBuilder json = new StringBuilder("{");
-                errorResponse.forEach((key, value) ->
-                        json.append("\"")
-                                .append(key)
-                                .append("\":\"")
-                                .append(value)
-                                .append("\",")
-                );
-
-                String finalJson = json.substring(0, json.length() - 1) + "}";
-
-                return bufferFactory.wrap(finalJson.getBytes(StandardCharsets.UTF_8));
+                return bufferFactory.wrap(objectMapper.writeValueAsBytes(errorResponse));
             } catch (Exception e) {
                 log.error("Error writing response", e);
-                return bufferFactory.wrap("".getBytes());
+                return bufferFactory.wrap("".getBytes(StandardCharsets.UTF_8));
             }
         }));
     }
