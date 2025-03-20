@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.patterns.credit.application.command.AutoPaymentCommand;
+import ru.patterns.credit.application.command.DecreaseCreditRatingCommand;
+import ru.patterns.credit.application.command.IncreaseCreditRatingCommand;
 import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
@@ -23,6 +25,7 @@ import java.util.UUID;
 public class AutoPaymentCommandHandler {
     private static final int RETRY_DELAY_DAYS = 1;
     private final CreditPaymentService creditPaymentService;
+    private final CreditRatingCommandHandler creditRatingCommandHandler;
     private final MissedPaymentService missedPaymentService;
     private final CreditRepository creditRepository;
 
@@ -38,12 +41,20 @@ public class AutoPaymentCommandHandler {
 
                         if ("success".equals(paymentResult.status())) {
                             log.info("Автоплатеж для кредита {} успешно выполнен", credit.getId());
+                            creditRatingCommandHandler.handle(
+                                    new IncreaseCreditRatingCommand(
+                                            credit.getClientId(),
+                                            amount,
+                                            credit.getAmount()
+                                    )
+                            );
                         } else {
                             handleFailedPayment(credit);
                             missedPaymentService.create(
                                     credit,
                                     new MissedPaymentCreateRequest(paymentResult.debt(), amount)
                             );
+                            creditRatingCommandHandler.handle(new DecreaseCreditRatingCommand(credit.getClientId()));
                         }
                     }
                 });
