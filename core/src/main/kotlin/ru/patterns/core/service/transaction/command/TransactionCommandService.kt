@@ -74,7 +74,7 @@ class TransactionCommandServiceImpl(
     override fun create(createTransactionCommand: CreateTransactionCommand): Mono<CreateTransactionResult> =
         if (createTransactionCommand.accountTo == createTransactionCommand.accountFrom) {
             CreateTransactionResult.Error.SameAccount.toMono()
-        } else if (createTransactionCommand.amount.value == BigDecimal.ZERO) {
+        } else if (createTransactionCommand.amount.value.compareTo(BigDecimal.ZERO) == 0) {
             CreateTransactionResult.Error.ZeroAmountTransaction.toMono()
         } else {
             accountRepository.findById(createTransactionCommand.accountFrom)
@@ -119,56 +119,56 @@ class TransactionCommandServiceImpl(
         }
 
 
-    private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> {
+    private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> =
         if (isAccountClosedOrBlocked(account)) {
-            return CreditPaymentResult.Error.AccountClosedOrBlocked(account.id.value).toMono()
-        }
+            CreditPaymentResult.Error.AccountClosedOrBlocked(account.id.value).toMono()
+        } else {
+            Mono.fromCallable {
+                val currentAccountBalance = account.balance.value
 
-        return Mono.fromCallable {
-            val currentAccountBalance = account.balance.value
-
-            if (currentAccountBalance < paymentAmount) {
-                // Если средств недостаточно, обновляем баланс до нуля и вычисляем долг
-                val updatedAccount = updateAccountBalance(account, BigDecimal.ZERO)
-                updatedAccount to (paymentAmount - currentAccountBalance)
-            } else {
-                // Если средств достаточно, списываем деньги и долг равен нулю
-                val updatedAccount = writeOffMoney(account, paymentAmount)
-                updatedAccount to BigDecimal.ZERO
+                if (currentAccountBalance < paymentAmount) {
+                    // Если средств недостаточно, обновляем баланс до нуля и вычисляем долг
+                    val updatedAccount = updateAccountBalance(account, BigDecimal.ZERO)
+                    updatedAccount to (paymentAmount - currentAccountBalance)
+                } else {
+                    // Если средств достаточно, списываем деньги и долг равен нулю
+                    val updatedAccount = writeOffMoney(account, paymentAmount)
+                    updatedAccount to BigDecimal.ZERO
+                }
             }
-        }
-            .flatMap { (account, debt) ->
-                accountRepository.save(account)
-                    .flatMap { saveResult ->
-                        when (saveResult) {
-                            is AccountRepository.SaveAccountResult.Success -> {
-                                findMasterAndCreateCreditTransaction(saveResult.account, paymentAmount, debt)
-                                    .doOnSuccess { result ->
-                                        if (result is CreditPaymentResult.Success) {
-                                            kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
+                .flatMap { (account, debt) ->
+                    accountRepository.save(account)
+                        .flatMap { saveResult ->
+                            when (saveResult) {
+                                is AccountRepository.SaveAccountResult.Success -> {
+                                    findMasterAndCreateCreditTransaction(saveResult.account, paymentAmount, debt)
+                                        .doOnSuccess { result ->
+                                            if (result is CreditPaymentResult.Success) {
+                                                kafkaEventSender.sendEventToKafkaAsync(saveResult.account)
+                                            }
                                         }
-                                    }
-                            }
+                                }
 
-                            is AccountRepository.SaveAccountResult.Error -> {
-                                CreditPaymentResult.Error.Unexpected(saveResult.cause).toMono()
+                                is AccountRepository.SaveAccountResult.Error -> {
+                                    CreditPaymentResult.Error.Unexpected(saveResult.cause).toMono()
+                                }
                             }
                         }
-                    }
-            }
-    }
+                }
+        }
+
 
     private fun findMasterAndCreateCreditTransaction(
         account: Account,
         amount: BigDecimal,
         debt: BigDecimal
     ): Mono<CreditPaymentResult> {
-        val paymentAmount = if (debt != BigDecimal.ZERO)
-            amount - debt
+        val paymentAmount = if (debt.compareTo(BigDecimal.ZERO) == 0)
+            debt
         else
-            amount
+            amount - debt
 
-        if (paymentAmount == BigDecimal.ZERO) {
+        if (paymentAmount.compareTo(BigDecimal.ZERO) == 0) {
             return CreditPaymentResult.Error.ZeroBalance.toMono()
         }
 
