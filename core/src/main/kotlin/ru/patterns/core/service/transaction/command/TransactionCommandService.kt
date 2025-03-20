@@ -164,7 +164,7 @@ class TransactionCommandServiceImpl(
         debt: BigDecimal
     ): Mono<CreditPaymentResult> {
         val paymentAmount = if (debt.compareTo(BigDecimal.ZERO) == 0)
-            debt
+            amount
         else
             amount - debt
 
