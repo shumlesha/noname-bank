@@ -10,12 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
+import ru.patterns.credit.infrastructure.handler.command.CreditRatingCommandHandler;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditPayEventPublisher;
 import ru.patterns.credit.shared.dto.PaymentResult;
 import ru.patterns.credit.shared.exception.InsufficientFundsException;
 import ru.patterns.credit.shared.exception.InternalServerException;
 import ru.patterns.credit.shared.exception.PaymentProcessingException;
 import ru.patterns.credit.shared.request.credit.pay.PayCreditRequest;
+import ru.patterns.credit.shared.response.credit.pay.PayCreditErrorResponse;
 import ru.patterns.credit.shared.response.credit.pay.PayCreditResponse;
 import ru.patterns.credit.shared.response.credit.pay.PayCreditResponseRaw;
 
@@ -29,6 +31,7 @@ import java.time.LocalDate;
 @Slf4j
 public class CreditPaymentService {
     private static final int NEXT_PAYMENT_DELAY_DAYS = 1;
+
     private final CreditRepository creditRepository;
     private final CreditPayEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
@@ -42,8 +45,6 @@ public class CreditPaymentService {
             return handlePaymentResponse(response, credit, amount);
         } catch (InsufficientFundsException e) {
             return handlePaymentError("Недостаточно средств для оплаты кредита", credit, amount, e);
-        } catch (PaymentProcessingException e) {
-            return handlePaymentError("Ошибка при оплате", credit, amount, e);
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
         } catch (Exception e) {
@@ -60,19 +61,25 @@ public class CreditPaymentService {
             throw new PaymentProcessingException("Ответ с подтверждением оплаты не получен");
         }
 
-        String responseString = new String(response.getBody(), StandardCharsets.UTF_8);
+        var responseString = new String(response.getBody(), StandardCharsets.UTF_8);
         log.info("Ответ от оплаты для кредита {}: {}", credit.getId(), responseString);
 
         var payCreditResponse = objectMapper.readValue(response.getBody(), PayCreditResponseRaw.class);
 
         if (payCreditResponse instanceof PayCreditResponse creditResponse) {
             return processResponseBasedOnDebt(creditResponse, credit, amount);
-        } else {
+        } else if (payCreditResponse instanceof PayCreditErrorResponse creditErrorResponse) {
+            throw new InsufficientFundsException(creditErrorResponse.message());
+        } else  {
             throw new PaymentProcessingException("Некорректный формат ответа платежа");
         }
     }
 
-    private PaymentResult processResponseBasedOnDebt(PayCreditResponse creditResponse, Credit credit, BigDecimal amount) {
+    private PaymentResult processResponseBasedOnDebt(
+            PayCreditResponse creditResponse,
+            Credit credit,
+            BigDecimal amount
+    ) {
         if (creditResponse.debt().compareTo(BigDecimal.ZERO) == 0) {
             processSuccessfulPayment(credit, amount);
             return new PaymentResult("success", creditResponse.debt());

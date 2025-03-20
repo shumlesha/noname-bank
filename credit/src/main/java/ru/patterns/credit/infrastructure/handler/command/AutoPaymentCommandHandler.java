@@ -10,8 +10,6 @@ import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.service.CreditPaymentService;
 import ru.patterns.credit.infrastructure.service.MissedPaymentService;
-import ru.patterns.credit.shared.exception.InsufficientFundsException;
-import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 import ru.patterns.credit.shared.request.credit.pay.MissedPaymentCreateRequest;
 
 import java.math.BigDecimal;
