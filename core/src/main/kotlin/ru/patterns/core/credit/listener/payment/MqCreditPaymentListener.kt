@@ -53,6 +53,9 @@ class MqCreditPaymentListener(
                         is TransactionCommandService.CreditPaymentResult.Error.AccountClosedOrBlocked ->
                             CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} закрыт или заблокирован")
 
+                        is TransactionCommandService.CreditPaymentResult.Error.ZeroPayment ->
+                            CreditPaymentErrorMessage("Минимальная сумма оплаты кредита равна 1 рублю")
+
                         is TransactionCommandService.CreditPaymentResult.Error ->
                             CreditPaymentErrorMessage("Во время списания произошла ошибка")
                     }

@@ -34,6 +34,7 @@ sealed interface TransactionCommandService {
         sealed interface Error : CreditPaymentResult {
             data class AccountNotFound(val accountId: UUID) : Error
             data object ZeroBalance : Error
+            data object ZeroPayment : Error
             data class AccountClosedOrBlocked(val accountId: UUID) : Error
             data class Unexpected(val cause: Throwable) : Error
         }
@@ -96,21 +97,27 @@ class TransactionCommandServiceImpl(
 
     @Transactional
     override fun payCredit(creditPaymentTransactionCommand: CreditPaymentTransactionCommand): Mono<CreditPaymentResult> =
-        accountRepository.findById(AccountId(creditPaymentTransactionCommand.accountId))
-            .flatMap { findResult ->
-                when (findResult) {
-                    is AccountRepository.FindAccountResult.Success -> payCredit(
-                        account = findResult.account,
-                        paymentAmount = creditPaymentTransactionCommand.amount
-                    )
+        if (creditPaymentTransactionCommand.amount <= BigDecimal.ZERO) {
+            CreditPaymentResult.Error.ZeroPayment.toMono()
+        } else {
+            accountRepository.findById(AccountId(creditPaymentTransactionCommand.accountId))
+                .flatMap { findResult ->
+                    when (findResult) {
+                        is AccountRepository.FindAccountResult.Success -> payCredit(
+                            account = findResult.account,
+                            paymentAmount = creditPaymentTransactionCommand.amount
+                        )
 
-                    is AccountRepository.FindAccountResult.Error.AccountNotFound ->
-                        CreditPaymentResult.Error.AccountNotFound(creditPaymentTransactionCommand.accountId).toMono()
+                        is AccountRepository.FindAccountResult.Error.AccountNotFound ->
+                            CreditPaymentResult.Error.AccountNotFound(creditPaymentTransactionCommand.accountId)
+                                .toMono()
 
-                    is AccountRepository.FindAccountResult.Error.Unexpected ->
-                        CreditPaymentResult.Error.Unexpected(findResult.cause).toMono()
+                        is AccountRepository.FindAccountResult.Error.Unexpected ->
+                            CreditPaymentResult.Error.Unexpected(findResult.cause).toMono()
+                    }
                 }
-            }
+        }
+
 
     private fun payCredit(account: Account, paymentAmount: BigDecimal): Mono<CreditPaymentResult> {
         if (isAccountClosedOrBlocked(account)) {
