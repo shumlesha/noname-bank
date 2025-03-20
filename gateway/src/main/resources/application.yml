@@ -1,73 +1,27 @@
 spring:
   application:
     name: api-gateway
+  config:
+    import: optional:file:gateway/.env[.properties]
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
-      routes:
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/api/auth/**
 
-        - id: credit-service
-          uri: lb://credit-service
-          predicates:
-            - Path=/api/credit/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.issuerUri}
+          jwk-set-uri: ${keycloak.jwkSetUri}
 
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
 
-        - id: core-query
-          uri: lb://core-query
-          predicates:
-            - Path=/api/query/account/**, /api/query/transaction/**
+keycloak:
+  issuerUri: http://46.29.239.208:8089/realms/app-realm
+  jwkSetUri: http://46.29.239.208:8089/realms/app-realm/protocol/openid-connect/certs
 
-        - id: core
-          uri: lb://core
-          predicates:
-            - Path=/api/account/**, /api/transaction/**
-
-        - id: atm
-          uri: lb://atm
-          predicates:
-            - Path=/api/atm/**
-
-        - id: client-root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/client, /client/
-          filters:
-            - RedirectTo=302, /client/login
-
-        - id: client-interface
-          uri: lb://client-interface
-          predicates:
-            - Path=/client/**
-
-        - id: employee-root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/employee, /employee/
-          filters:
-            - RedirectTo=302, /employee/login
-
-        - id: employee-interface
-          uri: lb://employee-interface
-          predicates:
-            - Path=/employee/**
-
-        - id: root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/
-          filters:
-            - RedirectTo=302, /client/login
 eureka:
   client:
     registry-fetch-interval-seconds: 3
