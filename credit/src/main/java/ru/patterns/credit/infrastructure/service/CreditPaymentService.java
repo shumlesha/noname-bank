@@ -44,7 +44,7 @@ public class CreditPaymentService {
             var response = eventPublisher.publishPaymentRequest(payCreditRequest);
             return handlePaymentResponse(response, credit, amount);
         } catch (InsufficientFundsException e) {
-            return handlePaymentError("Недостаточно средств для оплаты кредита", credit, amount, e);
+            throw new PaymentProcessingException("На счету недостаточно средств");
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Ошибка обработки ответа платежа", e);
         } catch (Exception e) {
