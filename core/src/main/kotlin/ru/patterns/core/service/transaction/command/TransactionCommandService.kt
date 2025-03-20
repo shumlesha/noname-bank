@@ -286,13 +286,16 @@ class TransactionCommandServiceImpl(
                                     val updatedAccountTo =
                                         writeOnMoney(moneyTransfer.accountTo, convertResult.response.convertedAmount)
 
-                                    accrueTaxToMasterAsync(tax)
-
                                     saveUpdatedAccountAndCreateTransaction(
                                         updatedAccountFrom = updatedAccountFrom,
                                         updatedAccountTo = updatedAccountTo,
                                         moneyTransfer = moneyTransfer
                                     )
+                                        .doOnSuccess { result ->
+                                            if (result is CreateTransactionResult.Success) {
+                                                accrueTaxToMasterAsync(tax)
+                                            }
+                                        }
                                 }
 
                                 is CurrencyService.ConvertCurrencyResult.Error.BankUnavailable -> {
