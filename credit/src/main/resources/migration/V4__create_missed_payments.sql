@@ -1,5 +1,5 @@
 CREATE TABLE missed_payments (
-       id UUID PRIMARY KEY DEFAULT,
+       id UUID PRIMARY KEY,
        credit_id UUID NOT NULL,
        missed_date DATE NOT NULL,
        debt NUMERIC(19, 2) NOT NULL,
