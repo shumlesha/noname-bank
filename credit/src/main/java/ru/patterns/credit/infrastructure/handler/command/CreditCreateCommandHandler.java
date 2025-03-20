@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.application.command.CreateCreditCommand;
+import ru.patterns.credit.application.command.CreateCreditRatingCommand;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.handler.command.serialization.CreditFactory;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditCreateEventPublisher;
@@ -14,6 +15,7 @@ import ru.patterns.credit.shared.exception.InternalServerException;
 import ru.patterns.credit.shared.response.credit.create.CreateCreditAccountResponseRaw;
 import ru.patterns.credit.shared.request.credit.create.CreateCreditAccountRequest;
 import ru.patterns.credit.shared.response.credit.create.CreateCreditAccountResponse;
+import ru.patterns.credit.shared.response.credit.create.CreateCreditErrorResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class CreditCreateCommandHandler {
+    private final CreditRatingCommandHandler creditRatingCommandHandler;
     private final CreditRepository creditRepository;
     private final CreditCreateEventPublisher eventPublisher;
     private final CreditFactory creditFactory;
@@ -37,7 +40,10 @@ public class CreditCreateCommandHandler {
             if (accountData instanceof CreateCreditAccountResponse responseMessage){
                 var credit = creditFactory.createCredit(command, responseMessage.account());
                 creditRepository.save(credit);
+                creditRatingCommandHandler.handle(new CreateCreditRatingCommand(command.clientId()));
                 return credit.getId();
+            } else if (accountData instanceof CreateCreditErrorResponse response){
+                throw new CreditProcessingException(response.message());
             } else {
                 throw new CreditProcessingException("Ошибка при создании кредита");
             }
@@ -53,7 +59,7 @@ public class CreditCreateCommandHandler {
 
         var responseBody = new String(eventResponse.getBody(), StandardCharsets.UTF_8);
         var account = objectMapper.readValue(eventResponse.getBody(), CreateCreditAccountResponseRaw.class);
-        log.info("Получен аккаунт {}", responseBody);
+        log.info("Получен кредитный счет {}", responseBody);
 
         return account;
     }

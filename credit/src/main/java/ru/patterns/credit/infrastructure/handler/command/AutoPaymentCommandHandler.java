@@ -42,7 +42,10 @@ public class AutoPaymentCommandHandler {
                             log.info("Автоплатеж для кредита {} успешно выполнен", credit.getId());
                         } else {
                             handleFailedPayment(credit);
-                            missedPaymentService.create(credit, new MissedPaymentCreateRequest(paymentResult.debt(), amount));
+                            missedPaymentService.create(
+                                    credit,
+                                    new MissedPaymentCreateRequest(paymentResult.debt(), amount)
+                            );
                         }
                     }
                 });
