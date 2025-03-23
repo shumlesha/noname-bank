@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -31,9 +32,8 @@ import java.util.stream.Stream;
 @EnableReactiveMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final KeycloakProperties keycloakProperties;
-
     private static final String[] PUBLIC_ROUTES = {
+            "/",
             "/api/auth/**",
             "/client/login", "/client/logout", "/client/callback",
             "/employee/login", "/employee/logout", "/employee/callback",
@@ -42,6 +42,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+
+
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
@@ -49,6 +51,7 @@ public class SecurityConfig {
                         .pathMatchers(PUBLIC_ROUTES).permitAll()
                         .anyExchange().authenticated()
                 )
+                .oauth2Login(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor())))
                 .exceptionHandling(exceptionHandling -> exceptionHandling

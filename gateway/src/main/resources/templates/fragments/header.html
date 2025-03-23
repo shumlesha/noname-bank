@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title ?: 'Банковская система'}">Банковская система</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="${cssUrl}" th:if="${cssUrl != null}">
+</head>
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">Банковская система</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/home}" th:classappend="${page == 'home'} ? 'active' : ''">
+                            Главная
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex" th:if="${userInfo != null}">
+                        <span class="navbar-text me-3">
+                            <span th:text="${userInfo.fullName}">Имя пользователя</span>
+                        </span>
+                    <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">Выйти</a>
+                </div>
+                <div class="d-flex" th:unless="${userInfo != null}">
+                    <a class="btn btn-outline-light btn-sm" th:href="@{/login}">Войти</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

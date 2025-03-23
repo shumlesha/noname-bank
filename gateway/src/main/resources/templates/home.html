@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(title='Домашняя страница')}">
+    <title>Домашняя страница</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragments/header :: header(page='home')}"></div>
+
+<main class="flex-grow-1">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">Личный кабинет</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Добро пожаловать, <span th:text="${userInfo.fullName}">">Пользователь</span>!</h4>
+                        <p>Выберите нужный интерфейс в соответствии с вашими ролями:</p>
+
+                        <div class="alert alert-info" th:if="${hasClientRole == false && hasEmployeeRole == false}">
+                            У вас нет ни одной из необходимых ролей для доступа к интерфейсам. Обратитесь к администратору.
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-4" th:if="${hasEmployeeRole}">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="card-title mb-0">Интерфейс сотрудника</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Доступ к управлению клиентами, счетами и транзакциями. Работа с внутренней банковской системой.</p>
+                                    </div>
+                                    <div class="card-footer bg-light">
+                                        <a href="/employee-interface" class="btn btn-success w-100">Перейти к интерфейсу сотрудника</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4" th:if="${hasClientRole}">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="card-title mb-0">Интерфейс клиента</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Доступ к просмотру ваших счетов, истории транзакций, возможность совершать переводы и платежи.</p>
+                                    </div>
+                                    <div class="card-footer bg-light">
+                                        <a href="/client-interface" class="btn btn-primary w-100">Перейти к интерфейсу клиента</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="card-title mb-0">Информация о пользователе</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Email:</strong> <span th:text="${userInfo.email}">email@example.com</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>ID пользователя:</strong> <span th:text="${userInfo.id}">id</span></p>
+                                <p><strong>Роли:</strong> <span th:text="${#strings.listJoin(userInfo.roles, ', ')}">roles</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

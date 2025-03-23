@@ -1,4 +1,4 @@
-package ru.patterns.gateway.configuration;
+package ru.patterns.gateway.configuration.gateway;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -48,9 +48,9 @@ public class GatewayConfiguration {
                 .route("employee-interface", r -> r.path("/employee/**")
                         .filters(f -> f.filter(customTokenRelayFactory.apply()))
                         .uri("lb://employee-interface"))
-                .route("root-redirect", r -> r.path("/")
-                        .filters(f -> f.redirect(302, "/client/login"))
-                        .uri("lb://client-interface"))
+//                .route("root-redirect", r -> r.path("/")
+//                        .filters(f -> f.redirect(302, "/client/login"))
+//                        .uri("lb://client-interface"))
                 .build();
     }
 }
