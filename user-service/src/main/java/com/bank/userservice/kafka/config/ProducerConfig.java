@@ -13,6 +13,7 @@ import java.util.Map;
 import static org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.INTERCEPTOR_CLASSES_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
@@ -31,6 +32,8 @@ public class ProducerConfig {
         props.put(ACKS_CONFIG, "all");
         props.put(ENABLE_IDEMPOTENCE_CONFIG, true);
         props.put(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+        props.put(INTERCEPTOR_CLASSES_CONFIG,
+                "com.bank.userservice.kafka.config.CustomProducerInterceptor");
 
         return new DefaultKafkaProducerFactory<>(props);
     }
