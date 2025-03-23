@@ -4,16 +4,17 @@ import { logout as authLogout } from '../auth.js';
 
 const apiService = {
     fetch: async (url, options = {}) => {
-        const tokenData = storageService.getTokens();
+        // const tokenData = storageService.getTokens();
         const defaultOptions = {
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             }
         };
 
-        if (tokenData && tokenData.accessToken && !options.skipAuth) {
-            defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
-        }
+        // if (tokenData && tokenData.accessToken && !options.skipAuth) {
+        //     defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
+        // }
 
         const fetchOptions = {
             ...defaultOptions,
@@ -43,8 +44,9 @@ const apiService = {
                 
 
                 if (response.status === 401 && !options.skipAuth) {
-                    console.log('Токен просрочен или недействителен. Выполняется автоматический выход...');
-                    authLogout();
+                    console.log('Сессия невалидна/истекла. Выполняется автоматический выход...');
+                    //window.location.href = 'http://localhost:8080/';
+                    console.log(response);
                     return;
                 }
                 
@@ -58,49 +60,49 @@ const apiService = {
         }
     },
 
-    register: async (userData) => {
-        const options = {
-            method: 'POST',
-            body: JSON.stringify({
-                email: userData.email,
-                fullName: userData.fullName,
-                gender: userData.gender,
-                roles: userData.roles,
-                password: userData.password
-            }),
-            skipAuth: true
-        };
+    // register: async (userData) => {
+    //     const options = {
+    //         method: 'POST',
+    //         body: JSON.stringify({
+    //             email: userData.email,
+    //             fullName: userData.fullName,
+    //             gender: userData.gender,
+    //             roles: userData.roles,
+    //             password: userData.password
+    //         }),
+    //         skipAuth: true
+    //     };
+    //
+    //     return apiService.fetch(API_CONFIG.ENDPOINTS.register, options);
+    // },
+    //
+    //
+    // login: async (credentials) => {
+    //     const options = {
+    //         method: 'POST',
+    //         body: JSON.stringify(credentials),
+    //         skipAuth: true
+    //     };
+    //
+    //     return apiService.fetch(API_CONFIG.ENDPOINTS.login, options);
+    // },
 
-        return apiService.fetch(API_CONFIG.ENDPOINTS.register, options);
-    },
 
-
-    login: async (credentials) => {
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-            skipAuth: true
-        };
-
-        return apiService.fetch(API_CONFIG.ENDPOINTS.login, options);
-    },
-
-
-    logout: async () => {
-        const tokenData = storageService.getTokens();
-        if (!tokenData || !tokenData.refreshToken) {
-            console.error('Отсутствует refresh token для выхода из системы');
-            return;
-        }
-        
-        const options = { 
-            method: 'POST',
-            body: JSON.stringify({
-                refreshToken: tokenData.refreshToken
-            })
-        };
-        return apiService.fetch(API_CONFIG.ENDPOINTS.logout, options);
-    },
+    // logout: async () => {
+    //     const tokenData = storageService.getTokens();
+    //     if (!tokenData || !tokenData.refreshToken) {
+    //         console.error('Отсутствует refresh token для выхода из системы');
+    //         return;
+    //     }
+    //
+    //     const options = {
+    //         method: 'POST',
+    //         body: JSON.stringify({
+    //             refreshToken: tokenData.refreshToken
+    //         })
+    //     };
+    //     return apiService.fetch(API_CONFIG.ENDPOINTS.logout, options);
+    // },
 
 
     getUserMe: async () => {

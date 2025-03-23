@@ -3,6 +3,7 @@ package com.bank.userservice.security;
 import com.bank.userservice.enumeration.Gender;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import java.security.Principal;
@@ -38,7 +39,8 @@ public class CurrentUser implements Principal, OAuth2AuthenticatedPrincipal {
     }
 
     public boolean isBanned() {
-        return !((boolean) attributes.get("user_enabled"));
+        String enabled = String.valueOf(attributes.get("user_enabled"));
+        return !Boolean.parseBoolean(enabled);
     }
 
     public List<String> getRoles() {

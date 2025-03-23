@@ -18,7 +18,7 @@ public interface KeycloakMapper {
     @Mapping(target = "roles", expression = "java(getRoles(userRepresentation))")
     @Mapping(target = "gender", expression = "java(getGender(attributes))")
     @Mapping(target = "fullName", expression = "java(getName(attributes))")
-    @Mapping(target = "banned", source = "userRepresentation.enabled")
+    @Mapping(target = "banned", expression = "java(!userRepresentation.isEnabled())")
     @Mapping(target = "id", source = "userRepresentation.id")
     @Mapping(target = "email", source = "userRepresentation.email")
     UserDto toDto(UserRepresentation userRepresentation, Map<String, List<String>> attributes);

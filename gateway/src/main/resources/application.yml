@@ -17,6 +17,16 @@ spring:
           issuer-uri: ${keycloak.issuerUri}
           jwk-set-uri: ${keycloak.jwkSetUri}
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USER}
+      password: ${REDIS_PASSWORD}
+
+
+
+
   main:
     allow-bean-definition-overriding: true
     web-application-type: reactive
@@ -28,7 +38,7 @@ keycloak:
   client-secret: ${KEYCLOAK_CLIENT_SECRET}
   authorization-grant-type: authorization_code
   redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-  scope: openid,profile,email,roles
+  scope: openid,profile,email,roles,offline_access
   admin:
     realm: ${KEYCLOAK_ADMIN_REALM}
     username: ${KEYCLOAK_ADMIN_USERNAME}
