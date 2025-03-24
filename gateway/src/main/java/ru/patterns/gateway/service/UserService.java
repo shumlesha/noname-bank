@@ -6,10 +6,11 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +30,35 @@ public class UserService {
     }
 
     @SuppressWarnings("unchecked")
-    private Collection<String> extractRoles(OidcIdToken oidcIdToken) {
-        Collection<String> roles = oidcIdToken.getClaimAsStringList("roles");
-        return roles != null ? roles : Collections.emptySet();
+    private Set<String> extractRoles(OidcIdToken oidcIdToken) {
+        Set<String> allRoles = new HashSet<>();
+
+        extractRolesFromClaim(oidcIdToken, allRoles);
+
+        String clientId = Optional.ofNullable(oidcIdToken.getClaimAsString("azp"))
+                .orElse("app-client");
+
+        extractClientRoles(oidcIdToken, clientId, allRoles);
+
+        return allRoles.stream().filter(role -> role.equals(role.toUpperCase())).collect(Collectors.toSet());
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void extractRolesFromClaim(OidcIdToken token, Set<String> targetSet) {
+        Optional.ofNullable(token.getClaimAsMap("realm_access"))
+                .map(claim -> (Collection<String>) claim.get("roles"))
+                .ifPresent(targetSet::addAll);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void extractClientRoles(OidcIdToken token, String clientId, Set<String> targetSet) {
+        Optional.ofNullable(token.getClaimAsMap("resource_access"))
+                .map(resourceAccess -> resourceAccess.get(clientId))
+                .map(clientAccess -> (Map<String, Object>) clientAccess)
+                .map(clientAccess -> (Collection<String>) clientAccess.get("roles"))
+                .ifPresent(targetSet::addAll);
     }
 
     @Data
