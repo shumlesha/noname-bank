@@ -1,27 +1,24 @@
 import storageService from './services/storage-service.js';
 import apiService from './services/api-service.js';
-import {addCardField} from './utils/ui-utils.js';
-import {formatGenderValue} from './utils/format-utils.js';
+import { addCardField } from './utils/ui-utils.js';
+import { formatGenderValue } from './utils/format-utils.js';
+import API_CONFIG from "./config/api-config.js";
 
 
-export const checkAuth = () => {
-    const currentPath = window.location.pathname;
-    const isLoginPage = currentPath === '/employee/login';
-    const isRegisterPage = currentPath === '/employee/register';
-
-    if (!isLoginPage && !isRegisterPage) {
-        const tokenData = storageService.getTokens();
-        if (!tokenData) {
-            window.location.href = '/employee/login';
+export const checkAuth = async () => {
+    try {
+        const response = await apiService.getUserMe();
+        if (response.status === "OK") {
+            return true;
+        } else {
+            //window.location.href = 'http://localhost:8080/';
+            console.log('response.status:', response.status);
             return false;
         }
-        return true;
-    } else if (storageService.getTokens()) {
-        window.location.href = '/employee/me';
+    } catch (error) {
+        console.error('Error checking user me:', error);
         return false;
     }
-
-    return true;
 };
 
 

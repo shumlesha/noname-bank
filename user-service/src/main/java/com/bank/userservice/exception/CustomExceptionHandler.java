@@ -6,6 +6,8 @@ import com.bank.userservice.util.ErrorUtil;
 import com.bank.userservice.util.ResponseBuilder;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,6 +141,39 @@ public class CustomExceptionHandler {
         ErrorApiResponse errorApiResponse = ResponseBuilder.error(
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST
+        );
+
+        return ResponseEntity.status(errorApiResponse.getStatus()).body(errorApiResponse);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorApiResponse> handleNotFoundException(NotFoundException e) {
+        ErrorApiResponse errorApiResponse = ResponseBuilder.error(
+                e.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+
+        return ResponseEntity.status(errorApiResponse.getStatus()).body(errorApiResponse);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorApiResponse> handleBadRequestException(jakarta.ws.rs.BadRequestException e) {
+        ErrorApiResponse errorApiResponse = ResponseBuilder.error(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST
+        );
+
+        return ResponseEntity.status(errorApiResponse.getStatus()).body(errorApiResponse);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorApiResponse> handleForbiddenException(ForbiddenException e) {
+        ErrorApiResponse errorApiResponse = ResponseBuilder.error(
+                e.getMessage(),
+                HttpStatus.FORBIDDEN
         );
 
         return ResponseEntity.status(errorApiResponse.getStatus()).body(errorApiResponse);

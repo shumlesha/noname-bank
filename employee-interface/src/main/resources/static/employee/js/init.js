@@ -17,13 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     switch (currentPath) {
-        case '/employee/login':
-            initLoginPage();
-            break;
-
-        case '/employee/register':
-            initRegisterPage();
-            break;
+        // case '/employee/login':
+        //     initLoginPage();
+        //     break;
+        //
+        // case '/employee/register':
+        //     initRegisterPage();
+        //     break;
 
         case '/employee/me':
             initProfilePage();

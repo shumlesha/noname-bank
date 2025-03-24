@@ -52,7 +52,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(summary = "Get user details", description = "Get the details of the currently logged in user")
     public ResponseEntity<DefaultResponse<UserDto>> getMe(@AuthenticationPrincipal CurrentUser currentUser) {
-        UserDto user = userService.getUserById(currentUser.getId());
+        UserDto user = userService.convertAndGet(currentUser);
 
         return ResponseEntity.ok(
                 ResponseBuilder.success(

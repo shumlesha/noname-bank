@@ -1,73 +1,54 @@
 spring:
   application:
     name: api-gateway
+  config:
+    import: optional:file:gateway/.env[.properties]
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
-      routes:
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/api/auth/**
 
-        - id: credit-service
-          uri: lb://credit-service
-          predicates:
-            - Path=/api/credit/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.issuerUri}
+          jwk-set-uri: ${keycloak.jwkSetUri}
 
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USER}
+      password: ${REDIS_PASSWORD}
 
-        - id: core-query
-          uri: lb://core-query
-          predicates:
-            - Path=/api/query/account/**, /api/query/transaction/**
 
-        - id: core
-          uri: lb://core
-          predicates:
-            - Path=/api/account/**, /api/transaction/**
 
-        - id: atm
-          uri: lb://atm
-          predicates:
-            - Path=/api/atm/**
 
-        - id: client-root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/client, /client/
-          filters:
-            - RedirectTo=302, /client/login
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
 
-        - id: client-interface
-          uri: lb://client-interface
-          predicates:
-            - Path=/client/**
+keycloak:
+  issuerUri: ${ISSUER_URI}
+  jwkSetUri: ${JWK_SET_URI}
+  client-id: ${KEYCLOAK_CLIENT_ID}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  authorization-grant-type: authorization_code
+  redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+  scope: openid,profile,email,roles,offline_access
+  admin:
+    realm: ${KEYCLOAK_ADMIN_REALM}
+    username: ${KEYCLOAK_ADMIN_USERNAME}
+    password: ${KEYCLOAK_ADMIN_PASSWORD}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
+  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL}
+  realm: ${KEYCLOAK_REALM}
+  logout-redirect-uri: ${server.servlet.context-path:}/
 
-        - id: employee-root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/employee, /employee/
-          filters:
-            - RedirectTo=302, /employee/login
-
-        - id: employee-interface
-          uri: lb://employee-interface
-          predicates:
-            - Path=/employee/**
-
-        - id: root-redirect
-          uri: http://localhost:8080
-          predicates:
-            - Path=/
-          filters:
-            - RedirectTo=302, /client/login
 eureka:
   client:
     registry-fetch-interval-seconds: 3
@@ -75,3 +56,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        security.oauth2.client: DEBUG
+        security.oauth2.client.endpoint: TRACE
+        security.oauth2.core: DEBUG
+        web: DEBUG
