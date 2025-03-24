@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/client")
 public class ClientViewController {
-    @GetMapping("/login")
-    public String loginPage() {
-        return "login";
-    }
-
-    @GetMapping("/register")
-    public String registerPage() {
-        return "register";
-    }
+//    @GetMapping("/login")
+//    public String loginPage() {
+//        return "login";
+//    }
+//
+//    @GetMapping("/register")
+//    public String registerPage() {
+//        return "register";
+//    }
 
     @GetMapping("/home")
     public String homePage() {

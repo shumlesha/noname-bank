@@ -6,27 +6,20 @@ export class HttpClient {
         const tokenData = storageService.getTokens();
 
         const defaultOptions = {
-            headers: { 'Content-Type': 'application/json' }
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         };
 
-        if (tokenData?.accessToken && !skipAuth) {
-            defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
-        }
+        // if (tokenData?.accessToken && !skipAuth) {
+        //     defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
+        // }
 
         try {
             const response = await fetch(url, { ...defaultOptions, ...options });
             const text = await response.text();
             const data = text ? JSON.parse(text) : null;
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    console.log('Не авторизован. Редирект на страницу логина');
-                    storageService.removeTokens();
-                    storageService.removeUserData();
-                    window.location.href = config.routes.login;
-                }
-                throw new Error(data?.message || `Ошибка ${response.status}`);
-            }
 
             return data;
         } catch (error) {

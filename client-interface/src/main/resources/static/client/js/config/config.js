@@ -30,8 +30,8 @@ export const config = {
     },
 
     storage: {
-        tokens: 'auth_tokens_client',
-        userData: 'user_data_client'
+        tokens: 'auth_tokens',
+        userData: 'user_data'
     },
 
     routes: {

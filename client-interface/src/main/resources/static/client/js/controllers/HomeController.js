@@ -15,11 +15,7 @@ export class HomeController {
     }
     
     init() {
-        if (!authService.isAuthenticated()) {
-            window.location.href = config.routes.login;
-            return;
-        }
-        
+
         const userData = authService.getCurrentUser();
         
         this.displayUserData(userData);
@@ -45,7 +41,6 @@ export class HomeController {
         DomUtils.on('#logout-btn', 'click', async () => {
             try {
                 await authService.logout();
-                window.location.href = config.routes.login;
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
                 showError("Произошла ошибка при выходе из системы.");
@@ -98,11 +93,7 @@ export class HomeController {
     
     async createAccount() {
         const userData = authService.getCurrentUser();
-        if (!userData) {
-            showError("Ошибка: не удалось получить данные пользователя.");
-            return;
-        }
-        
+
         try {
             await accountService.createAccount(userData.userId);
             showSuccess("Счет успешно создан!");
@@ -117,10 +108,6 @@ export class HomeController {
     async loadAccounts() {
         console.log("Вызов загрузки счетов");
         const userData = authService.getCurrentUser();
-        if (!userData) {
-            showError("Ошибка: не удалось получить данные пользователя.");
-            return;
-        }
 
         try {
             const data = await accountService.loadAccounts(userData.userId);
@@ -211,11 +198,7 @@ export class HomeController {
     
     async loadAccountDetails(accountId) {
         const userData = authService.getCurrentUser();
-        if (!userData) {
-            showError("Ошибка: не удалось получить данные пользователя.");
-            return;
-        }
-        
+
         try {
             const data = await accountService.loadAccountDetails(userData.userId, accountId);
             
@@ -278,10 +261,6 @@ export class HomeController {
         }
         
         const userData = authService.getCurrentUser();
-        if (!userData) {
-            showError("Ошибка: не удалось получить данные пользователя.");
-            return;
-        }
         
         try {
             await accountService.closeAccount(userData.userId, accountId);

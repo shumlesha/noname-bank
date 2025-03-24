@@ -10,11 +10,6 @@ export class CreditController {
     }
     
     init() {
-        if (!authService.isAuthenticated()) {
-            window.location.href = config.routes.login;
-            return;
-        }
-        
         const userData = authService.getCurrentUser();
         
         this.displayUserData(userData);
@@ -35,7 +30,6 @@ export class CreditController {
         DomUtils.on('#logout-btn', 'click', async () => {
             try {
                 await authService.logout();
-                window.location.href = config.routes.login;
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
                 showError("Произошла ошибка при выходе из системы.");
