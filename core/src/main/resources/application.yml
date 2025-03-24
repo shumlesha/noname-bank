@@ -29,6 +29,9 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
 
 core:
+  kafka:
+    transaction-topic:
+      name: "TRANSACTION_PROCESSING"
   currency:
     api:
       valute:

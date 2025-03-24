@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import ru.patterns.core.atm.AtmService
-import ru.patterns.core.atm.EventProcessor
 import ru.patterns.core.atm.deposit.serialization.DepositRaw
 import ru.patterns.core.atm.deposit.serialization.Factory
+import ru.patterns.core.service.kafka.listener.EventProcessor
 
 @Component
 class DepositUpdateEventProcessor(

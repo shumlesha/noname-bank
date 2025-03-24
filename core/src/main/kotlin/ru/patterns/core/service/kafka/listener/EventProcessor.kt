@@ -1,4 +1,4 @@
-package ru.patterns.core.atm
+package ru.patterns.core.service.kafka.listener
 
 import reactor.core.publisher.Mono
 
@@ -8,6 +8,6 @@ interface EventProcessor<T> {
 
     sealed interface ProcessResult {
         data object Success : ProcessResult
-        data class Error(val cause: Throwable) : ProcessResult
+        data class Error(val cause: Throwable? = null) : ProcessResult
     }
 }

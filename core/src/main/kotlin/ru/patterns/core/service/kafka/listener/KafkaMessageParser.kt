@@ -1,7 +1,7 @@
-package ru.patterns.core.atm
+package ru.patterns.core.service.kafka.listener
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import ru.patterns.core.atm.MessageParser.ParseResult
+import ru.patterns.core.service.kafka.listener.MessageParser.ParseResult
 
 interface MessageParser<T> {
     fun parse(rawMessage: String): ParseResult<T>

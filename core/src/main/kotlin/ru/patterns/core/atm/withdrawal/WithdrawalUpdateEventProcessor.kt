@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import ru.patterns.core.atm.AtmService
-import ru.patterns.core.atm.EventProcessor
 import ru.patterns.core.atm.withdrawal.serialization.Factory
 import ru.patterns.core.atm.withdrawal.serialization.WithdrawalRaw
+import ru.patterns.core.service.kafka.listener.EventProcessor
 
 @Component
 class WithdrawalUpdateEventProcessor(

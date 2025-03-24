@@ -6,19 +6,19 @@ import org.springframework.context.event.EventListener
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.util.retry.Retry
 import ru.patterns.core.config.AtmProperties
+import ru.patterns.core.service.kafka.listener.RawMessageProcessor
 import java.time.Duration
 
-abstract class KafkaMessageListener<T>(
+abstract class AtmKafkaMessageListener<T>(
     private val kafkaReceiver: KafkaReceiver<String, String>,
     private val rawMessageProcessor: RawMessageProcessor<T>,
     atmProperties: AtmProperties
 ) {
-    private val kafkaProperties = atmProperties.kafka
     private val log = LoggerFactory.getLogger(this::class.java)
 
     private val backoff = Retry.backoff(
         Long.MAX_VALUE,
-        Duration.ofMillis(kafkaProperties.minBackoffDelayMs)
+        Duration.ofMillis(atmProperties.kafka.minBackoffDelayMs)
     )
         .doAfterRetry {
             log.warn("При подключении возникла ошибка, попытка переподключения: {}", it.totalRetries(), it.failure())

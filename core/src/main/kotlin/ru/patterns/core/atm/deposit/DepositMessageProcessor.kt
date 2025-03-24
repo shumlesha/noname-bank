@@ -1,9 +1,9 @@
 package ru.patterns.core.atm.deposit
 
 import org.springframework.stereotype.Component
-import ru.patterns.core.atm.EventProcessor
-import ru.patterns.core.atm.RawMessageProcessor
 import ru.patterns.core.atm.deposit.serialization.DepositRaw
+import ru.patterns.core.service.kafka.listener.EventProcessor
+import ru.patterns.core.service.kafka.listener.RawMessageProcessor
 
 @Component
 class DepositMessageProcessor(

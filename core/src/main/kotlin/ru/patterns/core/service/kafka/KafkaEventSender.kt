@@ -3,8 +3,11 @@ package ru.patterns.core.service.kafka
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
 import reactor.kafka.sender.KafkaSender
+import reactor.kafka.sender.SenderResult
 import reactor.kotlin.core.publisher.toMono
+import ru.patterns.core.controller.transaction.serialization.CreateTransactionCommandRaw
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.Transaction
@@ -28,6 +31,21 @@ class KafkaEventSender(
 
         kafkaSender.send(senderRecord).subscribe()
     }
+
+    fun sendEventToKafka(command: CreateTransactionCommandRaw): Flux<SenderResult<String>> {
+        val senderRecord = SenderRecord(command).toMono()
+
+        return kafkaSender.send(senderRecord)
+    }
+
+    private fun SenderRecord(value: CreateTransactionCommandRaw) =
+        reactor.kafka.sender.SenderRecord.create<String?, String, String?>(
+            ProducerRecord(
+                "TRANSACTION_PROCESSING",
+                objectMapper.writeValueAsString(value)
+            ),
+            null
+        )
 
     private fun SenderRecord(value: Account) =
         reactor.kafka.sender.SenderRecord.create<String?, String, String?>(

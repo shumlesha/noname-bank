@@ -1,9 +1,9 @@
 package ru.patterns.core.atm.withdrawal
 
 import org.springframework.stereotype.Component
-import ru.patterns.core.atm.EventProcessor
-import ru.patterns.core.atm.RawMessageProcessor
 import ru.patterns.core.atm.withdrawal.serialization.WithdrawalRaw
+import ru.patterns.core.service.kafka.listener.EventProcessor
+import ru.patterns.core.service.kafka.listener.RawMessageProcessor
 
 @Component
 class WithdrawalMessageProcessor(

@@ -1,4 +1,4 @@
-package ru.patterns.core.atm
+package ru.patterns.core.service.kafka.listener
 
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
@@ -18,7 +18,6 @@ abstract class RawMessageProcessor<T>(
                 when (parserResult) {
                     is MessageParser.ParseResult.Success -> {
                         eventProcessor.process(parserResult.data)
-                            .doOnSuccess { log.info("Результат обработки события: {}", it) }
                     }
 
                     is MessageParser.ParseResult.Error -> {
