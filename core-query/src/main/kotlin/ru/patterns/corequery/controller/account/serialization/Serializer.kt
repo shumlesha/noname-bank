@@ -60,7 +60,8 @@ object Serializer {
             clientId = account.clientId.value,
             number = account.number.value,
             balance = account.balance.value,
-            isCredit = account.isCredit
+            isCredit = account.isCredit,
+            currency = account.currency
         )
 
     private fun FindAllAccountsResponse(accounts: List<Account>) =

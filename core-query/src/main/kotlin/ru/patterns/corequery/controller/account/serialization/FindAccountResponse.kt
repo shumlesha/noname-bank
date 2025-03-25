@@ -14,5 +14,6 @@ class FindAccountResponse(
     val clientId: UUID,
     val number: String,
     val balance: BigDecimal,
-    val isCredit: Boolean
+    val isCredit: Boolean,
+    val currency: String
 ) : AccountResponse

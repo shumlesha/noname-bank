@@ -34,6 +34,11 @@ public class GatewayConfiguration {
                                 .filter(customTokenRelayFactory.apply())
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://atm"))
+                .route("credit-service", r -> r.path("/api/credit/**")
+                        .filters(f -> f
+                                .filter(customTokenRelayFactory.apply())
+                                .addRequestHeader("X-Service", "gateway"))
+                        .uri("lb://credit-service"))
                 .route("client-root-redirect", r -> r.path("/client", "/client/")
                         .filters(f -> f.setPath("/client/home"))
                         .uri("lb://client-interface"))
