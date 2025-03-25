@@ -8,11 +8,14 @@ export const renderClientSummary = (accounts, credits, container) => {
 
     const totalAccounts = accounts ? accounts.length : 0;
     let totalBalance = 0;
-    
+
     if (accounts && accounts.length > 0) {
         accounts.forEach(account => {
             if (account.balance) {
-                totalBalance += parseFloat(account.balance);
+                const balance = Number(account.balance);
+                if (!isNaN(balance)) {
+                    totalBalance += balance;
+                }
             }
         });
     }
@@ -21,14 +24,20 @@ export const renderClientSummary = (accounts, credits, container) => {
     let totalCreditAmount = 0;
     let totalPaidAmount = 0;
     let activeCredits = 0;
-    
+
     if (credits && credits.length > 0) {
         credits.forEach(credit => {
             if (credit.amount) {
-                totalCreditAmount += parseFloat(credit.amount);
+                const amount = Number(credit.amount);
+                if (!isNaN(amount)) {
+                    totalCreditAmount += amount;
+                }
             }
             if (credit.paidAmount) {
-                totalPaidAmount += parseFloat(credit.paidAmount);
+                const paid = Number(credit.paidAmount);
+                if (!isNaN(paid)) {
+                    totalPaidAmount += paid;
+                }
             }
             if (credit.status === 'ACTIVE') {
                 activeCredits++;

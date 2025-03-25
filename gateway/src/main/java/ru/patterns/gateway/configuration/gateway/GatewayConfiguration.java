@@ -5,6 +5,16 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import org.springframework.web.reactive.socket.client.TomcatWebSocketClient;
+import org.springframework.web.reactive.socket.client.WebSocketClient;
+import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
+import org.springframework.web.reactive.socket.server.WebSocketService;
+import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService;
+import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy;
+import org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,11 +29,14 @@ public class GatewayConfiguration {
                                 .filter(customTokenRelayFactory.apply())
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://user-service"))
-                .route("core-query", r -> r.path("/api/query/account/**", "/api/query/transaction/**")
+                .route("core-query-http", r -> r.path("/api/query/account/**", "/api/query/transaction/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://core-query"))
+                .route("core-query-websocket", r -> r
+                        .path("/ws/employee/transaction/**")
+                        .uri("lb:ws://core-query"))
                 .route("core", r -> r.path("/api/account/**", "/api/transaction/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
@@ -51,4 +64,5 @@ public class GatewayConfiguration {
                         .uri("lb://employee-interface"))
                 .build();
     }
+
 }

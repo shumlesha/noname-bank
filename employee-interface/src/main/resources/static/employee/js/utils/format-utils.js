@@ -24,22 +24,19 @@ export const formatDate = (timestamp) => {
 };
 
 
-export const formatCurrency = (amount) => {
+export const formatCurrency = (amount, currency = 'RUB') => {
     if (amount === undefined || amount === null) return 'Нет данных';
     
-
     let numAmount = amount;
     if (typeof amount === 'string') {
         numAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
     }
     
-
     if (isNaN(numAmount)) return 'Нет данных';
     
-
     return numAmount.toLocaleString('ru-RU', {
         style: 'currency',
-        currency: 'RUB',
+        currency: currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });

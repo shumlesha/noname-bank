@@ -3,7 +3,11 @@ import apiService from '../services/api-service.js';
 import {checkAuth} from '../auth.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
-import {normalizeTransactionsResponse, renderTransactionsList} from '../components/transactions-list.js';
+import {
+    renderTransactionsList, 
+    initTransactionsWebSocket,
+    cleanupTransactionsWebSocket
+} from '../components/transactions-list.js';
 import {renderPagination} from '../components/pagination.js';
 import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
 
@@ -12,6 +16,7 @@ const ACCOUNTS_PER_PAGE = API_CONFIG.PAGINATION.ACCOUNTS_PER_PAGE;
 let currentPage = 0;
 let totalAccountsCount = 0;
 let allLoadedAccounts = [];
+let currentAccountId = null;
 
 
 export const initAccountsPage = () => {
@@ -52,8 +57,20 @@ export const initAccountsPage = () => {
         hideElement(document.getElementById('transactions-container'));
         hideElement(backToListBtn);
 
+        if (currentAccountId) {
+            cleanupTransactionsWebSocket();
+            currentAccountId = null;
+        }
+
         searchInput.value = '';
         loadAccounts(0, ACCOUNTS_PER_PAGE);
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (currentAccountId) {
+            cleanupTransactionsWebSocket();
+            currentAccountId = null;
+        }
     });
 };
 
@@ -143,6 +160,12 @@ const loadAccountDetails = async (accountId, clientId) => {
     const loadingIndicator = document.getElementById('account-details-loading');
     const backToListBtn = document.getElementById('back-to-list-btn');
 
+    if (currentAccountId && currentAccountId !== accountId) {
+        cleanupTransactionsWebSocket();
+    }
+
+    currentAccountId = accountId;
+
     showElement(backToListBtn);
     showElement(loadingIndicator);
     hideElement(accountsContainer);
@@ -173,30 +196,14 @@ const loadAccountDetails = async (accountId, clientId) => {
     }
 };
 
-const loadAccountTransactions = async (accountId) => {
+const loadAccountTransactions = (accountId) => {
     const transactionsContainer = document.getElementById('transactions-container');
-    const loadingIndicator = document.getElementById('transactions-loading');
 
     if (!transactionsContainer) return;
 
     console.log('Loading transactions for account ID:', accountId);
+    showElement(transactionsContainer, 'block');
+    
 
-    showElement(loadingIndicator);
-    transactionsContainer.style.display = 'block';
-    transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3><div class="loading-indicator"><span class="loading-text">Загрузка транзакций...</span></div>';
-
-    try {
-        const response = await apiService.getAccountTransactions(accountId);
-        console.log('Raw transaction response:', response);
-
-        hideElement(loadingIndicator);
-
-        const transactions = normalizeTransactionsResponse(response);
-        renderTransactionsList(transactions, transactionsContainer);
-    } catch (error) {
-        console.error('Ошибка при загрузке транзакций:', error);
-        hideElement(loadingIndicator);
-        showMessage('Произошла ошибка при загрузке транзакций', 'error');
-        transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3>';
-    }
+    initTransactionsWebSocket(accountId, transactionsContainer);
 };
