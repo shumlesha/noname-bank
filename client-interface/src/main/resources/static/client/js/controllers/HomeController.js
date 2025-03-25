@@ -3,6 +3,7 @@ import {accountService} from '../core/accountService.js';
 import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showConfirm, showError, showSuccess} from '../utils/modalUtils.js';
+import {storageService} from "../core/storageService";
 
 export class HomeController {
     constructor() {
@@ -40,7 +41,8 @@ export class HomeController {
     bindEventListeners() {
         DomUtils.on('#logout-btn', 'click', async () => {
             try {
-                await authService.logout();
+                window.location.href = "/";
+                storageService.removeUserData()
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
                 showError("Произошла ошибка при выходе из системы.");

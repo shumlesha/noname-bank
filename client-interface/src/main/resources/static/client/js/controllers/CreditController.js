@@ -3,6 +3,7 @@ import {creditService} from '../core/creditService.js';
 import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showError, showSuccess} from '../utils/modalUtils.js';
+import {storageService} from "../core/storageService";
 
 export class CreditController {
     constructor() {
@@ -30,7 +31,8 @@ export class CreditController {
     bindEventListeners() {
         DomUtils.on('#logout-btn', 'click', async () => {
             try {
-                await authService.logout();
+                window.location.href = "/";
+                storageService.removeUserData()
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
                 showError("Произошла ошибка при выходе из системы.");
