@@ -3,10 +3,16 @@ import {checkAuth} from '../auth.js';
 import {renderClientInfo} from '../components/client-info.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
-import {normalizeTransactionsResponse, renderTransactionsList} from '../components/transactions-list.js';
+import {
+    renderTransactionsList,
+    initTransactionsWebSocket,
+    cleanupTransactionsWebSocket
+} from '../components/transactions-list.js';
 import {renderCreditsList} from '../components/credits-list.js';
 import {renderClientSummary} from '../components/client-summary.js';
 import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
+
+let currentAccountId = null;
 
 export const initClientDetailsPage = () => {
     if (window.clientDetailsPageInitialized) return;
@@ -38,6 +44,13 @@ export const initClientDetailsPage = () => {
     loadClientCredits(clientId);
 
     document.addEventListener('clientDataUpdated', updateClientSummary);
+
+    window.addEventListener('beforeunload', () => {
+        if (currentAccountId) {
+            cleanupTransactionsWebSocket();
+            currentAccountId = null;
+        }
+    });
 };
 
 const getClientIdFromUrl = () => {
@@ -171,6 +184,12 @@ const loadAccountDetails = async (accountId, clientId) => {
     const accountDetailsContainer = document.getElementById('account-details-container');
     const loadingIndicator = document.getElementById('account-details-loading');
 
+    if (currentAccountId && currentAccountId !== accountId) {
+        cleanupTransactionsWebSocket();
+    }
+
+    currentAccountId = accountId;
+
     showElement(loadingIndicator);
     hideElement(accountsContainer);
     showElement(accountDetailsContainer);
@@ -191,6 +210,11 @@ const loadAccountDetails = async (accountId, clientId) => {
             backButton.className = 'btn back-button';
             backButton.textContent = 'Вернуться к списку счетов';
             backButton.addEventListener('click', () => {
+                if (currentAccountId) {
+                    cleanupTransactionsWebSocket();
+                    currentAccountId = null;
+                }
+                
                 hideElement(accountDetailsContainer);
                 hideElement(document.getElementById('transactions-container'));
                 showElement(accountsContainer);
@@ -210,30 +234,14 @@ const loadAccountDetails = async (accountId, clientId) => {
     }
 };
 
-const loadAccountTransactions = async (accountId) => {
+const loadAccountTransactions = (accountId) => {
     const transactionsContainer = document.getElementById('transactions-container');
-    const loadingIndicator = document.getElementById('transactions-loading');
 
     if (!transactionsContainer) return;
 
     console.log('Loading transactions for account ID:', accountId);
+    showElement(transactionsContainer, 'block');
+    
 
-    showElement(loadingIndicator);
-    transactionsContainer.style.display = 'block';
-    transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3><div class="loading-indicator"><span class="loading-text">Загрузка транзакций...</span></div>';
-
-    try {
-        const response = await apiService.getAccountTransactions(accountId);
-        console.log('Raw transaction response:', response);
-
-        hideElement(loadingIndicator);
-
-        const transactions = normalizeTransactionsResponse(response);
-        renderTransactionsList(transactions, transactionsContainer);
-    } catch (error) {
-        console.error('Ошибка при загрузке транзакций:', error);
-        hideElement(loadingIndicator);
-        showMessage('Произошла ошибка при загрузке транзакций', 'error');
-        transactionsContainer.innerHTML = '<h3>Транзакции по счету</h3>';
-    }
+    initTransactionsWebSocket(accountId, transactionsContainer);
 };

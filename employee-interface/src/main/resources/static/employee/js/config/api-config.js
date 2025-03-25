@@ -4,6 +4,7 @@ const API_CONFIG = {
     USERS_ENDPOINT: '/api/users',
     QUERY_ENDPOINT: '/api/query',
     CREDIT_ENDPOINT: '/api/credit',
+    WS_BASE_URL: window.location.protocol === 'https:' ? 'wss://' : 'ws://' + window.location.host,
 
     STORAGE_KEYS: {
         TOKEN: 'auth_tokens',
@@ -29,7 +30,8 @@ const API_CONFIG = {
         creditTariffById: '/api/credit/tariff/query',
         creditTariffCreate: '/api/credit/tariff/command/create',
         creditTariffUpdate: '/api/credit/tariff/command/update',
-        creditTariffDelete: '/api/credit/tariff/command/delete'
+        creditTariffDelete: '/api/credit/tariff/command/delete',
+        wsTransactionEmployee: '/ws/employee/transaction'
     },
 
     PAGINATION: {
