@@ -31,6 +31,8 @@ const API_CONFIG = {
         creditTariffCreate: '/api/credit/tariff/command/create',
         creditTariffUpdate: '/api/credit/tariff/command/update',
         creditTariffDelete: '/api/credit/tariff/command/delete',
+        creditRatingByClient: '/api/credit/rating/query',
+        missedPaymentsByClient: '/api/credit/missed/query',
         wsTransactionEmployee: '/ws/employee/transaction'
     },
 

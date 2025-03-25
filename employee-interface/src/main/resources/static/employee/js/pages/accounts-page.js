@@ -4,7 +4,6 @@ import {checkAuth} from '../auth.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
 import {
-    renderTransactionsList, 
     initTransactionsWebSocket,
     cleanupTransactionsWebSocket
 } from '../components/transactions-list.js';

@@ -4,7 +4,7 @@ import API_CONFIG from '../config/api-config.js';
 
 let currentAccountId = null;
 const TRANSACTIONS_WS_CALLBACK_ID = 'transactions-list-updates';
-
+let transactionsCache = [];
 
 export const initTransactionsWebSocket = async (accountId, container) => {
     if (!accountId) {
@@ -19,7 +19,7 @@ export const initTransactionsWebSocket = async (accountId, container) => {
     currentAccountId = accountId;
 
     if (container) {
-        container.innerHTML = '<h3>Транзакции по счету</h3><div class="loading-indicator"><span class="loading-text">Загрузка транзакций...</span></div>';
+        container.innerHTML = '<div class="loading-indicator"><span class="loading-text">Загрузка транзакций...</span></div>';
     }
 
     try {
@@ -28,20 +28,26 @@ export const initTransactionsWebSocket = async (accountId, container) => {
             await websocketService.connect(wsUrl);
         }
 
-        const transactions = [];
+        // Reset transactions cache for the new account
+        transactionsCache = [];
+        
+        // Create empty transactions table
+        if (container) {
+            createEmptyTransactionsTable(container);
+        }
 
         websocketService.subscribe(TRANSACTIONS_WS_CALLBACK_ID, (transaction) => {
             if (transaction &&
                 (transaction.accountFrom === accountId || transaction.accountTo === accountId)) {
 
-                const existingIndex = transactions.findIndex(tx => tx.id === transaction.id);
+                const existingIndex = transactionsCache.findIndex(tx => tx.id === transaction.id);
                 const isNewTransaction = existingIndex === -1;
 
                 if (isNewTransaction) {
-                    transactions.push(transaction);
+                    transactionsCache.push(transaction);
 
                     if (container) {
-                        updateTransactionsList(transaction, container);
+                        addTransactionToTable(transaction, container);
                     }
                 }
             }
@@ -52,91 +58,24 @@ export const initTransactionsWebSocket = async (accountId, container) => {
     } catch (error) {
         console.error('Failed to initialize WebSocket connection:', error);
         if (container) {
-            container.innerHTML = '<h3>Транзакции по счету</h3><div class="error-message-container"><p class="error-message">Ошибка при подключении к серверу транзакций</p></div>';
+            container.innerHTML = '<div class="error-message-container"><p class="error-message">Ошибка при подключении к серверу транзакций</p></div>';
         }
     }
 };
 
-
 export const cleanupTransactionsWebSocket = () => {
     websocketService.unsubscribe(TRANSACTIONS_WS_CALLBACK_ID);
     currentAccountId = null;
+    transactionsCache = [];
 
     if (Object.keys(websocketService.callbacks).length === 0) {
         websocketService.disconnect();
     }
 };
 
-
-export const updateTransactionsList = (newTransaction, container) => {
-    if (!newTransaction || !container) return;
-
-    const existingTable = container.querySelector('.transactions-table');
-    if (!existingTable) {
-        renderTransactionsList([newTransaction], container);
-        return;
-    }
-
-    const tbody = existingTable.querySelector('tbody');
-    if (!tbody) {
-        console.error('Не найден tbody в таблице транзакций');
-        return;
-    }
-
-
-    const rows = tbody.querySelectorAll('tr');
-    let transactionExists = false;
+const createEmptyTransactionsTable = (container) => {
+    if (!container) return;
     
-    for (const row of rows) {
-        const idCell = row.querySelector('td:first-child');
-        if (idCell && idCell.textContent === newTransaction.id) {
-            transactionExists = true;
-            break;
-        }
-    }
-    
-    if (transactionExists) {
-        return;
-    }
-
-    try {
-        const fragment = document.createDocumentFragment();
-        const newRow = document.createElement('tr');
-
-        const transactionDate = formatDate(newTransaction.transactionTimestamp);
-        const accountFrom = newTransaction.accountFrom || 'Пополнение';
-        const accountTo = newTransaction.accountTo || 'Нет данных';
-        const currency = newTransaction.currency || 'RUB';
-        const amount = formatCurrency(newTransaction.amount, currency);
-
-        newRow.innerHTML = `
-            <td>${newTransaction.id || 'Нет данных'}</td>
-            <td>${transactionDate}</td>
-            <td>${accountFrom}</td>
-            <td>${accountTo}</td>
-            <td>${amount}</td>
-        `;
-
-        fragment.appendChild(newRow);
-
-        if (tbody.firstChild) {
-            tbody.insertBefore(fragment, tbody.firstChild);
-        } else {
-            tbody.appendChild(fragment);
-        }
-    } catch (error) {
-        console.error('Error adding new transaction to table:', error);
-    }
-};
-
-export const renderTransactionsList = (transactions, container) => {
-    console.log('Rendering transactions list:', transactions);
-
-    if (!transactions || !transactions.length) {
-        container.innerHTML = '<h3>Транзакции по счету</h3><div class="error-message-container"><p class="info-message">Транзакции не найдены</p></div>';
-        return;
-    }
-
     const table = document.createElement('table');
     table.className = 'transactions-table';
 
@@ -150,30 +89,75 @@ export const renderTransactionsList = (transactions, container) => {
         <th>Сумма</th>
       </tr>
     </thead>
-    <tbody>
-      ${transactions.map(tx => {
-        try {
-            const transactionDate = formatDate(tx.transactionTimestamp);
-            const accountFrom = tx.accountFrom || 'Пополнение';
-            const accountTo = tx.accountTo || 'Нет данных';
-            const currency = tx.currency || 'RUB';
-            const amount = formatCurrency(tx.amount, currency);
+    <tbody></tbody>
+    `;
 
-            return `<tr>
-              <td>${tx.id || 'Нет данных'}</td>
-              <td>${transactionDate}</td>
-              <td>${accountFrom}</td>
-              <td>${accountTo}</td>
-              <td>${amount}</td>
-            </tr>`;
-        } catch (error) {
-            console.error('Error rendering transaction:', tx, error);
-            return `<tr><td colspan="6">Ошибка отображения транзакции</td></tr>`;
-        }
-    }).join('')}
-    </tbody>
-  `;
-
-    container.innerHTML = '<h3>Транзакции по счету</h3>';
+    container.innerHTML = '';
     container.appendChild(table);
+    
+    // Add a message if no transactions yet
+    const tbody = table.querySelector('tbody');
+    const emptyRow = document.createElement('tr');
+    emptyRow.className = 'empty-transactions-row';
+    emptyRow.innerHTML = '<td colspan="5" class="info-message">Ожидание транзакций...</td>';
+    tbody.appendChild(emptyRow);
+};
+
+const addTransactionToTable = (transaction, container) => {
+    if (!transaction || !container) return;
+
+    const table = container.querySelector('.transactions-table');
+    if (!table) {
+        createEmptyTransactionsTable(container);
+        addTransactionToTable(transaction, container);
+        return;
+    }
+
+    const tbody = table.querySelector('tbody');
+    if (!tbody) {
+        console.error('Не найден tbody в таблице транзакций');
+        return;
+    }
+
+    // Remove empty message if it exists
+    const emptyRow = tbody.querySelector('.empty-transactions-row');
+    if (emptyRow) {
+        emptyRow.remove();
+    }
+
+    // Check if transaction already exists in the table
+    const rows = tbody.querySelectorAll('tr');
+    for (const row of rows) {
+        const idCell = row.querySelector('td:first-child');
+        if (idCell && idCell.textContent === transaction.id) {
+            return; // Transaction already exists
+        }
+    }
+
+    try {
+        const newRow = document.createElement('tr');
+
+        const transactionDate = formatDate(transaction.transactionTimestamp);
+        const accountFrom = transaction.accountFrom || 'Пополнение';
+        const accountTo = transaction.accountTo || 'Нет данных';
+        const currency = transaction.currency || 'RUB';
+        const amount = formatCurrency(transaction.amount, currency);
+
+        newRow.innerHTML = `
+            <td>${transaction.id || 'Нет данных'}</td>
+            <td>${transactionDate}</td>
+            <td>${accountFrom}</td>
+            <td>${accountTo}</td>
+            <td>${amount}</td>
+        `;
+
+        // Add new transaction at the top of the table
+        if (tbody.firstChild) {
+            tbody.insertBefore(newRow, tbody.firstChild);
+        } else {
+            tbody.appendChild(newRow);
+        }
+    } catch (error) {
+        console.error('Error adding transaction to table:', error);
+    }
 };

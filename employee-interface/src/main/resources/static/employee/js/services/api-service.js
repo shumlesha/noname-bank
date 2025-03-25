@@ -177,14 +177,6 @@ const apiService = {
     },
 
 
-    getAccountTransactions: async (accountId) => {
-        return apiService.fetch(API_CONFIG.ENDPOINTS.transactionAccount, {
-            method: 'POST',
-            body: JSON.stringify({ accountId })
-        });
-    },
-
-
     getClientTransactions: async (clientId) => {
         return apiService.fetch(API_CONFIG.ENDPOINTS.transactionClient, {
             method: 'POST',
@@ -243,6 +235,18 @@ const apiService = {
     deleteCreditTariff: async (tariffId) => {
         return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditTariffDelete}/${tariffId}`, {
             method: 'DELETE'
+        });
+    },
+
+    getCreditRatingByClient: async (clientId) => {
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.creditRatingByClient}/${clientId}`, {
+            method: 'GET'
+        });
+    },
+
+    getMissedPaymentsByClient: async (clientId) => {
+        return apiService.fetch(`${API_CONFIG.ENDPOINTS.missedPaymentsByClient}/${clientId}`, {
+            method: 'GET'
         });
     }
 };

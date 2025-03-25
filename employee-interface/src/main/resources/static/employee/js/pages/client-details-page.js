@@ -4,15 +4,17 @@ import {renderClientInfo} from '../components/client-info.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
 import {
-    renderTransactionsList,
     initTransactionsWebSocket,
     cleanupTransactionsWebSocket
 } from '../components/transactions-list.js';
 import {renderCreditsList} from '../components/credits-list.js';
-import {renderClientSummary} from '../components/client-summary.js';
+import {renderCreditRating} from '../components/credit-rating.js';
+import {renderMissedPaymentsList} from '../components/missed-payments-list.js';
 import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
+import {TabbedModal} from '../components/modal.js';
 
 let currentAccountId = null;
+let accountDetailsModal = null;
 
 export const initClientDetailsPage = () => {
     if (window.clientDetailsPageInitialized) return;
@@ -32,18 +34,10 @@ export const initClientDetailsPage = () => {
     }
 
     loadClientDetails(clientId);
-    
-
-    window.clientData = {
-        accounts: null,
-        credits: null
-    };
-    
-
     loadClientAccounts(clientId);
     loadClientCredits(clientId);
-
-    document.addEventListener('clientDataUpdated', updateClientSummary);
+    loadClientCreditRating(clientId);
+    loadClientMissedPayments(clientId);
 
     window.addEventListener('beforeunload', () => {
         if (currentAccountId) {
@@ -107,14 +101,10 @@ const loadClientAccounts = async (clientId) => {
                 accountsContainer.innerHTML = '';
                 return;
             }
-
-            window.clientData.accounts = accounts;
             
             renderAccountsList(accounts, accountsContainer, (accountId, clientId) => {
                 loadAccountDetails(accountId, clientId);
             });
-
-            document.dispatchEvent(new CustomEvent('clientDataUpdated'));
         } else {
             showMessage('Не удалось загрузить список счетов клиента', 'error');
             accountsContainer.innerHTML = '';
@@ -150,12 +140,8 @@ const loadClientCredits = async (clientId) => {
                 creditsContainer.innerHTML = '';
                 return;
             }
-
-            window.clientData.credits = credits;
             
             renderCreditsList(credits, creditsContainer);
-
-            document.dispatchEvent(new CustomEvent('clientDataUpdated'));
         } else {
             showMessage('Не удалось загрузить список кредитов клиента', 'error');
             creditsContainer.innerHTML = '';
@@ -168,20 +154,71 @@ const loadClientCredits = async (clientId) => {
     }
 };
 
-const updateClientSummary = () => {
-    const summaryContainer = document.getElementById('client-summary-container');
-    if (!summaryContainer) return;
+const loadClientCreditRating = async (clientId) => {
+    const creditRatingContainer = document.getElementById('client-credit-rating-container');
+    const loadingIndicator = document.getElementById('client-credit-rating-loading');
 
-    summaryContainer.innerHTML = '';
+    if (!creditRatingContainer) return;
 
-    if (window.clientData.accounts && window.clientData.credits) {
-        renderClientSummary(window.clientData.accounts, window.clientData.credits, summaryContainer);
+    showElement(loadingIndicator);
+
+    try {
+        const response = await apiService.getCreditRatingByClient(clientId);
+        hideElement(loadingIndicator);
+
+        if (response && response.data) {
+            let ratingData = null;
+
+            if (response.data.data) {
+                ratingData = response.data.data;
+            } else {
+                ratingData = response.data;
+            }
+            
+            renderCreditRating(ratingData, creditRatingContainer);
+        } else {
+            creditRatingContainer.innerHTML = '<div class="error-message-container"><p class="info-message">Данные о кредитном рейтинге не найдены</p></div>';
+        }
+    } catch (error) {
+        console.error('Ошибка при загрузке кредитного рейтинга:', error);
+        hideElement(loadingIndicator);
+        creditRatingContainer.innerHTML = '<div class="error-message-container"><p class="error-message">Ошибка при загрузке кредитного рейтинга</p></div>';
+    }
+};
+
+const loadClientMissedPayments = async (clientId) => {
+    const missedPaymentsContainer = document.getElementById('client-missed-payments-container');
+    const loadingIndicator = document.getElementById('client-missed-payments-loading');
+
+    if (!missedPaymentsContainer) return;
+
+    showElement(loadingIndicator);
+
+    try {
+        const response = await apiService.getMissedPaymentsByClient(clientId);
+        hideElement(loadingIndicator);
+
+        if (response && response.data) {
+            let missedPayments = [];
+
+            if (Array.isArray(response.data)) {
+                missedPayments = response.data;
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+                missedPayments = response.data.data;
+            }
+            
+            renderMissedPaymentsList(missedPayments, missedPaymentsContainer);
+        } else {
+            missedPaymentsContainer.innerHTML = '<div class="error-message-container"><p class="info-message">Просроченные платежи не найдены</p></div>';
+        }
+    } catch (error) {
+        console.error('Ошибка при загрузке просроченных платежей:', error);
+        hideElement(loadingIndicator);
+        missedPaymentsContainer.innerHTML = '<div class="error-message-container"><p class="error-message">Ошибка при загрузке просроченных платежей</p></div>';
     }
 };
 
 const loadAccountDetails = async (accountId, clientId) => {
-    const accountsContainer = document.getElementById('client-accounts-container');
-    const accountDetailsContainer = document.getElementById('account-details-container');
     const loadingIndicator = document.getElementById('account-details-loading');
 
     if (currentAccountId && currentAccountId !== accountId) {
@@ -190,11 +227,37 @@ const loadAccountDetails = async (accountId, clientId) => {
 
     currentAccountId = accountId;
 
-    showElement(loadingIndicator);
-    hideElement(accountsContainer);
-    showElement(accountDetailsContainer);
 
-    accountDetailsContainer.innerHTML = '';
+    if (!accountDetailsModal) {
+        accountDetailsModal = new TabbedModal({
+            title: 'Детали счета',
+            width: '800px',
+            tabs: [
+                { title: 'Информация о счете', content: '<div id="modal-account-details"></div>' },
+                { title: 'Транзакции', content: '<div id="modal-transactions"></div>' }
+            ],
+            onClose: () => {
+                if (currentAccountId) {
+                    cleanupTransactionsWebSocket();
+                    currentAccountId = null;
+                }
+            },
+            footerButtons: [
+                {
+                    id: 'close-modal',
+                    text: 'Закрыть',
+                    class: 'modal-btn-secondary',
+                    handler: () => {
+                        accountDetailsModal.close();
+                    }
+                }
+            ]
+        });
+    }
+
+
+    accountDetailsModal.open();
+    showElement(loadingIndicator);
 
     try {
         const response = await apiService.getAccountDetails(accountId, clientId);
@@ -203,44 +266,30 @@ const loadAccountDetails = async (accountId, clientId) => {
         const accountData = response.data ? response.data : response;
 
         if (accountData && accountData.id) {
-            renderAccountDetails(accountData, accountDetailsContainer);
+            const accountDetailsContainer = document.getElementById('modal-account-details');
+            if (accountDetailsContainer) {
+                renderAccountDetails(accountData, accountDetailsContainer);
+                accountDetailsModal.setTitle(`Счет: ${accountData.number || accountId}`);
+            }
+            
             loadAccountTransactions(accountId);
-
-            const backButton = document.createElement('button');
-            backButton.className = 'btn back-button';
-            backButton.textContent = 'Вернуться к списку счетов';
-            backButton.addEventListener('click', () => {
-                if (currentAccountId) {
-                    cleanupTransactionsWebSocket();
-                    currentAccountId = null;
-                }
-                
-                hideElement(accountDetailsContainer);
-                hideElement(document.getElementById('transactions-container'));
-                showElement(accountsContainer);
-            });
-
-            accountDetailsContainer.insertBefore(backButton, accountDetailsContainer.firstChild);
         } else {
             console.error('Данные счета не содержат необходимых полей:', response);
             showMessage('Данные счета неполные или в неверном формате', 'error');
-            accountDetailsContainer.innerHTML = '';
+            accountDetailsModal.close();
         }
     } catch (error) {
         console.error('Ошибка при загрузке деталей счета:', error);
         hideElement(loadingIndicator);
         showMessage('Произошла ошибка при загрузке деталей счета', 'error');
-        accountDetailsContainer.innerHTML = '';
+        accountDetailsModal.close();
     }
 };
 
 const loadAccountTransactions = (accountId) => {
-    const transactionsContainer = document.getElementById('transactions-container');
-
+    const transactionsContainer = document.getElementById('modal-transactions');
+    
     if (!transactionsContainer) return;
-
-    console.log('Loading transactions for account ID:', accountId);
-    showElement(transactionsContainer, 'block');
     
 
     initTransactionsWebSocket(accountId, transactionsContainer);
