@@ -3,22 +3,78 @@ import {creditService} from '../core/creditService.js';
 import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showError, showSuccess} from '../utils/modalUtils.js';
-import {storageService} from "../core/storageService";
 
 export class CreditController {
     constructor() {
         this.init();
     }
-    
+
     init() {
         authService.loadUserData().then(() => {
             const userData = authService.getCurrentUser();
+
             this.displayUserData(userData);
-            
-            this.loadCredits();
-            
+
+            this.loadCreditRating(userData.userId);
+
+            this.loadCredits(userData.userId);
+
+            this.loadMissedPayments(userData.userId);
+
             this.bindEventListeners();
         });
+    }
+
+    async loadCreditRating(userId) {
+        try {
+            const response = await creditService.getCreditRating(userId);
+            const ratingValue = DomUtils.find('#credit-rating-value');
+            if (ratingValue) {
+                ratingValue.textContent = response.data.rating;
+
+                const rating = parseFloat(response.data.rating);
+                if (rating >= 4.5) {
+                    ratingValue.style.backgroundColor = '#28a745';
+                } else if (rating >= 3.5) {
+                    ratingValue.style.backgroundColor = '#007bff';
+                } else if (rating >= 2.5) {
+                    ratingValue.style.backgroundColor = '#ffc107';
+                } else {
+                    ratingValue.style.backgroundColor = '#dc3545';
+                }
+            }
+        } catch (error) {
+            console.error("Ошибка при загрузке рейтинга:", error);
+            showError("Ошибка при загрузке кредитного рейтинга");
+        }
+    }
+    
+    async loadMissedPayments(userId) {
+        try {
+            const response = await creditService.getMissedPayments(userId);
+            const missedPaymentsList = DomUtils.find('#missed-payments-list');
+            
+            if (!response.data || response.data.length === 0) {
+                missedPaymentsList.innerHTML = '<div class="no-missed-payments">У вас нет просроченных платежей</div>';
+                return;
+            }
+
+            const paymentsHtml = response.data.map(payment => `
+                <div class="missed-payment-item">
+                    <div class="missed-payment-info">
+                        <div class="missed-payment-credit-id">ID кредита: ${payment.creditId}</div>
+                        <div class="missed-payment-date">Дата просрочки: ${new Date(payment.missedDate).toLocaleDateString()}</div>
+                        <div class="missed-payment-amount">Сумма долга: ${payment.debt} ₽</div>
+                        <div class="missed-payment-total">Общая сумма выплат: ${payment.amount} ₽</div>
+                    </div>
+                </div>
+            `).join('');
+
+            missedPaymentsList.innerHTML = paymentsHtml;
+        } catch (error) {
+            console.error("Ошибка при загрузке просроченных платежей:", error);
+            showError("Ошибка при загрузке просроченных платежей");
+        }
     }
     
     displayUserData(userData) {
@@ -31,15 +87,14 @@ export class CreditController {
     bindEventListeners() {
         DomUtils.on('#logout-btn', 'click', async () => {
             try {
-                window.location.href = "/";
-                storageService.removeUserData()
+                await authService.logout();
             } catch (error) {
                 console.error("Ошибка при выходе:", error);
                 showError("Произошла ошибка при выходе из системы.");
             }
         });
         
-        DomUtils.on('#back-btn', 'click', () => {
+        DomUtils.on('#home-btn', 'click', () => {
             window.location.href = config.routes.home;
         });
         
@@ -52,13 +107,7 @@ export class CreditController {
         });
     }
 
-    async loadCredits() {
-        const clientId = authService.getCurrentUser()?.userId;
-        if (!clientId) {
-            showError("Ошибка: не удалось получить идентификатор клиента.");
-            return;
-        }
-
+    async loadCredits(clientId) {
         try {
             const data = await creditService.loadCredits(clientId);
             let creditsList = DomUtils.find("#credits-list");
@@ -139,7 +188,8 @@ export class CreditController {
             try {
                 await creditService.payCredit(creditId, amount);
                 showSuccess("Платеж успешно выполнен");
-                this.loadCredits();
+                const userData = authService.getCurrentUser();
+                await this.loadCredits(userData.userId);
             } catch (error) {
                 showError("Ошибка при оплате кредита.");
             }
@@ -228,7 +278,8 @@ export class CreditController {
             try {
                 await creditService.takeCredit(clientId, tariffId, amount);
                 showSuccess("Кредит успешно оформлен");
-                await this.loadCredits();
+                const userData = authService.getCurrentUser();
+                await this.loadCredits(userData.userId);
                 DomUtils.hideModal('tariff-modal');
             } catch (err) {
                 showError("Ошибка при создании кредита: " + (err.message || "неизвестная ошибка"));

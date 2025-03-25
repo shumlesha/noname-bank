@@ -53,11 +53,14 @@
                 </div>
                 <button id="apply-filters-btn" class="btn btn-secondary">Применить</button>
             </div>
-            <button id="create-account-btn" class="btn btn-primary">Создать счёт</button>
+            <div class="account-actions-buttons">
+                <button id="create-account-btn" class="btn btn-primary">Создать счёт</button>
+                <button id="transfer-money-btn" class="btn btn-primary">Перевести деньги</button>
+            </div>
             <table id="accounts-table">
                 <thead>
                 <tr>
-                    <th>Номер счёта</th>
+                    <th>ID счёта</th>
                     <th>Баланс</th>
                     <th>Валюта</th>
                     <th>Тип счета</th>
@@ -130,12 +133,35 @@
             <div class="form-group">
                 <label for="currency-select">Выберите валюту:</label>
                 <select id="currency-select" class="form-control">
-                    <option value="RUB">Российский рубль (RUB)</option>
+                    <option value="RUR">Российский рубль (RUB)</option>
                     <option value="USD">Доллар США (USD)</option>
                     <option value="EUR">Евро (EUR)</option>
                 </select>
             </div>
             <button id="confirm-create-account-btn" class="btn btn-primary">Создать счет</button>
+        </div>
+    </div>
+</div>
+
+<div id="transfer-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-transfer-modal-btn" class="close">&times;</span>
+        <h3>Перевод между счетами</h3>
+        <div class="modal-form">
+            <div class="form-group">
+                <label for="from-account-select">Выберите счет отправителя:</label>
+                <select id="from-account-select" class="form-control">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="to-account-id">ID счета получателя:</label>
+                <input type="text" id="to-account-id" class="form-control" placeholder="Введите ID счета">
+            </div>
+            <div class="form-group">
+                <label for="transfer-amount">Сумма перевода:</label>
+                <input type="number" id="transfer-amount" class="form-control" min="1" step="1" required>
+            </div>
+            <button id="confirm-transfer-btn" class="btn btn-primary">Перевести</button>
         </div>
     </div>
 </div>

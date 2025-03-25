@@ -1,9 +1,5 @@
-import {storageService} from '../core/storageService.js';
-import {config} from '../config/config.js';
-
 export class HttpClient {
-    static async fetch(url, options = {}, skipAuth = false) {
-        const tokenData = storageService.getTokens();
+    static async fetch(url, options = {}) {
 
         const defaultOptions = {
             credentials: 'include',
@@ -12,16 +8,14 @@ export class HttpClient {
             }
         };
 
-        // if (tokenData?.accessToken && !skipAuth) {
-        //     defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
-        // }
-
         try {
             const response = await fetch(url, { ...defaultOptions, ...options });
-            const text = await response.text();
-            const data = text ? JSON.parse(text) : null;
+            if (options.responseType === 'text') {
+                return await response.text();
+            }
 
-            return data;
+            const text = await response.text();
+            return text ? JSON.parse(text) : null;
         } catch (error) {
             console.error('API request error:', error);
             throw error;

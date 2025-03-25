@@ -3,3 +3,141 @@
 @import 'components/tables.css';
 @import 'components/modals.css';
 @import 'components/user-details.css';
+
+/* Кредитный рейтинг */
+.credit-rating {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.rating-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.rating-info {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 10px;
+}
+
+/* Кнопки действий */
+.account-actions-buttons {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.modal-form .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.modal-form .form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* Стили для просроченных платежей */
+.missed-payments-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.missed-payments-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.missed-payments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.missed-payment-item {
+    background: #fff5f5;
+    border: 1px solid #ffcdd2;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.missed-payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.missed-payment-credit-id {
+    color: #333;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.missed-payment-date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.missed-payment-amount {
+    color: #d32f2f;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.missed-payment-total {
+    color: #1976d2;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.no-missed-payments {
+    color: #4caf50;
+    text-align: center;
+    padding: 20px;
+    background: #e8f5e9;
+    border-radius: 4px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info span {
+    margin-right: 10px;
+    color: #333;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}

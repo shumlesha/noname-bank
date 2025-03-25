@@ -13,13 +13,31 @@
             <h1>NoName Банк</h1>
         </div>
         <div class="user-info">
+            <button id="home-btn" class="btn btn-primary">Главная</button>
             <span id="user-email"></span>
             <button id="logout-btn" class="btn btn-logout">Выйти</button>
         </div>
     </header>
 
     <div class="main-content">
-        <button id="back-btn" class="btn btn-secondary">Назад</button>
+        <div class="welcome-message">
+            <h2>Кредиты</h2>
+        </div>
+
+        <div class="content-section">
+            <h3>Ваш кредитный рейтинг</h3>
+            <div class="credit-rating">
+                <p>Текущий рейтинг: <span id="credit-rating-value" class="rating-badge">Загрузка...</span></p>
+                <p class="rating-info">Кредитный рейтинг влияет на условия кредитования и доступные суммы</p>
+            </div>
+        </div>
+
+        <div class="missed-payments-section">
+            <h3>Просроченные платежи</h3>
+            <div id="missed-payments-list" class="missed-payments-list">
+                <p>Загрузка...</p>
+            </div>
+        </div>
 
         <div class="content-section" id="credits-section">
             <h3>Ваши кредиты</h3>

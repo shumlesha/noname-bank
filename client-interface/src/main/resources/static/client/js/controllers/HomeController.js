@@ -3,7 +3,7 @@ import {accountService} from '../core/accountService.js';
 import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showConfirm, showError, showSuccess} from '../utils/modalUtils.js';
-import {storageService} from "../core/storageService";
+import {storageService} from "../core/storageService.js";
 
 export class HomeController {
     constructor() {
@@ -63,6 +63,18 @@ export class HomeController {
             this.createAccount(currency);
         });
         
+        DomUtils.on('#transfer-money-btn', 'click', () => {
+            this.showTransferModal();
+        });
+        
+        DomUtils.on('#close-transfer-modal-btn', 'click', () => {
+            DomUtils.hideModal('transfer-modal');
+        });
+        
+        DomUtils.on('#confirm-transfer-btn', 'click', () => {
+            this.processTransfer();
+        });
+        
         DomUtils.on('#credits-btn', 'click', () => {
             window.location.href = config.routes.credit;
         });
@@ -113,6 +125,7 @@ export class HomeController {
                 await this.loadAccounts();
             }, 1000);
         } catch (error) {
+            console.error("Ошибка при создании:", error);
             showError("Ошибка при создании счета.");
         }
     }
@@ -168,7 +181,7 @@ export class HomeController {
                 : `<span>Нет доступных действий</span>`;
 
             let row = `<tr>
-            <td><a href="#" class="account-link" data-id="${account.id}">${account.number}</a></td>
+            <td><a href="#" class="account-link" data-id="${account.id}">${account.id}</a></td>
             <td>${account.getFormattedBalance()}</td>
             <td>${account.currency}</td>
             <td>${account.getType()}</td>
@@ -220,6 +233,7 @@ export class HomeController {
             
             accountDetailsEl.innerHTML = `
                 <h3>Детали счета</h3>
+                <p><strong>ID счета:</strong> ${data.account.id}</p>
                 <p><strong>Номер счета:</strong> ${data.account.number}</p>
                 <p><strong>Баланс:</strong> ${data.account.getFormattedBalance()}</p>
                 <p><strong>Валюта:</strong> ${data.account.currency}</p>
@@ -283,6 +297,7 @@ export class HomeController {
                 await this.loadAccounts();
             }, 1000);
         } catch (error) {
+            console.error("Ошибка при закрытии:", error);
             showError("Ошибка при закрытии счета.");
         }
     }
@@ -295,6 +310,7 @@ export class HomeController {
                 await this.loadAccounts();
             }, 1000);
         } catch (error) {
+            console.error("Ошибка при пополнении:", error);
             showError("Ошибка при пополнении счета.");
         }
     }
@@ -307,7 +323,61 @@ export class HomeController {
                 await this.loadAccounts();
             }, 1000);
         } catch (error) {
+            console.error("Ошибка при снятии:", error);
             showError("Ошибка при снятии средств.");
+        }
+    }
+    
+    showTransferModal() {
+        const fromAccountSelect = DomUtils.find('#from-account-select');
+        fromAccountSelect.innerHTML = '';
+        
+        const activeAccounts = this.accounts.filter(account => account.isActive());
+        
+        if (activeAccounts.length === 0) {
+            showError("У вас нет активных счетов для перевода");
+            return;
+        }
+
+        activeAccounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account.id;
+            option.textContent = `${account.id} (${account.getFormattedBalance()}, ${account.currency})`;
+            fromAccountSelect.appendChild(option);
+        });
+
+        DomUtils.find('#to-account-id').value = '';
+        DomUtils.find('#transfer-amount').value = '';
+        
+        DomUtils.showModal('transfer-modal');
+    }
+    
+    async processTransfer() {
+        const fromAccountId = DomUtils.find('#from-account-select').value;
+        const toAccountId = DomUtils.find('#to-account-id').value;
+        const amount = DomUtils.find('#transfer-amount').value;
+        
+        if (!fromAccountId || !toAccountId || !amount) {
+            showError("Пожалуйста, заполните все поля");
+            return;
+        }
+        
+        if (fromAccountId === toAccountId) {
+            showError("Нельзя перевести деньги на тот же счет");
+            return;
+        }
+        
+        DomUtils.hideModal('transfer-modal');
+        
+        try {
+            await accountService.transferMoney(fromAccountId, toAccountId, amount);
+            showSuccess("Перевод успешно выполнен");
+            setTimeout(async () => {
+                await this.loadAccounts();
+            }, 1000);
+        } catch (error) {
+            console.error("Ошибка при переводе:", error);
+            showError(error.message || "Ошибка при переводе средств");
         }
     }
 }

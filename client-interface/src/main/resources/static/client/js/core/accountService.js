@@ -49,6 +49,19 @@ class AccountService {
         );
     }
 
+    async transferMoney(fromAccountId, toAccountId, amount) {
+        return apiService.post(
+            config.api.endpoints.transaction.create, 
+            { 
+                accountFrom: fromAccountId,
+                accountTo: toAccountId,
+                amount: parseFloat(amount)
+            },
+            false,
+            { responseType: 'text' }
+        );
+    }
+
     async loadAccountDetails(userId, accountId) {
         const accountResponse = await apiService.post(
             config.api.endpoints.account.details, 

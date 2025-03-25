@@ -1,6 +1,7 @@
 import {config} from "../config/config.js";
 import {Credit} from "../models/Credit.js";
 import {CreditTariff} from "../models/CreditTariff.js";
+import {apiService} from "./apiService.js";
 
 class CreditService {
     async loadCredits(clientId) {
@@ -39,6 +40,18 @@ class CreditService {
                 tariffId
             })
         }).then(res => res.json());
+    }
+
+    async getCreditRating(clientId) {
+        return apiService.get(
+            `${config.api.endpoints.credit.rating}/${clientId}`
+        );
+    }
+
+    async getMissedPayments(clientId) {
+        return apiService.get(
+            `${config.api.endpoints.credit.missed}/${clientId}`
+        );
     }
 }
 

@@ -14,7 +14,8 @@ export const config = {
                 details: '/api/query/account'
             },
             transaction: {
-                list: '/api/query/transaction/account'
+                list: '/api/query/transaction/account',
+                create: '/api/transaction/create'
             },
             atm: {
                 deposit: '/api/atm/deposit',
@@ -24,7 +25,9 @@ export const config = {
                 list: '/api/credit/query',
                 pay: '/api/credit/command/pay',
                 tariffs: '/api/credit/tariff/query/all',
-                create: '/api/credit/command'
+                create: '/api/credit/command',
+                rating: '/api/credit/rating/query',
+                missed: '/api/credit/missed/query'
             },
             user: {
                 me: '/api/users/me'
