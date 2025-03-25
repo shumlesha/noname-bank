@@ -241,20 +241,7 @@ export class HomeController {
                 <p><strong>Статус:</strong> ${data.account.getStatus()}</p>
             `;
             
-            transactionsList.innerHTML = "";
-            
-            if (data.transactions.length === 0) {
-                transactionsList.innerHTML = "<tr><td colspan='3'>Нет транзакций</td></tr>";
-            } else {
-                data.transactions.forEach(transaction => {
-                    let row = `<tr>
-                        <td>${transaction.transactionTimestamp}</td>
-                        <td>${transaction.getFormattedAmount(accountId)}</td>
-                        <td>${transaction.getType(accountId)}</td>
-                    </tr>`;
-                    transactionsList.innerHTML += row;
-                });
-            }
+            this.renderTransactions(data.transactions, data.account.id);
             
             DomUtils.find('#accounts-section').style.display = 'none';
             DomUtils.find('#account-details-section').style.display = 'block';
@@ -379,5 +366,50 @@ export class HomeController {
             console.error("Ошибка при переводе:", error);
             showError(error.message || "Ошибка при переводе средств");
         }
+    }
+
+    renderTransactions(transactions, currentAccountId) {
+        const transactionsList = DomUtils.find('#transactions-list');
+        if (!transactions || transactions.length === 0) {
+            transactionsList.innerHTML = '<tr><td colspan="5">Нет транзакций</td></tr>';
+            return;
+        }
+
+        const transactionsHtml = transactions.map(transaction => {
+            let type = '';
+            let direction = '';
+            let amount = '';
+            
+            if (transaction.accountFrom === '') {
+                type = 'Пополнение';
+                direction = `Пополнение на счет`;
+                amount = `+${transaction.amount}`;
+            } else if (transaction.accountTo === '') {
+                type = 'Снятие';
+                direction = `Снятие со счета`;
+                amount = `-${transaction.amount}`;
+            } else {
+                type = 'Перевод';
+                if (transaction.accountTo === currentAccountId) {
+                    direction = `Перевод со счета ${transaction.accountFrom} на текущий счет`;
+                    amount = `+${transaction.amount}`;
+                } else {
+                    direction = `Перевод с текущего счета на счет ${transaction.accountTo}`;
+                    amount = `-${transaction.amount}`;
+                }
+            }
+
+            return `
+                <tr>
+                    <td>${transaction.id}</td>
+                    <td>${new Date(transaction.transactionTimestamp).toLocaleString()}</td>
+                    <td>${type}</td>
+                    <td>${direction}</td>
+                    <td class="${amount.startsWith('+') ? 'positive-amount' : 'negative-amount'}">${amount}</td>
+                </tr>
+            `;
+        }).join('');
+
+        transactionsList.innerHTML = transactionsHtml;
     }
 }

@@ -141,3 +141,13 @@
 .btn-logout:hover {
     background-color: #c82333;
 }
+
+.positive-amount {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.negative-amount {
+    color: #f44336;
+    font-weight: bold;
+}
