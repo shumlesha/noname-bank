@@ -59,6 +59,7 @@
                 <tr>
                     <th>Номер счёта</th>
                     <th>Баланс</th>
+                    <th>Валюта</th>
                     <th>Тип счета</th>
                     <th>Статус</th>
                     <th>Действия</th>
@@ -117,6 +118,24 @@
         <div id="message-modal-content">
             <p id="message-modal-text"></p>
             <button id="message-modal-ok" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+</div>
+
+<div id="create-account-modal" class="modal">
+    <div class="modal-content">
+        <span id="close-create-account-modal-btn" class="close">&times;</span>
+        <h3>Создание нового счета</h3>
+        <div class="modal-form">
+            <div class="form-group">
+                <label for="currency-select">Выберите валюту:</label>
+                <select id="currency-select" class="form-control">
+                    <option value="RUB">Российский рубль (RUB)</option>
+                    <option value="USD">Доллар США (USD)</option>
+                    <option value="EUR">Евро (EUR)</option>
+                </select>
+            </div>
+            <button id="confirm-create-account-btn" class="btn btn-primary">Создать счет</button>
         </div>
     </div>
 </div>

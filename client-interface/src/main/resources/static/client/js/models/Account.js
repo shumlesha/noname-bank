@@ -10,6 +10,7 @@ export class Account extends BaseModel {
         this.isCredit = data.isCredit || false;
         this.closedTimestamp = data.closedTimestamp || null;
         this.clientId = data.clientId || '';
+        this.currency = data.currency || 'RUB';
     }
 
     isActive() {
@@ -25,6 +26,12 @@ export class Account extends BaseModel {
     }
 
     getFormattedBalance() {
-        return `${this.balance} ₽`;
+        const currencySymbols = {
+            'RUB': '₽',
+            'USD': '$',
+            'EUR': '€'
+        };
+        const symbol = currencySymbols[this.currency] || '₽';
+        return `${this.balance} ${symbol}`;
     }
 }

@@ -10,13 +10,14 @@ export class CreditController {
     }
     
     init() {
-        const userData = authService.getCurrentUser();
-        
-        this.displayUserData(userData);
-        
-        this.loadCredits();
-        
-        this.bindEventListeners();
+        authService.loadUserData().then(() => {
+            const userData = authService.getCurrentUser();
+            this.displayUserData(userData);
+            
+            this.loadCredits();
+            
+            this.bindEventListeners();
+        });
     }
     
     displayUserData(userData) {

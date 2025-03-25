@@ -16,10 +16,13 @@ class AccountService {
         };
     }
 
-    async createAccount(userId) {
+    async createAccount(userId, currency) {
         const response = await apiService.post(
             config.api.endpoints.account.create, 
-            { clientId: userId }
+            { 
+                clientId: userId,
+                currency: currency 
+            }
         );
         
         return new Account(response);

@@ -52,6 +52,22 @@ class AuthService {
         return !!(tokenData?.accessToken && userData?.userId);
     }
 
+    async loadUserData() {
+        try {
+            const response = await apiService.get(config.api.endpoints.user.me);
+            if (response && response.data) {
+                storageService.saveUserData({
+                    userId: response.data.id,
+                    email: response.data.email
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Ошибка при загрузке данных пользователя:", error);
+        }
+        return null;
+    }
+
     getCurrentUser() {
         const userData = storageService.getUserData();
         return userData ? new User(userData) : null;

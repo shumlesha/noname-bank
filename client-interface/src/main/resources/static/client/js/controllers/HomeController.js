@@ -15,14 +15,14 @@ export class HomeController {
     }
     
     init() {
-
-        const userData = authService.getCurrentUser();
-        
-        this.displayUserData(userData);
-        
-        this.loadAccounts();
-        
-        this.bindEventListeners();
+        authService.loadUserData().then(() => {
+            const userData = authService.getCurrentUser();
+            this.displayUserData(userData);
+            
+            this.loadAccounts();
+            
+            this.bindEventListeners();
+        });
     }
     
     displayUserData(userData) {
@@ -48,7 +48,17 @@ export class HomeController {
         });
         
         DomUtils.on('#create-account-btn', 'click', () => {
-            this.createAccount();
+            DomUtils.showModal('create-account-modal');
+        });
+        
+        DomUtils.on('#close-create-account-modal-btn', 'click', () => {
+            DomUtils.hideModal('create-account-modal');
+        });
+        
+        DomUtils.on('#confirm-create-account-btn', 'click', () => {
+            const currency = DomUtils.find('#currency-select').value;
+            DomUtils.hideModal('create-account-modal');
+            this.createAccount(currency);
         });
         
         DomUtils.on('#credits-btn', 'click', () => {
@@ -91,12 +101,12 @@ export class HomeController {
         });
     }
     
-    async createAccount() {
+    async createAccount(currency) {
         const userData = authService.getCurrentUser();
 
         try {
-            await accountService.createAccount(userData.userId);
-            showSuccess("Счет успешно создан!");
+            await accountService.createAccount(userData.userId, currency);
+            showSuccess(`Счет в валюте ${currency} успешно создан!`);
             setTimeout(async () => {
                 await this.loadAccounts();
             }, 1000);
@@ -158,6 +168,7 @@ export class HomeController {
             let row = `<tr>
             <td><a href="#" class="account-link" data-id="${account.id}">${account.number}</a></td>
             <td>${account.getFormattedBalance()}</td>
+            <td>${account.currency}</td>
             <td>${account.getType()}</td>
             <td>${account.getStatus()}</td>
             <td>${actions}</td>
@@ -209,6 +220,7 @@ export class HomeController {
                 <h3>Детали счета</h3>
                 <p><strong>Номер счета:</strong> ${data.account.number}</p>
                 <p><strong>Баланс:</strong> ${data.account.getFormattedBalance()}</p>
+                <p><strong>Валюта:</strong> ${data.account.currency}</p>
                 <p><strong>Тип:</strong> ${data.account.getType()}</p>
                 <p><strong>Статус:</strong> ${data.account.getStatus()}</p>
             `;

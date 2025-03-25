@@ -25,6 +25,9 @@ export const config = {
                 pay: '/api/credit/command/pay',
                 tariffs: '/api/credit/tariff/query/all',
                 create: '/api/credit/command'
+            },
+            user: {
+                me: '/api/users/me'
             }
         }
     },
