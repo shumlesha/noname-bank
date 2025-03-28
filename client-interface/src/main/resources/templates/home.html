@@ -59,28 +59,35 @@
 
         <div class="content-section" id="accounts-section">
             <h3>Ваши счета</h3>
-            <div class="account-filters">
-                <div class="filter-group">
-                    <label>Тип счета:</label>
-                    <select id="account-type-filter">
-                        <option value="all">Все</option>
-                        <option value="debit">Дебетовый</option>
-                        <option value="credit">Кредитный</option>
-                    </select>
+            <div class="account-actions-row">
+                <div class="account-filters-container">
+                    <div class="filter-label">Фильтры:</div>
+                    <div class="filter-dropdown">
+                        <select id="account-type-filter">
+                            <option value="all">Все типы</option>
+                            <option value="debit">Дебетовый</option>
+                            <option value="credit">Кредитный</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="account-status-filter">
+                            <option value="all">Все статусы</option>
+                            <option value="active">Активные</option>
+                            <option value="closed">Закрытые</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters-btn" class="btn btn-icon">
+                        <span class="material-icons">filter_list</span>
+                    </button>
                 </div>
-                <div class="filter-group">
-                    <label>Статус:</label>
-                    <select id="account-status-filter">
-                        <option value="all">Все</option>
-                        <option value="active">Активные</option>
-                        <option value="closed">Закрытые</option>
-                    </select>
+                <div class="account-action-btns">
+                    <button id="create-account-btn" class="btn btn-primary">
+                        <span class="material-icons">add</span> Создать счёт
+                    </button>
+                    <button id="transfer-money-btn" class="btn btn-primary">
+                        <span class="material-icons">swap_horiz</span> Перевести
+                    </button>
                 </div>
-                <button id="apply-filters-btn" class="btn btn-secondary">Применить</button>
-            </div>
-            <div class="account-actions-buttons">
-                <button id="create-account-btn" class="btn btn-primary">Создать счёт</button>
-                <button id="transfer-money-btn" class="btn btn-primary">Перевести деньги</button>
             </div>
             <table id="accounts-table">
                 <thead>
