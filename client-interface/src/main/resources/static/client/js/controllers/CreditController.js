@@ -42,8 +42,10 @@ export class CreditController {
     applyCurrentTheme() {
         const currentTheme = settingsService.getCurrentTheme();
         if (currentTheme === config.themes.DARK) {
+            document.documentElement.classList.add('dark-theme');
             document.body.classList.add('dark-theme');
         } else {
+            document.documentElement.classList.remove('dark-theme');
             document.body.classList.remove('dark-theme');
         }
     }

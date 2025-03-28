@@ -7,12 +7,26 @@
     <link rel="stylesheet" th:href="@{/client/css/styles.css}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        /* Быстрый фикс для иконок, чтобы они вертикально центрировались */
         .material-icons {
             display: inline-flex;
             vertical-align: middle;
         }
     </style>
+    <script>
+        (function() {
+            const userSettings = localStorage.getItem('user_settings');
+            if (userSettings) {
+                try {
+                    const settings = JSON.parse(userSettings);
+                    if (settings && settings.theme === 'DARK') {
+                        document.documentElement.classList.add('dark-theme');
+                    }
+                } catch (e) {
+                    console.error('Ошибка при чтении настроек темы:', e);
+                }
+            }
+        })();
+    </script>
 </head>
 <body>
 <div class="container">

@@ -25,6 +25,7 @@
     --button-text-color: #fff;
 }
 
+:root.dark-theme,
 body.dark-theme {
     --primary-color: #2ecc71;
     --primary-color-hover: #27ae60;
@@ -44,6 +45,10 @@ body.dark-theme {
     --input-bg-color: #2a2a2a;
     --input-border-color: #444;
     --button-text-color: #fff;
+}
+
+html {
+    background-color: var(--background-color);
 }
 
 body {
