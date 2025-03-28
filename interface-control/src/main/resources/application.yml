@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: interface-control-service
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://46.29.239.208:5435/user_settings
+    username: ${POSTGRES_USER:user_settings_user}
+    password: ${POSTGRES_PASSWORD:user_settings_password_strongvery}
+  flyway:
+    enabled: true
+    locations:
+      - migration
+
+server:
+  port: 8089
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
