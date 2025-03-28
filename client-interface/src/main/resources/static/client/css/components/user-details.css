@@ -1,18 +1,20 @@
 .user-details {
-    background-color: #f8f9fa;
+    background-color: var(--card-bg-color);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border-left: 4px solid #27ae60;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    border-left: 4px solid var(--primary-color);
     margin-bottom: 25px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .user-details p {
     margin-bottom: 12px;
     padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
+    color: var(--text-color);
 }
 
 .user-details p:last-child {
@@ -22,7 +24,7 @@
 }
 
 .user-details strong {
-    color: #27ae60;
+    color: var(--primary-color);
     margin-right: 10px;
     min-width: 150px;
     display: inline-block;
@@ -30,4 +32,5 @@
 
 .user-details span {
     font-weight: 500;
+    color: var(--text-color);
 }

@@ -24,16 +24,17 @@
 }
 
 .modal-content {
-    background-color: white;
+    background-color: var(--modal-bg-color);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 30px var(--modal-shadow-color);
     width: 50%;
     max-width: 600px;
     text-align: center;
     position: relative;
     margin: auto;
     animation: slideIn 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 @keyframes slideIn {
@@ -42,7 +43,7 @@
 }
 
 .modal-content h3 {
-    color: #27ae60;
+    color: var(--primary-color);
     margin-bottom: 20px;
     font-size: 22px;
 }
@@ -54,12 +55,12 @@
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    color: #666;
+    color: var(--text-color);
     transition: color 0.2s ease;
 }
 
 .close:hover {
-    color: #e74c3c;
+    color: var(--danger-color);
 }
 
 #message-modal .modal-content {
@@ -75,14 +76,15 @@
     font-size: 16px;
     margin-bottom: 20px;
     line-height: 1.5;
+    color: var(--text-color);
 }
 
 .error-message-text {
-    color: #e74c3c;
+    color: var(--danger-color);
 }
 
 .success-message-text {
-    color: #27ae60;
+    color: var(--primary-color);
 }
 
 .warning-message-text {

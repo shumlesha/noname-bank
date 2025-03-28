@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная страница</title>
     <link rel="stylesheet" th:href="@{/client/css/styles.css}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Быстрый фикс для иконок, чтобы они вертикально центрировались */
+        .material-icons {
+            display: inline-flex;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -13,6 +21,9 @@
             <h1>NoName Банк</h1>
         </div>
         <div class="user-info">
+            <button id="theme-toggle" class="theme-toggle" title="Переключить тему">
+                <span class="material-icons theme-toggle-icon">brightness_medium</span>
+            </button>
             <button id="credits-btn" class="btn btn-secondary">Мои кредиты</button>
             <span id="user-email"></span>
             <button id="logout-btn" class="btn btn-logout">Выйти</button>
@@ -70,7 +81,7 @@
                 </thead>
                 <tbody id="accounts-list">
                 <tr>
-                    <td colspan="5">Загрузка данных...</td>
+                    <td colspan="6">Загрузка данных...</td>
                 </tr>
                 </tbody>
             </table>
@@ -171,10 +182,12 @@
 <script type="module" th:src="@{/client/js/config/config.js}"></script>
 <script type="module" th:src="@{/client/js/utils/httpClient.js}"></script>
 <script type="module" th:src="@{/client/js/utils/domUtils.js}"></script>
+<script type="module" th:src="@{/client/js/utils/modalUtils.js}"></script>
 <script type="module" th:src="@{/client/js/core/storageService.js}"></script>
 <script type="module" th:src="@{/client/js/core/apiService.js}"></script>
 <script type="module" th:src="@{/client/js/core/authService.js}"></script>
 <script type="module" th:src="@{/client/js/core/accountService.js}"></script>
+<script type="module" th:src="@{/client/js/core/settingsService.js}"></script>
 <script type="module" th:src="@{/client/js/models/BaseModel.js}"></script>
 <script type="module" th:src="@{/client/js/models/User.js}"></script>
 <script type="module" th:src="@{/client/js/models/Account.js}"></script>

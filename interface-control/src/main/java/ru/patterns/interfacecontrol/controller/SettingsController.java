@@ -30,7 +30,7 @@ public class SettingsController {
         return ResponseEntity.ok(DefaultResponse.success(settings));
     }
 
-    @PutMapping("/theme")
+    @PostMapping("/theme")
     public ResponseEntity<DefaultResponse<UserSettingsDto>> updateTheme(@RequestBody UpdateThemeDto dto) {
         var updatedSettings = settingsService.updateTheme(dto.clientId(), dto.theme());
         return ResponseEntity.ok(DefaultResponse.success(updatedSettings));
@@ -38,7 +38,7 @@ public class SettingsController {
 
     @PostMapping("/hide-account")
     public ResponseEntity<DefaultResponse<UserSettingsDto>> hideAccount(@RequestBody HideAccountDto dto) {
-        var updatedSettings = settingsService.hideAccount(dto.clientId(), dto.clientId());
+        var updatedSettings = settingsService.hideAccount(dto.clientId(), dto.accountId());
         return ResponseEntity.ok(DefaultResponse.success(updatedSettings));
     }
 

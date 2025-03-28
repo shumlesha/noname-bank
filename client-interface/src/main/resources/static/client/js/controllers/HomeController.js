@@ -4,6 +4,7 @@ import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showConfirm, showError, showSuccess} from '../utils/modalUtils.js';
 import {storageService} from "../core/storageService.js";
+import {settingsService} from "../core/settingsService.js";
 
 export class HomeController {
     constructor() {
@@ -16,13 +17,85 @@ export class HomeController {
     }
     
     init() {
-        authService.loadUserData().then(() => {
+        authService.loadUserData().then(async () => {
             const userData = authService.getCurrentUser();
             this.displayUserData(userData);
             
-            this.loadAccounts();
+            // Сначала применяем локальные настройки из localStorage
+            settingsService.loadCachedSettings();
+            this.applyCurrentTheme();
+            
+            // Затем асинхронно загружаем настройки с сервера и обновляем UI
+            this.loadUserSettings(userData.userId).then(() => {
+                this.applyCurrentTheme();
+                this.renderAccounts();
+            });
+            
+            // Загружаем счета
+            await this.loadAccounts();
             
             this.bindEventListeners();
+        });
+    }
+    
+    async loadUserSettings(userId) {
+        try {
+            await settingsService.loadUserSettings(userId);
+        } catch (error) {
+            console.error("Ошибка при загрузке настроек:", error);
+        }
+    }
+    
+    applyCurrentTheme() {
+        const currentTheme = settingsService.getCurrentTheme();
+        if (currentTheme === config.themes.DARK) {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    }
+    
+    toggleTheme() {
+        const userData = authService.getCurrentUser();
+        const currentTheme = settingsService.getCurrentTheme();
+        const newTheme = currentTheme === config.themes.LIGHT ? config.themes.DARK : config.themes.LIGHT;
+        
+        // Применяем изменения локально сразу
+        settingsService.updateThemeLocally(newTheme);
+        this.applyCurrentTheme();
+        
+        // Отправляем запрос на сервер асинхронно
+        settingsService.syncThemeWithServer(userData.userId, newTheme)
+            .catch(error => {
+                console.error("Ошибка при синхронизации темы с сервером:", error);
+                // Уже применили изменения локально, поэтому просто логируем ошибку
+            });
+    }
+    
+    toggleAccountVisibility(accountId) {
+        const userData = authService.getCurrentUser();
+        const isHidden = settingsService.isAccountHidden(accountId);
+        
+        console.log(`Переключение видимости счета ${accountId}, текущий статус: ${isHidden ? 'скрыт' : 'виден'}`);
+        
+        // Меняем видимость локально немедленно
+        if (isHidden) {
+            settingsService.unhideAccountLocally(accountId);
+        } else {
+            settingsService.hideAccountLocally(accountId);
+        }
+        
+        // Сразу перерисовываем счета с новыми настройками
+        this.renderAccounts();
+        
+        // Отправляем запрос на сервер асинхронно
+        const action = isHidden 
+            ? settingsService.syncUnhideAccountWithServer(userData.userId, accountId)
+            : settingsService.syncHideAccountWithServer(userData.userId, accountId);
+            
+        action.catch(error => {
+            console.error("Ошибка при синхронизации видимости счета с сервером:", error);
+            // Уже применили изменения локально, поэтому просто логируем ошибку
         });
     }
     
@@ -113,6 +186,23 @@ export class HomeController {
         DomUtils.on('#apply-filters-btn', 'click', () => {
             this.renderAccounts();
         });
+        
+        // Добавляем обработчик для переключения темы
+        DomUtils.on('#theme-toggle', 'click', () => {
+            this.toggleTheme();
+        });
+        
+        // Фиксируем делегирование событий для переключения видимости счетов
+        DomUtils.on('#accounts-list', 'click', (e) => {
+            if (e.target.classList.contains('account-visibility-toggle') || 
+                e.target.closest('.account-visibility-toggle')) {
+                const button = e.target.classList.contains('account-visibility-toggle') 
+                    ? e.target 
+                    : e.target.closest('.account-visibility-toggle');
+                const accountId = button.dataset.id;
+                this.toggleAccountVisibility(accountId);
+            }
+        });
     }
     
     async createAccount(currency) {
@@ -148,7 +238,7 @@ export class HomeController {
         accountsList.innerHTML = "";
 
         if (this.accounts.length === 0) {
-            accountsList.innerHTML = "<tr><td colspan='5'>У вас нет счетов</td></tr>";
+            accountsList.innerHTML = "<tr><td colspan='6'>У вас нет счетов</td></tr>";
             return;
         }
 
@@ -167,11 +257,15 @@ export class HomeController {
         });
 
         if (filteredAccounts.length === 0) {
-            accountsList.innerHTML = "<tr><td colspan='5'>Нет счетов, соответствующих выбранным фильтрам</td></tr>";
+            accountsList.innerHTML = "<tr><td colspan='6'>Нет счетов, соответствующих выбранным фильтрам</td></tr>";
             return;
         }
 
         filteredAccounts.forEach(account => {
+            const isHidden = settingsService.isAccountHidden(account.id);
+            const rowClass = isHidden ? 'hidden-account' : '';
+            const balanceClass = isHidden ? 'hidden-account-value' : '';
+            
             let actions = account.isActive()
                 ? `<div class="account-actions">
                 <button class="btn btn-primary deposit-btn" data-id="${account.id}">Пополнить</button>
@@ -180,9 +274,19 @@ export class HomeController {
             </div>`
                 : `<span>Нет доступных действий</span>`;
 
-            let row = `<tr>
-            <td><a href="#" class="account-link" data-id="${account.id}">${account.id}</a></td>
-            <td>${account.getFormattedBalance()}</td>
+            const visibilityIcon = isHidden ? 'visibility_off' : 'visibility';
+            const visibilityTitle = isHidden ? 'Показать счет' : 'Скрыть счет';
+
+            let row = `<tr class="${rowClass}">
+            <td>
+                <div style="display: flex; align-items: center; justify-content: space-between">
+                    <a href="#" class="account-link" data-id="${account.id}">${account.id}</a>
+                    <button class="account-visibility-toggle" data-id="${account.id}" title="${visibilityTitle}">
+                        <span class="material-icons">${visibilityIcon}</span>
+                    </button>
+                </div>
+            </td>
+            <td class="${balanceClass}">${account.getFormattedBalance()}</td>
             <td>${account.currency}</td>
             <td>${account.getType()}</td>
             <td>${account.getStatus()}</td>

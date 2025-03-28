@@ -31,13 +31,20 @@ export const config = {
             },
             user: {
                 me: '/api/users/me'
+            },
+            settings: {
+                get: '/api/settings',
+                updateTheme: '/api/settings/theme',
+                hideAccount: '/api/settings/hide-account',
+                unhideAccount: '/api/settings/unhide-account'
             }
         }
     },
 
     storage: {
         tokens: 'auth_tokens',
-        userData: 'user_data'
+        userData: 'user_data',
+        userSettings: 'user_settings'
     },
 
     routes: {
@@ -45,5 +52,10 @@ export const config = {
         login: '/client/login',
         register: '/client/register',
         credit: '/client/credit'
+    },
+    
+    themes: {
+        LIGHT: 'LIGHT',
+        DARK: 'DARK'
     }
 };
