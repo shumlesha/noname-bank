@@ -54,8 +54,7 @@ export class CreditController {
         const userData = authService.getCurrentUser();
         const currentTheme = settingsService.getCurrentTheme();
         const newTheme = currentTheme === config.themes.LIGHT ? config.themes.DARK : config.themes.LIGHT;
-        
-        // Применяем изменения локально сразу
+
         settingsService.updateThemeLocally(newTheme);
         this.applyCurrentTheme();
 
@@ -145,8 +144,7 @@ export class CreditController {
         DomUtils.on('#close-modal-btn', 'click', () => {
             DomUtils.hideModal('tariff-modal');
         });
-        
-        // Добавляем обработчик для переключения темы
+
         DomUtils.on('#theme-toggle', 'click', () => {
             this.toggleTheme();
         });
