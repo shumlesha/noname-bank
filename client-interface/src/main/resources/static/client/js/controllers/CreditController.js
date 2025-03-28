@@ -3,26 +3,64 @@ import {creditService} from '../core/creditService.js';
 import {DomUtils} from '../utils/domUtils.js';
 import {config} from '../config/config.js';
 import {showError, showSuccess} from '../utils/modalUtils.js';
+import {settingsService} from '../core/settingsService.js';
 
 export class CreditController {
     constructor() {
+        settingsService.loadCachedSettings();
+        this.applyCurrentTheme();
+        
         this.init();
     }
 
     init() {
-        authService.loadUserData().then(() => {
+        authService.loadUserData().then(async () => {
             const userData = authService.getCurrentUser();
-
             this.displayUserData(userData);
 
-            this.loadCreditRating(userData.userId);
+            const settingsPromise = this.loadUserSettings(userData.userId);
+            const ratingPromise = this.loadCreditRating(userData.userId);
+            const creditsPromise = this.loadCredits(userData.userId);
+            const missedPaymentsPromise = this.loadMissedPayments(userData.userId);
 
-            this.loadCredits(userData.userId);
+            await Promise.all([settingsPromise, ratingPromise, creditsPromise, missedPaymentsPromise]);
 
-            this.loadMissedPayments(userData.userId);
+            this.applyCurrentTheme();
 
             this.bindEventListeners();
         });
+    }
+    
+    async loadUserSettings(userId) {
+        try {
+            await settingsService.loadUserSettings(userId);
+        } catch (error) {
+            console.error("Ошибка при загрузке настроек:", error);
+        }
+    }
+    
+    applyCurrentTheme() {
+        const currentTheme = settingsService.getCurrentTheme();
+        if (currentTheme === config.themes.DARK) {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    }
+    
+    toggleTheme() {
+        const userData = authService.getCurrentUser();
+        const currentTheme = settingsService.getCurrentTheme();
+        const newTheme = currentTheme === config.themes.LIGHT ? config.themes.DARK : config.themes.LIGHT;
+        
+        // Применяем изменения локально сразу
+        settingsService.updateThemeLocally(newTheme);
+        this.applyCurrentTheme();
+
+        settingsService.syncThemeWithServer(userData.userId, newTheme)
+            .catch(error => {
+                console.error("Ошибка при синхронизации темы с сервером:", error);
+            });
     }
 
     async loadCreditRating(userId) {
@@ -104,6 +142,11 @@ export class CreditController {
         
         DomUtils.on('#close-modal-btn', 'click', () => {
             DomUtils.hideModal('tariff-modal');
+        });
+        
+        // Добавляем обработчик для переключения темы
+        DomUtils.on('#theme-toggle', 'click', () => {
+            this.toggleTheme();
         });
     }
 

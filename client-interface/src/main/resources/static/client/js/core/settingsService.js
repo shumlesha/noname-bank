@@ -1,5 +1,4 @@
 import {apiService} from './apiService.js';
-import {storageService} from './storageService.js';
 import {config} from '../config/config.js';
 
 class SettingsService {
@@ -9,14 +8,12 @@ class SettingsService {
 
     async loadUserSettings(userId) {
         try {
-            // Пробуем получить настройки из localStorage
             const cachedSettings = this.getCachedSettings();
             if (cachedSettings) {
                 this.settings = cachedSettings;
                 return cachedSettings;
             }
 
-            // Если нет в кэше, запрашиваем с сервера
             const response = await apiService.get(`/api/settings/${userId}`);
             if (response && response.data) {
                 this.settings = response.data;
@@ -26,7 +23,6 @@ class SettingsService {
             return null;
         } catch (error) {
             console.error('Ошибка при загрузке настроек:', error);
-            // Если не удалось загрузить, создаем настройки по умолчанию
             const defaultSettings = {
                 userId,
                 theme: 'LIGHT',
@@ -37,8 +33,6 @@ class SettingsService {
             return defaultSettings;
         }
     }
-
-    // ЛОКАЛЬНЫЕ МЕТОДЫ ДЛЯ МГНОВЕННОГО ОБНОВЛЕНИЯ UI
     
     updateThemeLocally(theme) {
         if (!this.settings) {
@@ -63,7 +57,6 @@ class SettingsService {
             if (!this.settings.hiddenAccounts) {
                 this.settings.hiddenAccounts = [];
             }
-            // Добавляем только если еще нет в массиве
             const accountIdStr = accountId.toString();
             if (!this.settings.hiddenAccounts.some(id => id.toString() === accountIdStr)) {
                 this.settings.hiddenAccounts.push(accountIdStr);
@@ -83,8 +76,6 @@ class SettingsService {
             console.log(`Счет ${accountId} успешно показан локально`);
         }
     }
-
-    // МЕТОДЫ ДЛЯ СИНХРОНИЗАЦИИ С СЕРВЕРОМ
     
     async syncThemeWithServer(userId, theme) {
         try {
@@ -96,9 +87,7 @@ class SettingsService {
             
             if (response && response.data) {
                 console.log('Получены обновленные настройки с сервера:', response.data);
-                // Обновляем данные в памяти, но не перезаписываем локальные изменения темы
                 if (this.settings) {
-                    // Обновляем только то, что не касается темы
                     this.settings.hiddenAccounts = response.data.hiddenAccounts || this.settings.hiddenAccounts;
                 } else {
                     this.settings = response.data;
@@ -122,14 +111,11 @@ class SettingsService {
             
             if (response && response.data) {
                 console.log('Получены обновленные настройки с сервера:', response.data);
-                
-                // Сохраняем тему из локальных настроек (она могла измениться)
+
                 const localTheme = this.settings ? this.settings.theme : 'LIGHT';
-                
-                // Обновляем настройки с сервера
+
                 this.settings = response.data;
-                
-                // Применяем локальную тему, если она отличается
+
                 if (this.settings.theme !== localTheme) {
                     this.settings.theme = localTheme;
                 }
@@ -153,14 +139,11 @@ class SettingsService {
             
             if (response && response.data) {
                 console.log('Получены обновленные настройки с сервера:', response.data);
-                
-                // Сохраняем тему из локальных настроек (она могла измениться)
+
                 const localTheme = this.settings ? this.settings.theme : 'LIGHT';
-                
-                // Обновляем настройки с сервера
+
                 this.settings = response.data;
-                
-                // Применяем локальную тему, если она отличается
+
                 if (this.settings.theme !== localTheme) {
                     this.settings.theme = localTheme;
                 }
@@ -174,34 +157,15 @@ class SettingsService {
         }
     }
 
-    // СТАРЫЕ МЕТОДЫ (сохраняем для обратной совместимости)
-    
-    async updateTheme(userId, theme) {
-        this.updateThemeLocally(theme);
-        return this.syncThemeWithServer(userId, theme);
-    }
-
-    async hideAccount(userId, accountId) {
-        this.hideAccountLocally(accountId);
-        return this.syncHideAccountWithServer(userId, accountId);
-    }
-
-    async unhideAccount(userId, accountId) {
-        this.unhideAccountLocally(accountId);
-        return this.syncUnhideAccountWithServer(userId, accountId);
-    }
-
     isAccountHidden(accountId) {
         if (!this.settings || !this.settings.hiddenAccounts) {
             return false;
         }
-        
-        // Преобразовать accountId в строку, чтобы сравнение работало корректно
+
         const accountIdStr = accountId.toString();
         console.log('Проверка скрытия счета:', accountIdStr);
         console.log('Список скрытых счетов:', this.settings.hiddenAccounts);
-        
-        // Проверить, содержит ли массив hiddenAccounts accountId
+
         return this.settings.hiddenAccounts.some(id => id.toString() === accountIdStr);
     }
 
@@ -226,7 +190,6 @@ class SettingsService {
         this.settings = null;
     }
 
-    // Добавляем метод для загрузки настроек из localStorage
     loadCachedSettings() {
         const settings = this.getCachedSettings();
         if (settings) {

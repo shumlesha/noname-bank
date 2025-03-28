@@ -13,6 +13,10 @@ export class HomeController {
             type: 'all',
             status: 'all'
         };
+
+        settingsService.loadCachedSettings();
+        this.applyCurrentTheme();
+        
         this.init();
     }
     
@@ -20,19 +24,13 @@ export class HomeController {
         authService.loadUserData().then(async () => {
             const userData = authService.getCurrentUser();
             this.displayUserData(userData);
-            
-            // Сначала применяем локальные настройки из localStorage
-            settingsService.loadCachedSettings();
+
+            const settingsPromise = this.loadUserSettings(userData.userId);
+            const accountsPromise = this.loadAccounts();
+
+            await Promise.all([settingsPromise, accountsPromise]);
+
             this.applyCurrentTheme();
-            
-            // Затем асинхронно загружаем настройки с сервера и обновляем UI
-            this.loadUserSettings(userData.userId).then(() => {
-                this.applyCurrentTheme();
-                this.renderAccounts();
-            });
-            
-            // Загружаем счета
-            await this.loadAccounts();
             
             this.bindEventListeners();
         });
@@ -59,16 +57,13 @@ export class HomeController {
         const userData = authService.getCurrentUser();
         const currentTheme = settingsService.getCurrentTheme();
         const newTheme = currentTheme === config.themes.LIGHT ? config.themes.DARK : config.themes.LIGHT;
-        
-        // Применяем изменения локально сразу
+
         settingsService.updateThemeLocally(newTheme);
         this.applyCurrentTheme();
-        
-        // Отправляем запрос на сервер асинхронно
+
         settingsService.syncThemeWithServer(userData.userId, newTheme)
             .catch(error => {
                 console.error("Ошибка при синхронизации темы с сервером:", error);
-                // Уже применили изменения локально, поэтому просто логируем ошибку
             });
     }
     
@@ -77,25 +72,21 @@ export class HomeController {
         const isHidden = settingsService.isAccountHidden(accountId);
         
         console.log(`Переключение видимости счета ${accountId}, текущий статус: ${isHidden ? 'скрыт' : 'виден'}`);
-        
-        // Меняем видимость локально немедленно
+
         if (isHidden) {
             settingsService.unhideAccountLocally(accountId);
         } else {
             settingsService.hideAccountLocally(accountId);
         }
-        
-        // Сразу перерисовываем счета с новыми настройками
+
         this.renderAccounts();
-        
-        // Отправляем запрос на сервер асинхронно
+
         const action = isHidden 
             ? settingsService.syncUnhideAccountWithServer(userData.userId, accountId)
             : settingsService.syncHideAccountWithServer(userData.userId, accountId);
             
         action.catch(error => {
             console.error("Ошибка при синхронизации видимости счета с сервером:", error);
-            // Уже применили изменения локально, поэтому просто логируем ошибку
         });
     }
     
@@ -186,13 +177,11 @@ export class HomeController {
         DomUtils.on('#apply-filters-btn', 'click', () => {
             this.renderAccounts();
         });
-        
-        // Добавляем обработчик для переключения темы
+
         DomUtils.on('#theme-toggle', 'click', () => {
             this.toggleTheme();
         });
-        
-        // Фиксируем делегирование событий для переключения видимости счетов
+
         DomUtils.on('#accounts-list', 'click', (e) => {
             if (e.target.classList.contains('account-visibility-toggle') || 
                 e.target.closest('.account-visibility-toggle')) {

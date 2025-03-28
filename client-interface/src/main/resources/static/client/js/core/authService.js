@@ -2,12 +2,14 @@ import {apiService} from './apiService.js';
 import {storageService} from './storageService.js';
 import {config} from '../config/config.js';
 import {User} from '../models/User.js';
+import {settingsService} from './settingsService.js';
 
 class AuthService {
 
     logout() {
         window.location.href = "/";
         storageService.removeUserData();
+        settingsService.clearCachedSettings();
     }
 
     async loadUserData() {
