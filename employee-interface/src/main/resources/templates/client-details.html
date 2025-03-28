@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/employee/css/styles.css}">
     <link rel="stylesheet" th:href="@{/employee/css/accounts.css}">
     <link rel="stylesheet" th:href="@{/employee/css/client-details.css}">
+    <link rel="stylesheet" th:href="@{/employee/css/modal.css}">
 </head>
 <body>
 <div class="container">
@@ -42,10 +43,29 @@
 
             <div id="client-info-container"></div>
             
-
-            <div id="client-summary-container" class="client-summary-container"></div>
-            
             <div class="client-data-sections">
+                <div class="credit-info-row">
+                    <div class="credit-info-column">
+                        <div class="section-header">
+                            <h3>Кредитный рейтинг</h3>
+                        </div>
+                        <div id="client-credit-rating-loading" class="loading-indicator">
+                            <span class="loading-text">Загрузка кредитного рейтинга...</span>
+                        </div>
+                        <div id="client-credit-rating-container"></div>
+                    </div>
+                    
+                    <div class="credit-info-column">
+                        <div class="section-header">
+                            <h3>Просроченные платежи</h3>
+                        </div>
+                        <div id="client-missed-payments-loading" class="loading-indicator">
+                            <span class="loading-text">Загрузка просроченных платежей...</span>
+                        </div>
+                        <div id="client-missed-payments-container"></div>
+                    </div>
+                </div>
+
                 <div class="section-header">
                     <h3>Счета клиента</h3>
                 </div>
@@ -63,11 +83,9 @@
                 <div id="client-credits-container"></div>
             </div>
 
-            <div id="account-details-container" style="display: none;"></div>
             <div id="account-details-loading" class="loading-indicator" style="display: none;">
                 <span class="loading-text">Загрузка деталей счета...</span>
             </div>
-            <div id="transactions-container" style="display: none;"></div>
             <div id="transactions-loading" class="loading-indicator" style="display: none;">
                 <span class="loading-text">Загрузка транзакций...</span>
             </div>

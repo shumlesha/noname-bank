@@ -154,3 +154,202 @@
     padding: 20px;
     font-style: italic;
 }
+
+.credit-info-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.credit-info-column {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.credit-rating-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.credit-rating-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.credit-rating-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.rating-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.rating-bar {
+    width: 100%;
+    height: 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+}
+
+.credit-rating-value.excellent .rating-number {
+    color: #28a745;
+}
+
+.credit-rating-value.good .rating-number {
+    color: #17a2b8;
+}
+
+.credit-rating-value.average .rating-number {
+    color: #ffc107;
+}
+
+.credit-rating-value.poor .rating-number {
+    color: #fd7e14;
+}
+
+.credit-rating-value.very-poor .rating-number {
+    color: #dc3545;
+}
+
+.rating-bar-fill.excellent {
+    background-color: #28a745;
+}
+
+.rating-bar-fill.good {
+    background-color: #17a2b8;
+}
+
+.rating-bar-fill.average {
+    background-color: #ffc107;
+}
+
+.rating-bar-fill.poor {
+    background-color: #fd7e14;
+}
+
+.rating-bar-fill.very-poor {
+    background-color: #dc3545;
+}
+
+.credit-rating-description {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.credit-rating-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.credit-rating-info p {
+    margin: 5px 0;
+}
+
+
+.missed-payments-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.missed-payments-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.missed-payments-summary {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.missed-payments-summary .summary-label {
+    font-weight: 500;
+    color: #555;
+    white-space: nowrap;
+}
+
+.missed-payments-summary .summary-value {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.missed-payments-list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.missed-payments-list th, 
+.missed-payments-list td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9rem;
+}
+
+.missed-payments-list th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.missed-payments-list tr:hover {
+    background-color: #f5f5f5;
+}
+
+.debt-amount {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+
+@media (max-width: 768px) {
+    .credit-info-row {
+        flex-direction: column;
+    }
+    
+    .credit-info-column {
+        width: 100%;
+    }
+}

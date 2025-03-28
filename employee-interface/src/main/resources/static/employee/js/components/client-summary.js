@@ -1,10 +1,12 @@
 import {formatCurrency} from '../utils/format-utils.js';
 
-export const renderClientSummary = (accounts, credits, container) => {
-    if (!container) return;
+export const renderClientSummary = (clientData, container) => {
+    if (!container || !clientData) return;
     
     const summaryContainer = document.createElement('div');
     summaryContainer.className = 'client-summary';
+
+    const { accounts, credits, creditRating } = clientData;
 
     const totalAccounts = accounts ? accounts.length : 0;
     let totalBalance = 0;
@@ -46,6 +48,7 @@ export const renderClientSummary = (accounts, credits, container) => {
     }
     
     const remainingDebt = totalCreditAmount - totalPaidAmount;
+    const creditRatingValue = creditRating ? creditRating.rating : 'Н/Д';
 
     summaryContainer.innerHTML = `
         <h3>Сводная информация</h3>
@@ -78,8 +81,14 @@ export const renderClientSummary = (accounts, credits, container) => {
                 <span class="summary-label">Остаток задолженности:</span>
                 <span class="summary-value">${formatCurrency(remainingDebt)}</span>
             </div>
+            <div class="summary-item">
+                <span class="summary-label">Кредитный рейтинг:</span>
+                <span class="summary-value">${creditRatingValue}</span>
+            </div>
         </div>
     `;
     
+
+    container.innerHTML = '';
     container.appendChild(summaryContainer);
 };
