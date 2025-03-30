@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clientMainRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ClientMainActivity"
+    android:background="@color/white">
+
+    <!-- Зелёная «шапка» -->
+    <View
+        android:id="@+id/greenHeader"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@color/greenPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <!-- Кнопка «Открыть счёт» в верхней части -->
+    <Button
+        android:id="@+id/btnOpenAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Открыть счет"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/greenDark"
+        app:layout_constraintTop_toTopOf="@id/greenHeader"
+        app:layout_constraintBottom_toBottomOf="@id/greenHeader"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <!-- RecyclerView со списком счетов -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewAccounts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/greenHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
