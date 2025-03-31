@@ -31,7 +31,8 @@ import java.util.Collections.singleton
 @ComponentScan(
     basePackages = [
         "ru.patterns.core.service",
-        "ru.patterns.core.controller"
+        "ru.patterns.core.controller",
+        "ru.patterns.core.security"
     ]
 )
 @EnableConfigurationProperties(KafkaListenerProperties::class)
