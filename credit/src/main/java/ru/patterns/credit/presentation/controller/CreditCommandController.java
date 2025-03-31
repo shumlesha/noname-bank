@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.command.CreateCreditCommand;
 import ru.patterns.credit.application.command.PayCreditCommand;
+import ru.patterns.credit.configuration.security.user.CurrentUser;
 import ru.patterns.credit.infrastructure.handler.command.CreditCreateCommandHandler;
 import ru.patterns.credit.infrastructure.handler.command.CreditPayCommandHandler;
 import ru.patterns.credit.shared.common.DefaultResponse;
@@ -26,8 +28,11 @@ public class CreditCommandController {
 
     @PostMapping
     @Operation(summary = "Взять кредит")
-    public ResponseEntity<DefaultResponse<UUID>> createCredit(@RequestBody CreateCreditCommand command) {
-        var creditId = creditCreateCommandHandler.handle(command);
+    public ResponseEntity<DefaultResponse<UUID>> createCredit(
+            @RequestBody CreateCreditCommand command,
+            @AuthenticationPrincipal CurrentUser user
+    ) {
+        var creditId = creditCreateCommandHandler.handle(command, user.getId());
         return ResponseEntity.ok(DefaultResponse.success(creditId));
     }
 
