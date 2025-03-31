@@ -2,6 +2,7 @@ import {apiService} from './apiService.js';
 import {config} from '../config/config.js';
 import {Account} from '../models/Account.js';
 import {Transaction} from '../models/Transaction.js';
+import {websocketService} from './websocketService.js';
 
 class AccountService {
     async loadAccounts(userId) {
@@ -67,18 +68,41 @@ class AccountService {
             config.api.endpoints.account.details, 
             { clientId: userId, accountId }
         );
+        websocketService.clearTransactions();
 
+        const transactions = await this.getTransactionsViaWebSocket(accountId);
+
+        return {
+            account: new Account(accountResponse),
+            transactions: transactions
+        };
+    }
+
+    async getTransactionsViaWebSocket(accountId) {
+        try {
+            return await websocketService.getTransactions(accountId);
+        } catch (error) {
+            return this.getTransactionsViaRestApi(accountId);
+        }
+    }
+
+    async getTransactionsViaRestApi(accountId) {
         const transactionsResponse = await apiService.post(
             config.api.endpoints.transaction.list, 
             { accountId }
         );
+        
+        return transactionsResponse.transactions.map(
+            txData => new Transaction(txData)
+        );
+    }
 
-        return {
-            account: new Account(accountResponse),
-            transactions: transactionsResponse.transactions.map(
-                txData => new Transaction(txData)
-            )
-        };
+    subscribeToTransactions(accountId, callback) {
+        websocketService.subscribe(accountId, callback);
+    }
+
+    unsubscribeFromTransactions(accountId, callback) {
+        websocketService.unsubscribe(accountId, callback);
     }
 }
 

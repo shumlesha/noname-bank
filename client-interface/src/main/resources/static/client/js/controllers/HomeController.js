@@ -146,8 +146,10 @@ export class HomeController {
         });
         
         DomUtils.on('#back-to-accounts-btn', 'click', () => {
-            DomUtils.find('#accounts-section').style.display = 'block';
+            this.unsubscribeFromTransactionUpdates();
+            
             DomUtils.find('#account-details-section').style.display = 'none';
+            DomUtils.find('#accounts-section').style.display = 'block';
         });
 
         DomUtils.on('#close-account-modal-btn', 'click', () => {
@@ -319,12 +321,12 @@ export class HomeController {
     
     async loadAccountDetails(accountId) {
         const userData = authService.getCurrentUser();
+        this.currentAccountId = accountId;
 
         try {
             const data = await accountService.loadAccountDetails(userData.userId, accountId);
             
             const accountDetailsEl = DomUtils.find("#account-details");
-            const transactionsList = DomUtils.find("#transactions-list");
             
             accountDetailsEl.innerHTML = `
                 <h3>Детали счета</h3>
@@ -338,11 +340,32 @@ export class HomeController {
             
             this.renderTransactions(data.transactions, data.account.id);
             
+            this.subscribeToTransactionUpdates(accountId);
+            
             DomUtils.find('#accounts-section').style.display = 'none';
             DomUtils.find('#account-details-section').style.display = 'block';
         } catch (error) {
             console.error("Ошибка загрузки деталей счета:", error);
             showError("Ошибка загрузки деталей счета.");
+        }
+    }
+    
+    subscribeToTransactionUpdates(accountId) {
+        if (this.transactionUpdateCallback) {
+            accountService.unsubscribeFromTransactions(this.currentAccountId, this.transactionUpdateCallback);
+        }
+        
+        this.transactionUpdateCallback = (transactions) => {
+            this.renderTransactions(transactions, accountId);
+        };
+        
+        accountService.subscribeToTransactions(accountId, this.transactionUpdateCallback);
+    }
+    
+    unsubscribeFromTransactionUpdates() {
+        if (this.transactionUpdateCallback && this.currentAccountId) {
+            accountService.unsubscribeFromTransactions(this.currentAccountId, this.transactionUpdateCallback);
+            this.transactionUpdateCallback = null;
         }
     }
     
