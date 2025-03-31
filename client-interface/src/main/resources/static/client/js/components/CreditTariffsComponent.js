@@ -1,47 +1,56 @@
 import {DomUtils} from '../utils/domUtils.js';
 import {creditService} from '../core/creditService.js';
 import {showError, showSuccess} from '../utils/modalUtils.js';
+import {PaginationComponent} from './PaginationComponent.js';
 
 export class CreditTariffsComponent {
     constructor(parentController) {
         this.parentController = parentController;
+        this.tariffs = [];
+        this.pagination = new PaginationComponent('tariffs-pagination', 5, () => this.renderTariffs());
     }
 
     async fetchCreditTariffs() {
         try {
             const data = await creditService.fetchCreditTariffs();
-            let tariffsList = DomUtils.find("#tariffs-list");
-            tariffsList.innerHTML = "";
-            
-            if (data.data.length === 0) {
-                tariffsList.innerHTML = "<tr><td colspan='3'>Нет доступных тарифов</td></tr>";
-                return;
-            }
-
-            data.data.forEach(tariff => {
-                let row = `<tr>
-                    <td>${tariff.name}</td>
-                    <td>${tariff.getFormattedInterestRate()}</td>
-                    <td>${tariff.getFormattedAutoPaymentRate()}</td>
-                    <td>${tariff.getFormattedPenaltyRate()}</td>
-                    <td>
-                        <button class="btn btn-success take-credit-btn" data-id="${tariff.id}">Выбрать</button>
-                    </td>
-                </tr>`;
-                tariffsList.innerHTML += row;
-            });
-            
+            this.tariffs = data.data || [];
+            this.renderTariffs();
             DomUtils.showModal('tariff-modal');
-            
-            DomUtils.findAll(".take-credit-btn").forEach(button => {
-                button.addEventListener("click", () => {
-                    this.takeCredit(button.dataset.id);
-                });
-            });
         } catch (error) {
             console.error("Ошибка при загрузке тарифов:", error);
             showError("Ошибка при загрузке кредитных тарифов.");
         }
+    }
+
+    renderTariffs() {
+        let tariffsList = DomUtils.find("#tariffs-list");
+        tariffsList.innerHTML = "";
+        
+        if (this.tariffs.length === 0) {
+            tariffsList.innerHTML = "<tr><td colspan='5'>Нет доступных тарифов</td></tr>";
+            return;
+        }
+
+        this.pagination.setTotalItems(this.tariffs.length);
+
+        const paginatedTariffs = this.pagination.getPaginatedItems(this.tariffs);
+
+        let rows = paginatedTariffs.map(tariff => `
+            <tr>
+                <td>${tariff.name}</td>
+                <td>${tariff.description}</td>
+                <td>${tariff.interestRate}%</td>
+                <td><button class="btn btn-primary take-credit-btn" data-id="${tariff.id}">Оформить</button></td>
+            </tr>
+        `).join("");
+
+        tariffsList.innerHTML = rows;
+        
+        DomUtils.findAll(".take-credit-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                this.takeCredit(button.dataset.id);
+            });
+        });
     }
     
     async takeCredit(tariffId) {

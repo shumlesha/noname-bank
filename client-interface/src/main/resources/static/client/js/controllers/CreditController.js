@@ -11,8 +11,7 @@ import {CreditTariffsComponent} from '../components/CreditTariffsComponent.js';
 export class CreditController {
     constructor() {
         settingsService.loadCachedSettings();
-        
-        // Инициализируем компоненты
+
         this.themeComponent = new ThemeComponent(this);
         this.creditRatingComponent = new CreditRatingComponent(this);
         this.missedPaymentsComponent = new MissedPaymentsComponent(this);

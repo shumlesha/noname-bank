@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная страница</title>
     <link rel="stylesheet" th:href="@{/client/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/client/css/pagination.css}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         .material-icons {
@@ -106,6 +107,7 @@
                 </tr>
                 </tbody>
             </table>
+            <div id="accounts-pagination" class="pagination-container"></div>
         </div>
 
         <div class="content-section" id="account-details-section" style="display: none;">
@@ -213,6 +215,7 @@
 <script type="module" th:src="@{/client/js/models/User.js}"></script>
 <script type="module" th:src="@{/client/js/models/Account.js}"></script>
 <script type="module" th:src="@{/client/js/models/Transaction.js}"></script>
+<script type="module" th:src="@{/client/js/components/PaginationComponent.js}"></script>
 <script type="module" th:src="@{/client/js/controllers/HomeController.js}"></script>
 <script type="module" th:src="@{/client/js/pages/home.js}"></script>
 

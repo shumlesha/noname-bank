@@ -2,6 +2,7 @@ import {DomUtils} from '../utils/domUtils.js';
 import {accountService} from '../core/accountService.js';
 import {showSuccess, showError, showConfirm} from '../utils/modalUtils.js';
 import {settingsService} from '../core/settingsService.js';
+import {PaginationComponent} from './PaginationComponent.js';
 
 export class AccountsComponent {
     constructor(parentController) {
@@ -11,6 +12,7 @@ export class AccountsComponent {
             type: 'all',
             status: 'all'
         };
+        this.pagination = new PaginationComponent('accounts-pagination', 5, () => this.renderAccounts());
     }
 
     async loadAccounts() {
@@ -56,7 +58,11 @@ export class AccountsComponent {
             return;
         }
 
-        filteredAccounts.forEach(account => {
+        this.pagination.setTotalItems(filteredAccounts.length);
+        
+        const paginatedAccounts = this.pagination.getPaginatedItems(filteredAccounts);
+
+        paginatedAccounts.forEach(account => {
             const isHidden = settingsService.isAccountHidden(account.id);
             const rowClass = isHidden ? 'hidden-account' : '';
             const balanceClass = isHidden ? 'hidden-account-value' : '';
