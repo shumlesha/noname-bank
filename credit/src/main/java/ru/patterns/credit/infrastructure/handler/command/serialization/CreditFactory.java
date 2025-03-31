@@ -18,7 +18,7 @@ import java.util.UUID;
 public class CreditFactory {
     private final CreditTariffRepository creditTariffRepository;
 
-    public Credit createCredit(CreateCreditCommand command, Account accountData) {
+    public Credit createCredit(CreateCreditCommand command, Account accountData, UUID clientId) {
         var tariff = creditTariffRepository.findById(command.tariffId())
                 .orElseThrow(() -> new ResourceNotFoundException("Кредитный тариф не найден"));
 
@@ -27,7 +27,7 @@ public class CreditFactory {
 
         return new Credit(
                 UUID.randomUUID(),
-                command.clientId(),
+                clientId,
                 accountData.id(),
                 finalAmount,
                 BigDecimal.ZERO,

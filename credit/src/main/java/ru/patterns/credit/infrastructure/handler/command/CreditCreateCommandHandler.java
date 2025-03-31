@@ -38,7 +38,7 @@ public class CreditCreateCommandHandler {
             var accountData = requestCreditAccount(command, clientId);
 
             if (accountData instanceof CreateCreditAccountResponse responseMessage){
-                var credit = creditFactory.createCredit(command, responseMessage.account());
+                var credit = creditFactory.createCredit(command, responseMessage.account(), clientId);
                 creditRepository.save(credit);
                 creditRatingCommandHandler.handle(new CreateCreditRatingCommand(clientId));
                 return credit.getId();

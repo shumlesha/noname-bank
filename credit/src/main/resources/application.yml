@@ -38,7 +38,14 @@ spring:
       creditCreateResponse: "credit.create.response"
       paymentRequest: "credit.payment.request"
       paymentResponse: "credit.payment.response"
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ISSUER_URI:http://46.29.239.208:8089/realms/app-realm}
+          jwk-set-uri: ${JWK_SET_URI:http://46.29.239.208:8089/realms/app-realm/protocol/openid-connect/certs}
+keycloak:
+  resource: ${KEYCLOAK_RESOURCE:spring-app}
 server:
   port: 8085
 eureka:
