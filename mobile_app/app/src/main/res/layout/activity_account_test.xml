@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Поле ввода для clientId -->
     <EditText
         android:id="@+id/etClientId"
         android:layout_width="match_parent"
@@ -13,7 +12,6 @@
         android:hint="Client ID"
         android:inputType="text" />
 
-    <!-- Поле ввода для currency -->
     <EditText
         android:id="@+id/etCurrency"
         android:layout_width="match_parent"

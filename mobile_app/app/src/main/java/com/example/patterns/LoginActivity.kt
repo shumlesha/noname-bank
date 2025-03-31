@@ -19,6 +19,7 @@ class LoginActivity : AppCompatActivity() {
 
     private val testUsers = listOf(
         User("client@example.com", "client123", UserRole.CLIENT),
+        User("client@example1.com", "client123", UserRole.CLIENT),
         User("employee@example.com", "employee123", UserRole.EMPLOYEE)
     )
 

@@ -2,6 +2,7 @@ package com.example.patterns
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -41,9 +42,15 @@ class ClientMainActivity : AppCompatActivity() {
 
         accountDao = AppDatabase.getInstance(applicationContext).accountDao()
 
-        accountAdapter = AccountAdapter(mutableListOf()) { account ->
-            showCloseAccountConfirmation(account)
-        }
+        accountAdapter = AccountAdapter(
+            mutableListOf(),
+            onCloseClicked = { account -> showCloseAccountConfirmation(account) },
+            onAccountClicked = { account ->
+                val intent = Intent(this, AccountOperationsActivity::class.java)
+                intent.putExtra("account_id", account.id)
+                startActivity(intent)
+            }
+        )
         recyclerView.apply {
             adapter = accountAdapter
             layoutManager = LinearLayoutManager(this@ClientMainActivity)

@@ -11,13 +11,20 @@ import com.example.patterns.DataLayer.Entity.Account
 
 class AccountAdapter(
     private var accounts: MutableList<Account>,
-    private val onCloseClicked: (Account) -> Unit
+    private val onCloseClicked: (Account) -> Unit,
+    private val onAccountClicked: (Account) -> Unit
 ) : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     inner class AccountViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val number: TextView = view.findViewById(R.id.tvAccountNumber)
         val balance: TextView = view.findViewById(R.id.tvBalance)
         val closeButton: Button = view.findViewById(R.id.btnCloseAccount)
+
+        init {
+            view.setOnClickListener {
+                onAccountClicked(accounts[adapterPosition])
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountViewHolder {

@@ -10,7 +10,6 @@
     android:background="@color/white"
     >
 
-    <!-- Верхняя «шапка» с зеленым фоном -->
     <View
         android:id="@+id/headerView"
         android:layout_width="0dp"
@@ -20,7 +19,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Текстовое поле "NoName Банк" или приветствие -->
     <TextView
         android:id="@+id/tvBankName"
         android:layout_width="wrap_content"
@@ -36,7 +34,6 @@
         app:layout_constraintVertical_bias="0.5"
         app:layout_constraintHorizontal_bias="0.5" />
 
-    <!-- Поле ввода email -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="0dp"
@@ -50,7 +47,6 @@
         android:layout_marginTop="32dp"
         android:inputType="textEmailAddress" />
 
-    <!-- Поле ввода пароля -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="0dp"
@@ -64,7 +60,6 @@
         android:layout_marginTop="16dp"
         android:inputType="textPassword" />
 
-    <!-- Кнопка "Войти" -->
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="0dp"
