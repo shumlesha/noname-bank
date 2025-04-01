@@ -7,6 +7,7 @@ class WebSocketService {
         this.connected = false;
         this.listeners = {};
         this.transactions = [];
+        this.processedTransactionIds = new Set();
     }
 
     connect() {
@@ -36,12 +37,19 @@ class WebSocketService {
             this.socket.onmessage = (event) => {
                 try {
                     const txData = JSON.parse(event.data);
+                    
+                    if (this.processedTransactionIds.has(txData.id)) {
+                        console.log(`Транзакция ${txData.id} уже была обработана, пропускаем`);
+                        return;
+                    }
+                    
+                    this.processedTransactionIds.add(txData.id);
+                    
                     const transaction = new Transaction(txData);
-
                     this.transactions.push(transaction);
 
                     if (this.listeners['transaction']) {
-                        this.listeners['transaction'].forEach(callback => callback(this.transactions));
+                        this.listeners['transaction'].forEach(callback => callback([...this.transactions]));
                     }
                 } catch (error) {
                     console.error('Ошибка обработки сообщения WebSocket:', error);
@@ -58,7 +66,7 @@ class WebSocketService {
     }
 
     async getTransactions(accountId) {
-        this.transactions = [];
+        this.clearTransactions();
         
         await this.connect();
         
@@ -67,22 +75,9 @@ class WebSocketService {
                 resolve([...this.transactions]);
             }, 2000);
 
-            const messageHandler = (event) => {
-                try {
-                    const txData = JSON.parse(event.data);
-                    const transaction = new Transaction(txData);
-                    this.transactions.push(transaction);
-                } catch (error) {
-                    console.error('Ошибка парсинга данных с WebSocket:', error);
-                }
-            };
-            
-            this.socket.addEventListener('message', messageHandler);
-
             this.socket.send(accountId);
 
             setTimeout(() => {
-                this.socket.removeEventListener('message', messageHandler);
                 clearTimeout(timeoutId);
             }, 2000);
         });
@@ -115,6 +110,7 @@ class WebSocketService {
 
     clearTransactions() {
         this.transactions = [];
+        this.processedTransactionIds.clear();
     }
 }
 

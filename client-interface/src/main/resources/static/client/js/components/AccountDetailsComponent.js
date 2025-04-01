@@ -64,9 +64,12 @@ export class AccountDetailsComponent {
         }
         
         this.transactionUpdateCallback = (transactions) => {
-            this.allTransactions = transactions;
-            this.pagination.setTotalItems(this.allTransactions.length);
-            this.renderTransactions(this.allTransactions, accountId);
+            if (this.allTransactions.length !== transactions.length) {
+                console.log(`Обновление транзакций: было ${this.allTransactions.length}, стало ${transactions.length}`);
+                this.allTransactions = [...transactions];
+                this.pagination.setTotalItems(this.allTransactions.length);
+                this.renderTransactions(this.allTransactions, accountId);
+            }
         };
         
         accountService.subscribeToTransactions(accountId, this.transactionUpdateCallback);
