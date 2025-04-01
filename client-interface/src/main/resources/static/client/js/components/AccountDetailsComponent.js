@@ -1,12 +1,18 @@
 import {DomUtils} from '../utils/domUtils.js';
 import {accountService} from '../core/accountService.js';
 import {showError} from '../utils/modalUtils.js';
+import {PaginationComponent} from './PaginationComponent.js';
 
 export class AccountDetailsComponent {
     constructor(parentController) {
         this.parentController = parentController;
         this.currentAccountId = null;
         this.transactionUpdateCallback = null;
+        this.allTransactions = [];
+
+        this.pagination = new PaginationComponent('transactions-pagination', 5, () => {
+            this.renderTransactions(this.allTransactions, this.currentAccountId);
+        });
     }
 
     async loadAccountDetails(accountId) {
@@ -29,8 +35,11 @@ export class AccountDetailsComponent {
                 <p><strong>Тип:</strong> ${data.account.getType()}</p>
                 <p><strong>Статус:</strong> ${data.account.getStatus()}</p>
             `;
+
+            this.allTransactions = data.transactions || [];
+            this.pagination.setTotalItems(this.allTransactions.length);
             
-            this.renderTransactions(data.transactions, data.account.id);
+            this.renderTransactions(this.allTransactions, data.account.id);
             
             this.subscribeToTransactionUpdates(accountId);
             
@@ -48,7 +57,9 @@ export class AccountDetailsComponent {
         }
         
         this.transactionUpdateCallback = (transactions) => {
-            this.renderTransactions(transactions, accountId);
+            this.allTransactions = transactions;
+            this.pagination.setTotalItems(this.allTransactions.length);
+            this.renderTransactions(this.allTransactions, accountId);
         };
         
         accountService.subscribeToTransactions(accountId, this.transactionUpdateCallback);
@@ -65,10 +76,15 @@ export class AccountDetailsComponent {
         const transactionsList = DomUtils.find('#transactions-list');
         if (!transactions || transactions.length === 0) {
             transactionsList.innerHTML = '<tr><td colspan="5">Нет транзакций</td></tr>';
+            DomUtils.find('#transactions-pagination').style.display = 'none';
             return;
         }
 
-        const transactionsHtml = transactions.map(transaction => {
+        DomUtils.find('#transactions-pagination').style.display = 'block';
+
+        const paginatedTransactions = this.pagination.getPaginatedItems(transactions);
+
+        const transactionsHtml = paginatedTransactions.map(transaction => {
             let type = '';
             let direction = '';
             let amount = '';

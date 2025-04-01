@@ -134,6 +134,18 @@ export class HomeController {
             this.accountsComponent.renderAccounts();
         });
 
+        DomUtils.on('#reset-filters-btn', 'click', () => {
+            this.accountsComponent.setFilters('all', 'all');
+            
+            const typeFilter = DomUtils.find('#account-type-filter');
+            const statusFilter = DomUtils.find('#account-status-filter');
+            
+            if (typeFilter) typeFilter.value = 'all';
+            if (statusFilter) statusFilter.value = 'all';
+            
+            this.accountsComponent.renderAccounts();
+        });
+
         DomUtils.on('#theme-toggle', 'click', () => {
             this.themeComponent.toggleTheme();
         });
