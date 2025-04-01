@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мои кредиты</title>
     <link rel="stylesheet" th:href="@{/client/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/client/css/pagination.css}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         .material-icons {
@@ -62,6 +63,7 @@
             <div id="missed-payments-list" class="missed-payments-list">
                 <p>Загрузка...</p>
             </div>
+            <div id="missed-payments-pagination" class="pagination-container"></div>
         </div>
 
         <div class="content-section" id="credits-section">
@@ -84,6 +86,7 @@
                 <tr><td colspan="8">Загрузка данных...</td></tr>
                 </tbody>
             </table>
+            <div id="credits-pagination" class="pagination-container"></div>
         </div>
     </div>
     <footer class="main-footer">
@@ -109,6 +112,7 @@
             <tr><td colspan="5">Загрузка...</td></tr>
             </tbody>
         </table>
+        <div id="tariffs-pagination" class="pagination-container"></div>
     </div>
 </div>
 
@@ -135,6 +139,7 @@
 <script type="module" th:src="@{/client/js/models/User.js}"></script>
 <script type="module" th:src="@{/client/js/models/Credit.js}"></script>
 <script type="module" th:src="@{/client/js/models/CreditTariff.js}"></script>
+<script type="module" th:src="@{/client/js/components/PaginationComponent.js}"></script>
 <script type="module" th:src="@{/client/js/controllers/CreditController.js}"></script>
 <script type="module" th:src="@{/client/js/pages/credit.js}"></script>
 
