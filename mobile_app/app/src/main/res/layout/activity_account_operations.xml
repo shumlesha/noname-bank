@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:background="@color/white">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvAccountNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -17,9 +17,9 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvBalance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,45 +30,54 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"/>
 
-    <EditText
-        android:id="@+id/etAmount"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilAmount"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Сумма"
-        android:inputType="numberDecimal"
         app:layout_constraintTop_toBottomOf="@id/tvBalance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeposit"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Пополнить"
         android:backgroundTint="@color/greenPrimary"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/etAmount"
+        app:layout_constraintTop_toBottomOf="@id/tilAmount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnWithdraw"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnWithdraw"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Снять"
         android:backgroundTint="@color/greenPrimary"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/etAmount"
+        app:layout_constraintTop_toBottomOf="@id/tilAmount"
         app:layout_constraintStart_toEndOf="@id/btnDeposit"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnTransferOwn"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Перевод между своими счетами"
@@ -79,8 +88,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnTransferOther"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Перевод на счет другого клиента"
@@ -91,26 +101,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <EditText
-        android:id="@+id/etTargetCurrency"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilTargetCurrency"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Целевая валюта (например, USD)"
         app:layout_constraintTop_toBottomOf="@id/btnTransferOther"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTargetCurrency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnConvert"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Конвертировать"
         android:backgroundTint="@color/greenPrimary"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/etTargetCurrency"
+        app:layout_constraintTop_toBottomOf="@id/tilTargetCurrency"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRepayLoan"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Погасить кредит"
+        android:backgroundTint="@color/greenPrimary"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/btnConvert"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

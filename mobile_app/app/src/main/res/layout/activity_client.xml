@@ -6,40 +6,123 @@
     android:id="@+id/clientMainRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ClientMainActivity"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".ClientMainActivity">
 
-    <View
-        android:id="@+id/greenHeader"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
         android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:background="@color/greenPrimary"
+        android:layout_height="?attr/actionBarSize"
+        android:backgroundTint="@color/greenPrimary"
+        app:title="Главная"
+        app:titleTextColor="@android:color/white"
+        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOpenAccount"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Открыть счет"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/greenDark"
-        app:layout_constraintTop_toTopOf="@id/greenHeader"
-        app:layout_constraintBottom_toBottomOf="@id/greenHeader"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="16dp"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
         android:layout_marginEnd="16dp"
-        app:layout_constraintVertical_bias="0.5" />
+        android:layout_marginTop="4dp"
+        app:cornerRadius="12dp"
+        android:backgroundTint="@color/greenDark"
+        app:layout_constraintTop_toTopOf="@+id/topAppBar"
+        app:layout_constraintBottom_toBottomOf="@+id/topAppBar"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCreditInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/topAppBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvCreditInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Кредит: нет активного кредита"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRequestLoan"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Оформить кредит"
+                android:textAllCaps="false"
+                android:textColor="@color/greenDark"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAccounts"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/greenHeader"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintTop_toBottomOf="@+id/cardCreditInfo"
+        app:layout_constraintBottom_toTopOf="@+id/bottomToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/bottomToolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/greenPrimary"
+        android:orientation="horizontal"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPaymentHistory"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="История платежей"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:iconTint="@android:color/white"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettings"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Настройки"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:iconTint="@android:color/white"
+            app:iconGravity="textStart" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
