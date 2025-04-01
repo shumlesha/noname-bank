@@ -173,5 +173,5 @@ class AccountCommandServiceImpl(
         account.closedTimestamp != null
 
     private fun isMasterAccount(account: Account) =
-        account.clientId.value != BANK_ID && account.number.value != MASTER_ACCOUNT_NUMBER
+        account.clientId.value == BANK_ID && account.number.value == MASTER_ACCOUNT_NUMBER
 }
