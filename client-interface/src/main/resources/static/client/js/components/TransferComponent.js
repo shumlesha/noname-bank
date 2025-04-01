@@ -49,15 +49,41 @@ export class TransferComponent {
         DomUtils.hideModal('transfer-modal');
         
         try {
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'loading-message';
+            loadingMessage.innerHTML = `
+                <div class="loading-spinner"></div>
+                <p>Выполняется перевод...</p>
+            `;
+            document.body.appendChild(loadingMessage);
+            
             await accountService.transferMoney(fromAccountId, toAccountId, amount);
+
+            loadingMessage.innerHTML = `
+                <div class="success-icon">✓</div>
+                <p>Перевод успешно выполнен!</p>
+                <p>Переход к истории транзакций счета...</p>
+            `;
+            
             showSuccess("Перевод успешно выполнен");
 
             setTimeout(async () => {
+                document.body.removeChild(loadingMessage);
+                
                 if (this.parentController.reloadAccounts) {
                     await this.parentController.reloadAccounts();
                 }
-            }, 1000);
+
+                if (this.parentController.loadAccountDetails) {
+                    this.parentController.loadAccountDetails(fromAccountId);
+                }
+            }, 1500);
         } catch (error) {
+            const loadingMessage = document.querySelector('.loading-message');
+            if (loadingMessage) {
+                document.body.removeChild(loadingMessage);
+            }
+            
             console.error("Ошибка при переводе:", error);
             showError(error.message || "Ошибка при переводе средств");
         }

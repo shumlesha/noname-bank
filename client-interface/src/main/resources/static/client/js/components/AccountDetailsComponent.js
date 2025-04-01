@@ -45,6 +45,13 @@ export class AccountDetailsComponent {
             
             DomUtils.find('#accounts-section').style.display = 'none';
             DomUtils.find('#account-details-section').style.display = 'block';
+            
+            const transactionsHeading = DomUtils.find('#account-details-section h3');
+            if (transactionsHeading) {
+                setTimeout(() => {
+                    transactionsHeading.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
         } catch (error) {
             console.error("Ошибка загрузки деталей счета:", error);
             showError("Ошибка загрузки деталей счета.");
@@ -82,7 +89,14 @@ export class AccountDetailsComponent {
 
         DomUtils.find('#transactions-pagination').style.display = 'block';
 
-        const paginatedTransactions = this.pagination.getPaginatedItems(transactions);
+        const sortedTransactions = [...transactions].sort((a, b) => 
+            new Date(b.transactionTimestamp) - new Date(a.transactionTimestamp)
+        );
+        
+        const paginatedTransactions = this.pagination.getPaginatedItems(sortedTransactions);
+        
+        const latestTransaction = sortedTransactions[0];
+        const latestTransactionId = latestTransaction ? latestTransaction.id : null;
 
         const transactionsHtml = paginatedTransactions.map(transaction => {
             let type = '';
@@ -107,9 +121,12 @@ export class AccountDetailsComponent {
                     amount = `-${transaction.amount}`;
                 }
             }
+            
+            const isLatest = transaction.id === latestTransactionId;
+            const rowClass = isLatest ? 'latest-transaction' : '';
 
             return `
-                <tr>
+                <tr class="${rowClass}">
                     <td>${transaction.id}</td>
                     <td>${new Date(transaction.transactionTimestamp).toLocaleString()}</td>
                     <td>${type}</td>

@@ -163,3 +163,70 @@ button.account-visibility-toggle {
 button.account-visibility-toggle:hover {
     color: var(--primary-color-hover);
 }
+
+.loading-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+    font-size: 18px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #4CAF50;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+.success-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.dark-theme .success-icon {
+    background-color: #388E3C;
+}
+
+.latest-transaction {
+    animation: highlight-row 2s ease;
+    background-color: rgba(76, 175, 80, 0.1) !important;
+}
+
+@keyframes highlight-row {
+    0% { background-color: rgba(76, 175, 80, 0.4) !important; }
+    100% { background-color: rgba(76, 175, 80, 0.1) !important; }
+}
+
+.dark-theme .latest-transaction {
+    background-color: rgba(76, 175, 80, 0.15) !important;
+}
+
+@keyframes highlight-row-dark {
+    0% { background-color: rgba(76, 175, 80, 0.5) !important; }
+    100% { background-color: rgba(76, 175, 80, 0.15) !important; }
+}
