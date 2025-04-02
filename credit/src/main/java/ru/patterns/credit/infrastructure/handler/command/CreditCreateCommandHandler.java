@@ -33,14 +33,14 @@ public class CreditCreateCommandHandler {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public UUID handle(CreateCreditCommand command) {
+    public UUID handle(CreateCreditCommand command, UUID clientId){
         try {
-            var accountData = requestCreditAccount(command);
+            var accountData = requestCreditAccount(command, clientId);
 
             if (accountData instanceof CreateCreditAccountResponse responseMessage){
-                var credit = creditFactory.createCredit(command, responseMessage.account());
+                var credit = creditFactory.createCredit(command, responseMessage.account(), clientId);
                 creditRepository.save(credit);
-                creditRatingCommandHandler.handle(new CreateCreditRatingCommand(command.clientId()));
+                creditRatingCommandHandler.handle(new CreateCreditRatingCommand(clientId));
                 return credit.getId();
             } else if (accountData instanceof CreateCreditErrorResponse response){
                 throw new CreditProcessingException(response.message());
@@ -52,8 +52,8 @@ public class CreditCreateCommandHandler {
         }
     }
 
-    private CreateCreditAccountResponseRaw requestCreditAccount(CreateCreditCommand command) throws IOException {
-        var request = new CreateCreditAccountRequest(command.clientId(), command.amount());
+    private CreateCreditAccountResponseRaw requestCreditAccount(CreateCreditCommand command, UUID clientId) throws IOException {
+        var request = new CreateCreditAccountRequest(clientId, command.amount());
         var eventResponse = Optional.ofNullable(eventPublisher.publishCreditCreation(request))
                 .orElseThrow(() -> new CreditProcessingException("Ответ с кредитным счетом не получен"));
 

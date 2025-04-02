@@ -41,6 +41,10 @@ export const config = {
         }
     },
 
+    websocket: {
+        transaction: '/ws/employee/transaction'
+    },
+
     storage: {
         tokens: 'auth_tokens',
         userData: 'user_data',

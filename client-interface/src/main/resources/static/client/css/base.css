@@ -206,7 +206,6 @@ body {
     color: var(--text-color);
 }
 
-/* Стили для таблиц в темной теме */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -230,7 +229,6 @@ tbody tr:hover {
     background-color: var(--hover-row-color);
 }
 
-/* Стили для форм */
 input, select, textarea {
     width: 100%;
     padding: 12px;
@@ -242,7 +240,6 @@ input, select, textarea {
     transition: all 0.3s ease;
 }
 
-/* Стили для модальных окон */
 .modal {
     display: none;
     position: fixed;
@@ -278,7 +275,6 @@ input, select, textarea {
     margin-bottom: 20px;
 }
 
-/* Стили для переключателя темы */
 .theme-toggle {
     display: flex;
     align-items: center;
@@ -301,7 +297,6 @@ input, select, textarea {
     font-size: 24px;
 }
 
-/* Стили для скрытия/показа счетов */
 .account-visibility-toggle {
     background: none;
     border: none;
@@ -333,7 +328,6 @@ input, select, textarea {
     filter: none;
 }
 
-/* Стили для положительных/отрицательных сумм */
 .positive-amount {
     color: var(--primary-color);
     font-weight: bold;
@@ -344,7 +338,6 @@ input, select, textarea {
     font-weight: bold;
 }
 
-/* Новые стили для фильтров и кнопок действий */
 .account-actions-row {
     display: flex;
     justify-content: space-between;
@@ -446,7 +439,6 @@ input, select, textarea {
     font-size: 18px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
@@ -481,7 +473,6 @@ input, select, textarea {
     }
 }
 
-/* Удаляем ненужные старые стили */
 .account-filters,
 .filter-group {
     display: none;
