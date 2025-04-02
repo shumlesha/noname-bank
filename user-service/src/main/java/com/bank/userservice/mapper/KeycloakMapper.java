@@ -7,6 +7,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,12 +26,12 @@ public interface KeycloakMapper {
 
     @Named("getName")
     default String getName(Map<String, List<String>> attributes) {
-        return attributes.get("fullName").getFirst();
+        return attributes.get("fullName").get(0);
     }
 
     @Named("getGender")
     default Gender getGender(Map<String, List<String>> attributes) {
-        return Gender.valueOf(attributes.get("gender").getFirst());
+        return Gender.valueOf(attributes.get("gender").get(0));
     }
 
     @Named("getRoles")

@@ -5,6 +5,7 @@ import com.bank.userservice.dto.api.DefaultResponse;
 import com.bank.userservice.dto.api.ErrorApiResponse;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
+
 import java.util.Map;
 
 @UtilityClass

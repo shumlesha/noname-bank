@@ -9,6 +9,7 @@ import ru.patterns.core.commands.account.CloseAccountCommand
 import ru.patterns.core.commands.account.CreateAccountCommand
 import ru.patterns.core.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
+import ru.patterns.core.domain.ClientId
 import ru.patterns.core.service.account.MasterAccountInitializer.Companion.BANK_ID
 import ru.patterns.core.service.account.MasterAccountInitializer.Companion.MASTER_ACCOUNT_NUMBER
 import ru.patterns.core.service.account.command.AccountCommandService.CloseAccountResult
@@ -48,6 +49,7 @@ interface AccountCommandService {
             data object AccountNotExists : Error
             data object MasterAccountCantBeClosed : Error
             data class AccountAlreadyClosed(val account: Account) : Error
+            data object ClientIsNotOwner : Error
             data class AccountBlocked(val account: Account) : Error
             data class UnexpectedError(val cause: Throwable) : Error
         }
@@ -63,7 +65,7 @@ class AccountCommandServiceImpl(
 ) : AccountCommandService {
     @Transactional
     override fun createAccount(createAccountCommand: CreateAccountCommand): Mono<CreateAccountResult> =
-        currencyService.getCurrencyRate(createAccountCommand.currency)
+        currencyService.getCurrencyRate(createAccountCommand.currency.value)
             .flatMap { getCurrencyResult ->
                 when (getCurrencyResult) {
                     is CurrencyService.GetCurrencyRateResult.Success ->
@@ -114,7 +116,10 @@ class AccountCommandServiceImpl(
         accountRepository.findById(closeAccountCommand.accountId)
             .flatMap { findResult ->
                 when (findResult) {
-                    is AccountRepository.FindAccountResult.Success -> closeAccountIfNeed(findResult.account)
+                    is AccountRepository.FindAccountResult.Success -> closeAccountIfNeed(
+                        closeAccountCommand.clientId,
+                        findResult.account
+                    )
 
                     is AccountRepository.FindAccountResult.Error.Unexpected ->
                         CloseAccountResult.Error.FindErrorFromRepository(findResult).toMono()
@@ -126,12 +131,13 @@ class AccountCommandServiceImpl(
             .doOnError { TransactionAspectSupport.currentTransactionStatus().setRollbackOnly() }
             .onErrorResume { error -> CloseAccountResult.Error.UnexpectedError(error).toMono() }
 
-    private fun closeAccountIfNeed(account: Account): Mono<CloseAccountResult> {
+    private fun closeAccountIfNeed(clientId: ClientId, account: Account): Mono<CloseAccountResult> {
         if (isMasterAccount(account)) {
             return CloseAccountResult.Error.MasterAccountCantBeClosed.toMono()
-        } else if (isBlocked(account)) {
+        } else if (!isClientOwner(clientId, account))
+            return CloseAccountResult.Error.ClientIsNotOwner.toMono()
+        else if (isBlocked(account))
             return CloseAccountResult.Error.AccountBlocked(account).toMono()
-        }
 
         return when (isClosed(account)) {
             true -> CloseAccountResult.Error.AccountAlreadyClosed(account).toMono()
@@ -165,6 +171,9 @@ class AccountCommandServiceImpl(
         Mono.just(saveResult.account)
             .doOnSuccess { account -> kafkaEventSender.sendEventToKafkaAsync(account) }
             .map(CloseAccountResult::Success)
+
+    private fun isClientOwner(clientId: ClientId, account: Account) =
+        account.clientId == clientId
 
     private fun isBlocked(account: Account): Boolean =
         account.blockedTimestamp != null

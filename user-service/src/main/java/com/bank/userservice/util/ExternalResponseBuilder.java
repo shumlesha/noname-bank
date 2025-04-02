@@ -6,6 +6,7 @@ import com.bank.userservice.dto.api.interagration.ExternalResponse;
 import com.bank.userservice.dto.api.interagration.SuccessExternalResponse;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
+
 import java.util.List;
 import java.util.Map;
 

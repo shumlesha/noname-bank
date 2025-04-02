@@ -59,6 +59,12 @@ object Factory {
                     statusCode = 403
                 )
 
+            is AccountCommandService.CloseAccountResult.Error.ClientIsNotOwner ->
+                ErrorResponse(
+                    message = "Клиент не является владельцем счета",
+                    statusCode = 403
+                )
+
             else -> ErrorResponse(
                 message = "При закрытии счета произошла ошибка",
                 statusCode = 500

@@ -1,5 +1,3 @@
-import {formatCurrency} from '../utils/format-utils.js';
-
 export const renderCreditRating = (ratingData, container) => {
     if (!ratingData) {
         container.innerHTML = '<div class="error-message-container"><p class="info-message">Данные о кредитном рейтинге не найдены</p></div>';

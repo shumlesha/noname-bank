@@ -2,7 +2,9 @@
 
 ### Запросы
 
-1. POST `/api/query/account`
+1. POST 
+- `/api/query/account` для сотрудника
+- `/api/query/account/my` для клиента (clientId в запросе не нужен)
 
 **body**
 
@@ -38,7 +40,9 @@
 }
 ```
 
-2. POST `/api/query/account/list`
+2. POST 
+- `/api/query/account/list` для сотрудника 
+- `/api/query/account/list/my` для клиента (тело запроса не нужно)
 
 **body**
 
@@ -77,7 +81,9 @@
 }
 ```
 
-3. POST `/api/query/transaction/client` (все операции клиента)
+3. POST (все операции клиента)
+- `/api/query/transaction/client` 
+- `/api/query/transaction/client/my` (Тело не нужно)
 
 **body**
 
@@ -129,7 +135,9 @@
 }
 ```
 
-4. POST `/api/query/transaction`
+4. POST
+- `/api/query/transaction`
+- `/api/query/transaction/my` (Тело запроса ровно такое же, просто запрос для клиента)
 
 **body**
 

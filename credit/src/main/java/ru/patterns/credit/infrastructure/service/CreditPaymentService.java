@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.domain.model.Credit;
 import ru.patterns.credit.domain.model.CreditStatus;
 import ru.patterns.credit.domain.repository.CreditRepository;
-import ru.patterns.credit.infrastructure.handler.command.CreditRatingCommandHandler;
 import ru.patterns.credit.infrastructure.messaging.publisher.CreditPayEventPublisher;
 import ru.patterns.credit.shared.dto.PaymentResult;
 import ru.patterns.credit.shared.exception.InsufficientFundsException;

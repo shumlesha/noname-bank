@@ -1,6 +1,7 @@
 package com.bank.userservice.exception;
 
 import org.springframework.http.HttpStatus;
+
 import java.util.Map;
 
 public abstract class BusinessException extends BaseException {

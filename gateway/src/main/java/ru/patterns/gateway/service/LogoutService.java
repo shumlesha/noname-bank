@@ -11,6 +11,7 @@ import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import ru.patterns.gateway.configuration.keycloak.admin.KeycloakProperties;
+
 import java.net.URI;
 
 @Service

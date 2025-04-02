@@ -1,7 +1,6 @@
 package com.bank.userservice.security.config;
 
 import com.bank.userservice.dto.api.ErrorApiResponse;
-import com.bank.userservice.dto.api.ErrorResponse;
 import com.bank.userservice.util.ResponseBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -13,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 

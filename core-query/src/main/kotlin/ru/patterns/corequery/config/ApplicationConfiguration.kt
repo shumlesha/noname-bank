@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
 @Configuration
-@ComponentScan(basePackages = ["ru.patterns.corequery.service"])
+@ComponentScan(basePackages = ["ru.patterns.corequery.service", "ru.patterns.corequery.security"])
 class ApplicationConfiguration {
     @Bean
     @Primary

@@ -1,6 +1,4 @@
 import API_CONFIG from '../config/api-config.js';
-import storageService from './storage-service.js';
-import {logout as authLogout} from '../auth.js';
 
 const apiService = {
     fetch: async (url, options = {}) => {

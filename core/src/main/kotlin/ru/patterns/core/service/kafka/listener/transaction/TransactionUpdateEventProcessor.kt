@@ -18,7 +18,7 @@ class TransactionUpdateEventProcessor(
 
     @Transactional
     override fun process(event: CreateTransactionCommandRaw): Mono<EventProcessor.ProcessResult> =
-        Mono.fromCallable { Factory.CreateTransactionCommand(event) }
+        Mono.fromCallable { Factory.CreateCreditTransactionCommand(event) }
             .flatMap { command -> transactionCommandService.create(command) }
             .doOnSuccess { log.info(Serializer.CreateTransactionResponse(it).toString()) }
             .map { result ->

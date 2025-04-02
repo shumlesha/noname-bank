@@ -7,6 +7,7 @@ import com.bank.userservice.exception.EntityNotFoundException;
 import com.bank.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
 import java.util.UUID;
 
 @Component

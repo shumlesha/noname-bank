@@ -15,6 +15,13 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://46.29.239.208:8089/realms/app-realm
+          jwk-set-uri: http://46.29.239.208:8089/realms/app-realm/protocol/openid-connect/certs
+
 query:
   websocket:
     transaction:

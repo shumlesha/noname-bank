@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.corequery.domain.AccountId
+import ru.patterns.corequery.domain.AccountIdentification
 import ru.patterns.corequery.domain.ClientId
 import ru.patterns.corequery.domain.Transaction
 import ru.patterns.corequery.domain.TransactionInfo
@@ -15,7 +15,7 @@ import ru.patterns.corequery.service.transaction.repository.TransactionRepositor
 sealed interface TransactionQueryService {
     fun findById(transactionInfo: TransactionInfo): Mono<FindByIdResponse>
     fun findAllByClientId(clientId: ClientId): Mono<FindAllResponse>
-    fun findAllByAccountId(accountId: AccountId): Mono<FindAllResponse>
+    fun findAllByAccountId(accountId: AccountIdentification): Mono<FindAllResponse>
 
     sealed interface FindByIdResponse {
         data class Success(val transaction: Transaction) : FindByIdResponse
@@ -73,8 +73,8 @@ class TransactionQueryServiceImpl(
             }
             .handleFindAllResponse()
 
-    override fun findAllByAccountId(accountId: AccountId): Mono<FindAllResponse> =
-        transactionRepository.findAllByAccountId(accountId)
+    override fun findAllByAccountId(accountId: AccountIdentification): Mono<FindAllResponse> =
+        transactionRepository.findAllByAccountId(accountId.accountId)
             .doOnSuccess { log.debug("Получены транзакций счета с id: {}", accountId) }
             .doOnError { error ->
                 log.error(

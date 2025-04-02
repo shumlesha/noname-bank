@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.patterns.credit.application.query.GetCreditByIdQuery;
 import ru.patterns.credit.application.query.GetCreditsByClientQuery;
-import ru.patterns.credit.shared.dto.CreditDto;
 import ru.patterns.credit.domain.repository.CreditRepository;
+import ru.patterns.credit.shared.dto.CreditDto;
 import ru.patterns.credit.shared.exception.ResourceNotFoundException;
 import ru.patterns.credit.shared.mapper.CreditMapper;
 

@@ -3,10 +3,7 @@ import {checkAuth} from '../auth.js';
 import {renderClientInfo} from '../components/client-info.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
-import {
-    initTransactionsWebSocket,
-    cleanupTransactionsWebSocket
-} from '../components/transactions-list.js';
+import {cleanupTransactionsWebSocket, initTransactionsWebSocket} from '../components/transactions-list.js';
 import {renderCreditsList} from '../components/credits-list.js';
 import {renderCreditRating} from '../components/credit-rating.js';
 import {renderMissedPaymentsList} from '../components/missed-payments-list.js';

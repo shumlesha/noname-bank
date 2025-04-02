@@ -1,4 +1,4 @@
-package ru.patterns.core.security.config
+package ru.patterns.corequery.security.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

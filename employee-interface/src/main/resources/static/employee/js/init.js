@@ -1,6 +1,4 @@
 import {initAccountsPage} from './pages/accounts-page.js';
-import {initLoginPage} from './pages/login-page.js';
-import {initRegisterPage} from './pages/register-page.js';
 import {initProfilePage} from './pages/profile-page.js';
 import {initUsersPage} from './pages/users-page.js';
 import {initClientDetailsPage} from './pages/client-details-page.js';

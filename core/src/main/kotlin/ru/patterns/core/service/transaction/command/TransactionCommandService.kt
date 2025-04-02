@@ -15,6 +15,7 @@ import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.CurrencyCode
 import ru.patterns.core.domain.MoneyTransfer
 import ru.patterns.core.domain.Transaction
+import ru.patterns.core.service.account.command.AccountCommandService
 import ru.patterns.core.service.account.repository.AccountRepository
 import ru.patterns.core.service.currency.CurrencyService
 import ru.patterns.core.service.currency.serialization.ConvertCurrencyRequest
@@ -50,6 +51,7 @@ sealed interface TransactionCommandService {
             data object SameAccount : Error
             data class AccountNotFound(val accountId: UUID) : Error
             data class UnexpectedError(val cause: Throwable) : Error
+            data object ClientIsNotOwner : Error
             data object AccountClosedOrBlocked : Error
         }
     }
@@ -80,10 +82,16 @@ class TransactionCommandServiceImpl(
             accountRepository.findById(createTransactionCommand.accountFrom)
                 .flatMap { findResult ->
                     when (findResult) {
-                        is AccountRepository.FindAccountResult.Success -> findAccountToAndIfFoundThenCreateTransaction(
-                            createTransactionCommand = createTransactionCommand,
-                            accountFrom = findResult.account
-                        )
+                        is AccountRepository.FindAccountResult.Success -> {
+                            if (!isClientOwner(createTransactionCommand.ownerId, findResult.account)) {
+                                AccountCommandService.CloseAccountResult.Error.ClientIsNotOwner.toMono()
+                            }
+
+                            findAccountToAndIfFoundThenCreateTransaction(
+                                createTransactionCommand = createTransactionCommand,
+                                accountFrom = findResult.account
+                            )
+                        }
 
                         is AccountRepository.FindAccountResult.Error.AccountNotFound ->
                             CreateTransactionResult.Error.AccountNotFound(createTransactionCommand.accountFrom.value)
@@ -410,6 +418,9 @@ class TransactionCommandServiceImpl(
 
     private fun writeOnMoney(account: Account, amount: BigDecimal): Account =
         account.copy(balance = Balance(account.balance.value + amount))
+
+    private fun isClientOwner(clientId: ClientId, account: Account) =
+        account.clientId == clientId
 
     private fun processSuccessSaveResult(clientId: ClientId, transaction: Transaction): Mono<CreateTransactionResult> =
         Mono.just(transaction)

@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderResult
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.controller.transaction.serialization.CreateTransactionCommandRaw
+import ru.patterns.core.commands.transaction.CreateTransactionCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.Transaction
@@ -32,13 +32,13 @@ class KafkaEventSender(
         kafkaSender.send(senderRecord).subscribe()
     }
 
-    fun sendEventToKafka(command: CreateTransactionCommandRaw): Flux<SenderResult<String>> {
+    fun sendEventToKafka(command: CreateTransactionCommand): Flux<SenderResult<String>> {
         val senderRecord = SenderRecord(command).toMono()
 
         return kafkaSender.send(senderRecord)
     }
 
-    private fun SenderRecord(value: CreateTransactionCommandRaw) =
+    private fun SenderRecord(value: CreateTransactionCommand) =
         reactor.kafka.sender.SenderRecord.create<String?, String, String?>(
             ProducerRecord(
                 "TRANSACTION_PROCESSING",

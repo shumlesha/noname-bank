@@ -3,10 +3,10 @@ package com.bank.userservice.service;
 import com.bank.userservice.dto.event.payload.UserCreatePayload;
 import com.bank.userservice.dto.user.BanUserRequest;
 import com.bank.userservice.dto.user.UserDto;
-import com.bank.userservice.entity.User;
 import com.bank.userservice.security.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 public interface UserService {

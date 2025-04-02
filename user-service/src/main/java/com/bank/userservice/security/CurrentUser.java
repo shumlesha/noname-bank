@@ -3,9 +3,9 @@ package com.bank.userservice.security;
 import com.bank.userservice.enumeration.Gender;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;

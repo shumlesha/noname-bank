@@ -3,10 +3,7 @@ import apiService from '../services/api-service.js';
 import {checkAuth} from '../auth.js';
 import {renderAccountsList} from '../components/accounts-list.js';
 import {renderAccountDetails} from '../components/account-details.js';
-import {
-    initTransactionsWebSocket,
-    cleanupTransactionsWebSocket
-} from '../components/transactions-list.js';
+import {cleanupTransactionsWebSocket, initTransactionsWebSocket} from '../components/transactions-list.js';
 import {renderPagination} from '../components/pagination.js';
 import {clearMessages, hideElement, showElement, showMessage} from '../utils/ui-utils.js';
 

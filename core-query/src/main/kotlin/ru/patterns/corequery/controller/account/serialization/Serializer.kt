@@ -20,6 +20,12 @@ object Serializer {
                     message = "При получении счета произошла ошибка",
                     statusCode = 500
                 )
+
+            AccountQueryService.FindByIdResponse.Error.ClientIsNotOwner ->
+                ErrorResponse(
+                    message = "Клиент не является владельцем счета",
+                    statusCode = 403
+                )
         }
 
     fun FindAllResponse(findAllResult: AccountQueryService.FindAllResponse): AccountResponse =

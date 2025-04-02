@@ -9,8 +9,6 @@ import ru.patterns.credit.application.command.AutoPaymentCommand;
 import ru.patterns.credit.domain.repository.CreditRepository;
 import ru.patterns.credit.infrastructure.handler.command.AutoPaymentCommandHandler;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Service

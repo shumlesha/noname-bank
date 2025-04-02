@@ -86,6 +86,7 @@ class MasterAccountServiceImpl(
     ): Mono<GiveCreditResponse> =
         Mono.just(
             CreateTransactionCommand(
+                ownerId = masterAccount.clientId,
                 accountFrom = AccountId(value = masterAccount.id.value),
                 accountTo = AccountId(value = accountTo.id.value),
                 amount = Balance(value = amount)

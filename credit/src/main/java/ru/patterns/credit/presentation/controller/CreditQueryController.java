@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.query.GetCreditByIdQuery;
 import ru.patterns.credit.application.query.GetCreditsByClientQuery;
+import ru.patterns.credit.infrastructure.handler.query.CreditQueryHandler;
 import ru.patterns.credit.shared.common.DefaultResponse;
 import ru.patterns.credit.shared.dto.CreditDto;
-import ru.patterns.credit.infrastructure.handler.query.CreditQueryHandler;
 
 import java.util.List;
 import java.util.UUID;

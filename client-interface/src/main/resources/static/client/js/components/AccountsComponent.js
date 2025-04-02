@@ -1,6 +1,6 @@
 import {DomUtils} from '../utils/domUtils.js';
 import {accountService} from '../core/accountService.js';
-import {showSuccess, showError, showConfirm} from '../utils/modalUtils.js';
+import {showConfirm, showError, showSuccess} from '../utils/modalUtils.js';
 import {settingsService} from '../core/settingsService.js';
 import {PaginationComponent} from './PaginationComponent.js';
 

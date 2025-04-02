@@ -1,6 +1,5 @@
 package ru.patterns.core.service.account
 
-import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener

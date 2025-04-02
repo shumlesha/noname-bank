@@ -56,6 +56,12 @@ object Serializer {
                     statusCode = 500
                 )
 
+            is TransactionCommandService.CreateTransactionResult.Error.ClientIsNotOwner ->
+                ErrorResponse(
+                    message = "Клиент не является владельцем счета",
+                    statusCode = 403
+                )
+
             is TransactionCommandService.CreateTransactionResult.Error.SaveErrorFromRepository ->
                 ErrorResponse(
                     message = "Не удалось обработать транзакцию",

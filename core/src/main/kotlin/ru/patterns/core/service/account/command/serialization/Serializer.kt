@@ -12,14 +12,14 @@ object Serializer {
     fun AccountEntity(createAccountCommand: CreateAccountCommand) =
         AccountEntity(
             id = null,
-            clientId = createAccountCommand.clientId,
+            clientId = createAccountCommand.clientId.value,
             number = generate16DigitNumber(),
             isCredit = false,
             creationTimestamp = LocalDateTime.now(),
             blockedTimestamp = null,
             closedTimestamp = null,
             balance = BigDecimal.ZERO,
-            currency = createAccountCommand.currency
+            currency = createAccountCommand.currency.value
         )
 
     fun AccountEntity(createCreditAccountCommand: CreateCreditAccountCommand) =

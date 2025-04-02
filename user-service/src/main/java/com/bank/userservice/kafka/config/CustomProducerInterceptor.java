@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 

@@ -1,7 +1,9 @@
 package ru.patterns.credit.shared.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import lombok.*;
 
 @Getter
 @AllArgsConstructor

@@ -1,6 +1,6 @@
 import {DomUtils} from '../utils/domUtils.js';
 import {accountService} from '../core/accountService.js';
-import {showSuccess, showError} from '../utils/modalUtils.js';
+import {showError, showSuccess} from '../utils/modalUtils.js';
 
 export class TransferComponent {
     constructor(parentController) {

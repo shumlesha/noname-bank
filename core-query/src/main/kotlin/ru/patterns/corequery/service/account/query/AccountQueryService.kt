@@ -23,6 +23,7 @@ interface AccountQueryService {
         data class Success(val account: Account) : FindByIdResponse
         sealed interface Error : FindByIdResponse {
             data object NotFound : Error
+            data object ClientIsNotOwner : Error
             data class UnexpectedError(val cause: Throwable) : Error
         }
     }

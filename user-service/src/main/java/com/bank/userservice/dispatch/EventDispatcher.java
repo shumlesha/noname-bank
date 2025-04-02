@@ -8,6 +8,7 @@ import com.bank.userservice.util.StringFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
 
 @Service
