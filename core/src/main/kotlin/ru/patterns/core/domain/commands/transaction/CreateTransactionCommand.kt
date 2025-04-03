@@ -1,4 +1,4 @@
-package ru.patterns.core.commands.transaction
+package ru.patterns.core.domain.commands.transaction
 
 import jakarta.validation.constraints.Min
 import ru.patterns.core.domain.AccountId

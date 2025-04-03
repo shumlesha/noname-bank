@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
+import ru.patterns.core.domain.commands.transaction.CreditPaymentTransactionCommand
 import ru.patterns.core.domain.Deposit
 import ru.patterns.core.domain.MoneyTransfer
 import ru.patterns.core.domain.Transaction

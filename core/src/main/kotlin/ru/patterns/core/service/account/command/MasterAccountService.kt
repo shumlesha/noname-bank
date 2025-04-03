@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.commands.account.CreateCreditAccountCommand
-import ru.patterns.core.commands.transaction.CreateTransactionCommand
+import ru.patterns.core.domain.commands.account.CreateCreditAccountCommand
+import ru.patterns.core.domain.commands.transaction.CreateTransactionCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.Balance

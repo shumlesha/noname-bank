@@ -1,4 +1,4 @@
-package ru.patterns.core.commands.transaction
+package ru.patterns.core.domain.commands.transaction
 
 import java.math.BigDecimal
 import java.util.UUID

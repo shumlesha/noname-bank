@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderResult
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.commands.transaction.CreateTransactionCommand
+import ru.patterns.core.domain.commands.transaction.CreateTransactionCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.Transaction

@@ -1,7 +1,7 @@
 package ru.patterns.core.controller.account.serialization
 
-import ru.patterns.core.commands.account.CloseAccountCommand
-import ru.patterns.core.commands.account.CreateAccountCommand
+import ru.patterns.core.domain.commands.account.CloseAccountCommand
+import ru.patterns.core.domain.commands.account.CreateAccountCommand
 import ru.patterns.core.domain.AccountId
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.CurrencyCode

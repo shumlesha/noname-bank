@@ -1,6 +1,6 @@
 package ru.patterns.core.service.transaction.command.serialization
 
-import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
+import ru.patterns.core.domain.commands.transaction.CreditPaymentTransactionCommand
 import ru.patterns.core.domain.Deposit
 import ru.patterns.core.domain.MoneyTransfer
 import ru.patterns.core.domain.Withdrawal

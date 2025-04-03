@@ -1,4 +1,4 @@
-package ru.patterns.core.commands.account
+package ru.patterns.core.domain.commands.account
 
 import ru.patterns.core.domain.ClientId
 import ru.patterns.core.domain.CurrencyCode

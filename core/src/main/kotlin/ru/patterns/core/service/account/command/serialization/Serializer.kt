@@ -1,7 +1,7 @@
 package ru.patterns.core.service.account.command.serialization
 
-import ru.patterns.core.commands.account.CreateAccountCommand
-import ru.patterns.core.commands.account.CreateCreditAccountCommand
+import ru.patterns.core.domain.commands.account.CreateAccountCommand
+import ru.patterns.core.domain.commands.account.CreateCreditAccountCommand
 import ru.patterns.core.domain.Account
 import ru.patterns.core.service.account.entity.AccountEntity
 import java.math.BigDecimal

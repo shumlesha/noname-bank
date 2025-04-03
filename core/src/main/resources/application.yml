@@ -1,4 +1,8 @@
 server:
+  reactive:
+    session:
+      cookie:
+        name: SESSION_${spring.application.name}
   port: 8090
 
 spring:

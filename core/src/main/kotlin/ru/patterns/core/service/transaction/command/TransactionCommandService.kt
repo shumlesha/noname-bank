@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import ru.patterns.core.commands.transaction.CreateTransactionCommand
-import ru.patterns.core.commands.transaction.CreditPaymentTransactionCommand
+import ru.patterns.core.domain.commands.transaction.CreateTransactionCommand
+import ru.patterns.core.domain.commands.transaction.CreditPaymentTransactionCommand
 import ru.patterns.core.config.CurrencyProperties
 import ru.patterns.core.domain.Account
 import ru.patterns.core.domain.AccountId
