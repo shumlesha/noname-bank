@@ -33,7 +33,9 @@ const API_CONFIG = {
         creditTariffDelete: '/api/credit/tariff/command/delete',
         creditRatingByClient: '/api/credit/rating/query',
         missedPaymentsByClient: '/api/credit/missed/query',
-        wsTransactionEmployee: '/ws/employee/transaction'
+        wsTransactionEmployee: '/ws/employee/transaction',
+        settings: '/api/settings',
+        updateTheme: '/api/settings/theme'
     },
 
     PAGINATION: {

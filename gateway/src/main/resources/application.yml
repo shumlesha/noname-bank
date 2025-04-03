@@ -66,3 +66,10 @@ logging:
         security.oauth2.client.endpoint: TRACE
         security.oauth2.core: DEBUG
         web: DEBUG
+
+
+server:
+  reactive:
+    session:
+      cookie:
+        name: SESSION_${spring.application.name}

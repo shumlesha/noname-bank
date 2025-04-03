@@ -28,10 +28,8 @@ export const initTransactionsWebSocket = async (accountId, container) => {
             await websocketService.connect(wsUrl);
         }
 
-        // Reset transactions cache for the new account
         transactionsCache = [];
-        
-        // Create empty transactions table
+
         if (container) {
             createEmptyTransactionsTable(container);
         }
@@ -94,8 +92,7 @@ const createEmptyTransactionsTable = (container) => {
 
     container.innerHTML = '';
     container.appendChild(table);
-    
-    // Add a message if no transactions yet
+
     const tbody = table.querySelector('tbody');
     const emptyRow = document.createElement('tr');
     emptyRow.className = 'empty-transactions-row';
@@ -119,18 +116,16 @@ const addTransactionToTable = (transaction, container) => {
         return;
     }
 
-    // Remove empty message if it exists
     const emptyRow = tbody.querySelector('.empty-transactions-row');
     if (emptyRow) {
         emptyRow.remove();
     }
 
-    // Check if transaction already exists in the table
     const rows = tbody.querySelectorAll('tr');
     for (const row of rows) {
         const idCell = row.querySelector('td:first-child');
         if (idCell && idCell.textContent === transaction.id) {
-            return; // Transaction already exists
+            return;
         }
     }
 
@@ -151,7 +146,6 @@ const addTransactionToTable = (transaction, container) => {
             <td>${amount}</td>
         `;
 
-        // Add new transaction at the top of the table
         if (tbody.firstChild) {
             tbody.insertBefore(newRow, tbody.firstChild);
         } else {

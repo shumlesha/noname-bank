@@ -1,11 +1,14 @@
 import {logout} from '../auth.js';
 import storageService from '../services/storage-service.js';
+import themeService from '../services/theme-service.js';
 
 
-export const initCommonUI = () => {
+export const initCommonUI = async () => {
     initLogoutButton();
-
+    initThemeToggle();
     displayUserEmail();
+
+    await themeService.init();
 };
 
 
@@ -24,5 +27,13 @@ const displayUserEmail = () => {
         if (userData && userData.email) {
             userEmailEl.textContent = userData.email;
         }
+    }
+};
+
+
+const initThemeToggle = () => {
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', themeService.toggleTheme);
     }
 };
