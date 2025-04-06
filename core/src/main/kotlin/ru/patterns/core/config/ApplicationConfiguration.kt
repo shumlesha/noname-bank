@@ -32,7 +32,6 @@ import java.util.Collections.singleton
     basePackages = [
         "ru.patterns.core.service",
         "ru.patterns.core.controller",
-        "ru.patterns.core.security"
     ]
 )
 @EnableConfigurationProperties(KafkaListenerProperties::class)

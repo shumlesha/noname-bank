@@ -40,6 +40,10 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
 
 core:
+  security:
+    enabled: true
+    secret-key: "gateway"
+    header: "X-Service"
   kafka:
     transaction-topic:
       name: "TRANSACTION_PROCESSING"

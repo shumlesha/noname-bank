@@ -4,18 +4,21 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.reactive.CorsConfigurationSource
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
+import ru.patterns.core.config.SecurityProperties
 
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 class SecurityConfig(
-    private val keycloakJwtAuthenticationConverter: KeycloakJwtAuthenticationConverter
+    private val keycloakJwtAuthenticationConverter: KeycloakJwtAuthenticationConverter,
+    private val securityProperties: SecurityProperties
 ) {
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
@@ -30,6 +33,7 @@ class SecurityConfig(
             .oauth2ResourceServer { oauth2 ->
                 oauth2.jwt { jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter) }
             }
+            .addFilterBefore(HeaderSecurityFilter(securityProperties), SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
 
     @Bean
