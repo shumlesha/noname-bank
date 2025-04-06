@@ -24,4 +24,8 @@ interface AccountDao {
     @Query("SELECT * FROM accounts WHERE closedTimestamp IS NULL")
     suspend fun getAllAccounts(): List<Account>
 
+    @Query("SELECT * FROM accounts WHERE closedTimestamp IS NULL")
+    suspend fun getAllActiveAccounts(): List<Account>
+
+
 }

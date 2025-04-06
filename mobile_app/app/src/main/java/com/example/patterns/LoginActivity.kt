@@ -20,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private val testUsers = listOf(
         User("client@example.com", "client123", UserRole.CLIENT),
         User("client@example1.com", "client123", UserRole.CLIENT),
+        User("client@example112.com", "client123", UserRole.CLIENT),
         User("employee@example.com", "employee123", UserRole.EMPLOYEE)
     )
 
@@ -48,13 +49,17 @@ class LoginActivity : AppCompatActivity() {
                 val token = user.email
 
                 val prefs = getSharedPreferences("mybank_prefs", Context.MODE_PRIVATE)
-                prefs.edit().putString("client_token", token).apply()
+                prefs.edit().putString("user_token", token).apply()
 
-                if (user.role == UserRole.CLIENT) {
-                    startActivity(Intent(this, ClientMainActivity::class.java))
-                    finish()
-                } else {
-                    Toast.makeText(this, "Доступно только для клиентов", Toast.LENGTH_SHORT).show()
+                when (user.role) {
+                    UserRole.CLIENT -> {
+                        startActivity(Intent(this, ClientMainActivity::class.java))
+                        finish()
+                    }
+                    UserRole.EMPLOYEE -> {
+                        startActivity(Intent(this, EmployeeMainActivity::class.java))
+                        finish()
+                    }
                 }
             } else {
                 Toast.makeText(this, "Неверный email или пароль", Toast.LENGTH_SHORT).show()

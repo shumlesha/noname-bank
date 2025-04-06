@@ -3,7 +3,6 @@ package com.example.patterns
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.widget.Button
@@ -12,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.patterns.DataLayer.Database.AppDatabase
@@ -61,7 +61,8 @@ class ClientMainActivity : AppCompatActivity() {
 
             val amountInput = EditText(this)
             amountInput.hint = "Сумма кредита"
-            amountInput.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            amountInput.inputType =
+                InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             layout.addView(amountInput)
 
             val rateInput = EditText(this)
@@ -78,7 +79,8 @@ class ClientMainActivity : AppCompatActivity() {
                     if (amount != null && interestRate != null && amount > 0 && interestRate > 0) {
                         requestLoan(amount, interestRate)
                     } else {
-                        Toast.makeText(this, "Введите корректные значения", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Введите корректные значения", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
                 .setNegativeButton("Отмена", null)
@@ -94,10 +96,6 @@ class ClientMainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewAccounts)
         openAccountButton = findViewById(R.id.btnOpenAccount)
-
-
-
-
         accountDao = AppDatabase.getInstance(applicationContext).accountDao()
 
         accountAdapter = AccountAdapter(
@@ -159,6 +157,7 @@ class ClientMainActivity : AppCompatActivity() {
             .setNegativeButton("Отмена", null)
             .show()
     }
+
     private fun requestLoan(amount: Double, interestRate: Double) {
         val newLoan = Loan(
             id = UUID.randomUUID().toString(),
@@ -174,15 +173,18 @@ class ClientMainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             AppDatabase.getInstance(applicationContext).loanDao().insertLoan(newLoan)
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@ClientMainActivity, "Кредит оформлен", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ClientMainActivity, "Кредит оформлен", Toast.LENGTH_SHORT)
+                    .show()
                 updateCreditInfo()
             }
         }
 
     }
-    private  fun updateCreditInfo() {
+
+    private fun updateCreditInfo() {
         CoroutineScope(Dispatchers.IO).launch {
-            val loans = AppDatabase.getInstance(applicationContext).loanDao().getActiveLoansForClient(clientToken)
+            val loans = AppDatabase.getInstance(applicationContext).loanDao()
+                .getActiveLoansForClient(clientToken)
 
             val creditText = if (loans.isNotEmpty()) {
                 val totalRemaining = loans.sumOf { it.remainingAmount }

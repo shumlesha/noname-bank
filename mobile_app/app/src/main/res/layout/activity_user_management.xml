@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_user_management"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Заголовок экрана -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Управление пользователями"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Поле ввода E-mail -->
+    <EditText
+        android:id="@+id/etEmail1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="E-mail"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Поле ввода пароля -->
+    <EditText
+        android:id="@+id/etPassword1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Пароль"
+        android:inputType="textPassword"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Поле ввода роли (CLIENT/EMPLOYEE) -->
+    <EditText
+        android:id="@+id/etRole1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Роль (CLIENT или EMPLOYEE)"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Кнопка добавления пользователя -->
+    <Button
+        android:id="@+id/btnAddUser1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добавить пользователя"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Заголовок для списка пользователей -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Список пользователей"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- RecyclerView для отображения списка пользователей -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewUsers1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
+</LinearLayout>

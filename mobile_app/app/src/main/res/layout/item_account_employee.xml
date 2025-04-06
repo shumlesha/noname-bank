@@ -1,0 +1,79 @@
+<!-- item_account_employee.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_margin="8dp"
+    android:elevation="2dp">
+
+    <!-- Номер счета -->
+    <TextView
+        android:id="@+id/tvAccountNumber1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Номер счета: "
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <!-- Клиент (ID или имя) -->
+    <TextView
+        android:id="@+id/tvClient1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Клиент: "
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Баланс -->
+    <TextView
+        android:id="@+id/tvBalance1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Баланс: "
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Тип счета (Кредитный/Дебетовый) -->
+    <TextView
+        android:id="@+id/tvType1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Тип: "
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Статус счета (Активен/Закрыт) -->
+    <TextView
+        android:id="@+id/tvStatus1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Статус: "
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Блок кнопок действий -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btnDetails1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Детали" />
+
+        <Button
+            android:id="@+id/btnCloseAccount1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Закрыть счёт"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+</LinearLayout>

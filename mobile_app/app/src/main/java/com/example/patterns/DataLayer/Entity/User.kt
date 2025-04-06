@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey val email: String,
     val password: String,
-    val role: UserRole
+    val role: UserRole,
+    val isBlocked: Boolean = false
 )
