@@ -38,8 +38,9 @@ export class CreditTariffsComponent {
         let rows = paginatedTariffs.map(tariff => `
             <tr>
                 <td>${tariff.name}</td>
-                <td>${tariff.description}</td>
                 <td>${tariff.interestRate}%</td>
+                <td>${tariff.autoPaymentRate}%</td>
+                <td>${tariff.penaltyRate}%</td>
                 <td><button class="btn btn-primary take-credit-btn" data-id="${tariff.id}">Оформить</button></td>
             </tr>
         `).join("");
