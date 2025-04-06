@@ -26,6 +26,9 @@ public class GatewayConfiguration {
                         .uri("lb://core-query"))
                 .route("core-query-websocket", r -> r
                         .path("/ws/employee/transaction/**")
+                        .filters(f -> f
+                                .filter(customTokenRelayFactory.apply())
+                                .addRequestHeader("X-Service", "gateway"))
                         .uri("lb:ws://core-query"))
                 .route("core", r -> r.path("/api/account/**", "/api/transaction/**")
                         .filters(f -> f
