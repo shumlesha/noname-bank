@@ -25,7 +25,7 @@ public class NotificationController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @RequestBody RegisterTokenRequest registerTokenRequest
             ) {
-        TokenDto savedToken = notificationService.registerToken(currentUser.getId(), registerTokenRequest);
+        TokenDto savedToken = notificationService.registerToken(currentUser, registerTokenRequest);
 
         return ResponseEntity.ok(ResponseBuilder.success(
                 "Токен успешно зарегистрирован",

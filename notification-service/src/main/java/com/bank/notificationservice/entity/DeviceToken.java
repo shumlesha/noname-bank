@@ -1,6 +1,7 @@
 package com.bank.notificationservice.entity;
 
 import com.bank.notificationservice.enumeration.DeviceType;
+import com.bank.notificationservice.enumeration.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +35,10 @@ public class DeviceToken {
     @Column
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Role userRoleOnDevice;
 
     @CreationTimestamp
     @Column(updatable = false)

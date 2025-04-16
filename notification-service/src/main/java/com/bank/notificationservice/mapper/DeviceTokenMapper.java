@@ -6,7 +6,6 @@ import com.bank.notificationservice.entity.DeviceToken;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring")
@@ -17,7 +16,8 @@ public interface DeviceTokenMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "userId", conditionExpression = "java(shouldUpdateUserId(deviceToken, userId))")
-    void updateDeviceTokenFromRequest(@MappingTarget DeviceToken deviceToken, RegisterTokenRequest registerTokenRequest, UUID userId);
+    void updateDeviceTokenFromRequest(@MappingTarget DeviceToken deviceToken, RegisterTokenRequest registerTokenRequest,
+                                      UUID userId);
 
 
     @Mapping(target = "id", ignore = true)

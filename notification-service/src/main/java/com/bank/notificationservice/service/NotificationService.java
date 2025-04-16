@@ -2,8 +2,8 @@ package com.bank.notificationservice.service;
 
 import com.bank.notificationservice.dto.token.RegisterTokenRequest;
 import com.bank.notificationservice.dto.token.TokenDto;
-import java.util.UUID;
+import com.bank.notificationservice.security.CurrentUser;
 
 public interface NotificationService {
-    TokenDto registerToken(UUID userId, RegisterTokenRequest registerTokenRequest);
+    TokenDto registerToken(CurrentUser user, RegisterTokenRequest registerTokenRequest);
 }

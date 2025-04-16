@@ -1,6 +1,7 @@
 package com.bank.notificationservice.dto.token;
 
 import com.bank.notificationservice.enumeration.DeviceType;
+import com.bank.notificationservice.enumeration.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,4 +17,7 @@ public class RegisterTokenRequest {
 
     @NotNull(message = "Тип устройства не должен быть пустым")
     private DeviceType deviceType;
+
+    @NotNull(message = "Роль пользователя на устройстве не должна быть пустой")
+    private Role userRoleOnDevice;
 }
