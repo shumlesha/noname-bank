@@ -34,17 +34,16 @@ public class KafkaConsumerConfig {
     }
 
     private <T> ConsumerFactory<String, T> consumerFactory(Class<T> valueType, String groupId) {
-        JsonDeserializer<T> deserializer = new JsonDeserializer<>(valueType);
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.addTrustedPackages("*");
-        deserializer.setUseTypeMapperForKey(true);
+        Map<String, Object> consumerProps = consumerConfigs(groupId);
 
-        return new DefaultKafkaConsumerFactory<>(
-                consumerConfigs(groupId),
-                new StringDeserializer(),
-                deserializer
-        );
+        JsonDeserializer<T> deserializer = new JsonDeserializer<>(valueType);
+        consumerProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, valueType.getName());
+        consumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        consumerProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+
+        return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
+
 
     private <T> ConcurrentKafkaListenerContainerFactory<String, T> kafkaListenerContainerFactory(
             Class<T> valueType,
@@ -61,9 +60,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "*");
-        props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+
         return props;
     }
 }
