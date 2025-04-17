@@ -1,10 +1,13 @@
 package com.bank.notificationservice.exception.firebase;
 
 import com.bank.notificationservice.exception.BadRequestException;
+import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MessagingErrorCode;
+import com.google.firebase.messaging.SendResponse;
 import com.google.firebase.messaging.TopicManagementResponse;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
 public class FirebaseErrorHandler {
