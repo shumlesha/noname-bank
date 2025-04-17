@@ -10,6 +10,7 @@ import com.google.firebase.messaging.WebpushFcmOptions;
 import com.google.firebase.messaging.WebpushNotification;
 import lombok.experimental.UtilityClass;
 import java.util.List;
+import java.util.Map;
 
 @UtilityClass
 public class NotificationBuilder {
@@ -23,7 +24,7 @@ public class NotificationBuilder {
                         .setImage(notification.getImageURL())
                         .build()
                 )
-                .putAllData(notification.getData())
+                .putAllData(safeData(notification))
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(WebpushNotification.builder()
                                 .setTitle(notification.getTitle())
@@ -35,7 +36,7 @@ public class NotificationBuilder {
                                 .setLink(notification.getClickAction())
                                 .build())
                         .putHeader("TTL", String.valueOf(notification.getTtlInSeconds()))
-                        .putAllData(notification.getData())
+                        .putAllData(safeData(notification))
                         .build())
                 .setAndroidConfig(AndroidConfig.builder()
                         .setTtl(notification.getTtlInSeconds())
@@ -60,7 +61,7 @@ public class NotificationBuilder {
                         .setImage(notification.getImageURL())
                         .build()
                 )
-                .putAllData(notification.getData())
+                .putAllData(safeData(notification))
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(WebpushNotification.builder()
                                 .setTitle(notification.getTitle())
@@ -72,7 +73,7 @@ public class NotificationBuilder {
                                 .setLink(notification.getClickAction())
                                 .build())
                         .putHeader("TTL", String.valueOf(notification.getTtlInSeconds()))
-                        .putAllData(notification.getData())
+                        .putAllData(safeData(notification))
                         .build())
                 .setAndroidConfig(AndroidConfig.builder()
                         .setTtl(notification.getTtlInSeconds())
@@ -86,5 +87,9 @@ public class NotificationBuilder {
                                 .build())
                         .build())
                 .build();
+    }
+
+    private Map<String, String> safeData(Notification n) {
+        return n.getData() != null ? n.getData() : Map.of();
     }
 }

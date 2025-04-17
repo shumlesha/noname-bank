@@ -22,7 +22,7 @@ public interface DeviceTokenRepository extends JpaRepository<DeviceToken, UUID> 
             WHERE dt.user_id = :userId
             AND dt.user_role_on_device IN (:roles)
             """)
-    List<String> findAllTokensByUserIdAndRoles(UUID userId, List<Role> roles);
+    List<String> findAllTokensByUserIdAndRoles(UUID userId, List<String> roles);
 
 
     @Modifying

@@ -11,6 +11,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -47,6 +49,9 @@ public class TransactionConsumerService {
         String transactionType = "";
         String notificationBody = "";
 
+        LocalDateTime transactionTimestamp = transaction.getTransactionTimestamp();
+        String formattedTime = transactionTimestamp.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
+
         if (transaction.getAccountFrom() == null && transaction.getAccountTo() != null) {
             transactionType = "Пополнение";
             notificationBody = """
@@ -54,7 +59,7 @@ public class TransactionConsumerService {
                     Сумма: %s
                     Время: %s
                     """.formatted(transaction.getAccountTo(), transaction.getAmount(),
-                    transaction.getTransactionTimestamp());
+                    formattedTime);
         } else if (transaction.getAccountFrom() != null && transaction.getAccountTo() == null) {
             transactionType = "Снятие";
             notificationBody = """
@@ -62,7 +67,7 @@ public class TransactionConsumerService {
                     Сумма: %s
                     Время: %s
                     """.formatted(transaction.getAccountFrom(), transaction.getAmount(),
-                    transaction.getTransactionTimestamp());
+                    formattedTime);
         } else if (transaction.getAccountFrom() != null) {
             transactionType = "Перевод";
             notificationBody = """
@@ -71,7 +76,7 @@ public class TransactionConsumerService {
                     Сумма: %s
                     Время: %s
                     """.formatted(transaction.getAccountFrom(), transaction.getAccountTo(),
-                    transaction.getAmount(), transaction.getTransactionTimestamp());
+                    transaction.getAmount(), formattedTime);
         }
 
         return Notification.builder()

@@ -7,11 +7,13 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.TopicManagementResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TopicSubscriptionService {
@@ -32,6 +34,8 @@ public class TopicSubscriptionService {
                     return unregisteredToken;
                 }
             }
+
+            log.info("Токен {} успешно подписан на темы: {}", token, relevantTopics);
 
             return Optional.empty();
         } catch (FirebaseMessagingException e) {

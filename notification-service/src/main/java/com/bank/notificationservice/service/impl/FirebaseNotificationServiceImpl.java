@@ -89,7 +89,15 @@ public class FirebaseNotificationServiceImpl implements NotificationService {
     @Transactional
     public void sendNotificationToUserInRoles(UUID userId, List<Role> roles, Notification notification) {
         try {
-            List<String> userRelevantTokens = deviceTokenRepository.findAllTokensByUserIdAndRoles(userId, roles);
+            List<String> roleNames = roles.stream()
+                    .map(Role::name)
+                    .toList();
+            List<String> userRelevantTokens = deviceTokenRepository.findAllTokensByUserIdAndRoles(userId, roleNames);
+
+            if (userRelevantTokens.isEmpty()) {
+                log.info("У пользователя {} нет зарегистрированных токенов под ролями {}", userId, roles);
+                return;
+            }
 
             if (userRelevantTokens.size() > MAX_TOKENS) {
                 log.warn("Количество токенов превышает максимально допустимое значение - %d".formatted(MAX_TOKENS));

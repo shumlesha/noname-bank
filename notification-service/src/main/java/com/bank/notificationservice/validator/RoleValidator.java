@@ -2,7 +2,6 @@ package com.bank.notificationservice.validator;
 
 import com.bank.notificationservice.enumeration.Role;
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Component;
 import java.util.List;
 
 @UtilityClass
@@ -13,6 +12,7 @@ public class RoleValidator {
         }
 
         return userRoles.stream()
+                .filter(role -> List.of("EMPLOYEE", "CLIENT").contains(role))
                 .map(Role::valueOf)
                 .anyMatch(role -> role.equals(receivedRole));
     }

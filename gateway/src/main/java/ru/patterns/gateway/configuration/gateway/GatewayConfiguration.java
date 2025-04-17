@@ -50,7 +50,7 @@ public class GatewayConfiguration {
                                 .filter(customTokenRelayFactory.apply())
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://interface-control-service"))
-                .route("notification-service", r -> r.path("/api/notification/**")
+                .route("notification-service", r -> r.path("/api/notifications/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .addRequestHeader("X-Service", "gateway"))

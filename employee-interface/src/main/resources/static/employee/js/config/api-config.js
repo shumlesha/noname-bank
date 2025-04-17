@@ -35,7 +35,8 @@ const API_CONFIG = {
         missedPaymentsByClient: '/api/credit/missed/query',
         wsTransactionEmployee: '/ws/employee/transaction',
         settings: '/api/settings',
-        updateTheme: '/api/settings/theme'
+        updateTheme: '/api/settings/theme',
+        registerPushToken: '/api/notifications/token'
     },
 
     PAGINATION: {
