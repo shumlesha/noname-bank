@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface DeviceTokenRepository extends JpaRepository<DeviceToken, UUID> {
     Optional<DeviceToken> findByToken(String token);
+
+    void deleteByToken(String token);
 }

@@ -104,3 +104,10 @@ keycloak:
 
 firebase:
   service-account-key-path: ${FIREBASE_SERVICE_ACCOUNT_KEY_PATH}
+  notification:
+    topic-mappings:
+      roles:
+        EMPLOYEE:
+          - TRANSACTION
+        CLIENT:
+          -
