@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: monitoring
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://46.29.239.208:5436/postgres
+    username: ${POSTGRES_USER:monitoring_user}
+    password: ${POSTGRES_PASSWORD:monitoring_password_strongvery}
+  flyway:
+    enabled: true
+    locations:
+      - migration
+  kafka:
+    bootstrap-servers: 46.29.239.208:29094
+    group:
+      metric:
+        name: metrics-group
+      trace:
+        name: trace-logs-group
+server:
+  port: 8086
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
