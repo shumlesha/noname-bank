@@ -14,6 +14,17 @@ spring:
     enabled: true
     locations:
       - migration
+  kafka:
+    bootstrap-servers: 46.29.239.208:9092
+    group:
+      metric:
+        name: metrics-group
+      trace:
+        name: trace-logs-group
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 server:
   port: 8086
 eureka:
