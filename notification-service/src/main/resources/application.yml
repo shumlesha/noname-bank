@@ -15,16 +15,18 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       pool-name: HikariCP-Pool
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
-    queue-config:
-      queue-name: ${RABBITMQ_QUEUE_NAME}
-      exchange: ${RABBITMQ_EXCHANGE_NAME}
-      routing-key: ${RABBITMQ_ROUTING_KEY}
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    consumer:
+      group-id: ${spring.application.name}-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: '*'
+        spring.json.use.type.headers: false
+
+
   jpa:
     database-platform: POSTGRESQL
     show-sql: false
@@ -49,15 +51,6 @@ spring:
     default-schema: public
     enabled: true
 
-  kafka:
-    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all
-      retries: 3
-      compression-type: snappy
-      batch-size: 16384
 
   security:
     oauth2:
@@ -111,3 +104,11 @@ firebase:
           - TRANSACTION
         CLIENT:
           -
+
+icons:
+  transaction:
+    success: https://www.clipartmax.com/png/full/51-515463_check-mark-checkmark-clip-art-at-vector-clip-art-clipartcow-green-check.png
+
+notification:
+  transaction:
+    default-ttl: 3600

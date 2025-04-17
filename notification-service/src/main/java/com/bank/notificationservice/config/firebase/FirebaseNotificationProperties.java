@@ -1,4 +1,4 @@
-package com.bank.notificationservice.config;
+package com.bank.notificationservice.config.firebase;
 
 import com.bank.notificationservice.enumeration.Role;
 import lombok.Getter;

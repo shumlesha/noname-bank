@@ -1,6 +1,6 @@
 package com.bank.notificationservice.service.impl;
 
-import com.bank.notificationservice.config.FirebaseNotificationProperties;
+import com.bank.notificationservice.config.firebase.FirebaseNotificationProperties;
 import com.bank.notificationservice.enumeration.Role;
 import com.bank.notificationservice.exception.firebase.FirebaseErrorHandler;
 import com.google.firebase.messaging.FirebaseMessaging;

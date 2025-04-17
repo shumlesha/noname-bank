@@ -1,4 +1,4 @@
-package com.bank.notificationservice.config;
+package com.bank.notificationservice.config.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
