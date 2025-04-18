@@ -44,6 +44,23 @@ spring:
         jwt:
           issuer-uri: ${ISSUER_URI:http://46.29.239.208:8089/realms/app-realm}
           jwk-set-uri: ${JWK_SET_URI:http://46.29.239.208:8089/realms/app-realm/protocol/openid-connect/certs}
+  kafka:
+    bootstrap-servers: 46.29.239.208:29094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      compression-type: snappy
+      batch-size: 16384
+  data:
+    redis:
+      host: 46.29.239.208
+      port: 6379
+      username: veryHardAdmin
+      password: verystrongwordpassredis
+      client-type: lettuce
+      timeout: 10s
 keycloak:
   resource: ${KEYCLOAK_RESOURCE:spring-app}
 server:
