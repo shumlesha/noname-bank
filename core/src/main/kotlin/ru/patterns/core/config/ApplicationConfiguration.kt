@@ -46,6 +46,7 @@ import java.util.UUID
         "ru.patterns.core.service",
         "ru.patterns.core.controller",
         "ru.patterns.core.utils",
+        "ru.patterns.core.idempotent",
     ]
 )
 @EnableConfigurationProperties(KafkaListenerProperties::class)

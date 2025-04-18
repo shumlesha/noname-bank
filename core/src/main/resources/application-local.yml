@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      host: 46.29.239.208
+      port: 6379
+      username: veryHardAdmin
+      password: verystrongwordpassredis
   rabbitmq:
     host: 46.29.239.208
     port: 5672
