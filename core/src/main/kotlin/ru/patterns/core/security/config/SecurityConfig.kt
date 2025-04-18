@@ -33,6 +33,7 @@ class SecurityConfig(
             .oauth2ResourceServer { oauth2 ->
                 oauth2.jwt { jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter) }
             }
+            .addFilterAt(RequestIdFilter(), SecurityWebFiltersOrder.FIRST)
             .addFilterBefore(HeaderSecurityFilter(securityProperties), SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
 
