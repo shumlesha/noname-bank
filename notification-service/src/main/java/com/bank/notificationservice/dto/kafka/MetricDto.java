@@ -1,16 +1,12 @@
-package ru.patterns.monitoring.model;
+package com.bank.notificationservice.dto.kafka;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class MetricDto {
     private String metricName;
     private long timestamp;

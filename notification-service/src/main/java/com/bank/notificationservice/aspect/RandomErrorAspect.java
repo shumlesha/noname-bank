@@ -1,9 +1,8 @@
-package com.bank.userservice.aspect;
+package com.bank.notificationservice.aspect;
 
-
-import com.bank.userservice.dto.kafka.TraceDto;
-import com.bank.userservice.service.kafka.sender.KafkaLogSender;
-import com.bank.userservice.service.metric.RandomErrorMetric;
+import com.bank.notificationservice.dto.kafka.TraceDto;
+import com.bank.notificationservice.service.kafka.sender.KafkaLogSender;
+import com.bank.notificationservice.service.metric.RandomErrorMetric;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
