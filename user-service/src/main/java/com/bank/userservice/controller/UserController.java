@@ -1,6 +1,7 @@
 package com.bank.userservice.controller;
 
 
+import com.bank.userservice.aspect.idempotent.Idempotent;
 import com.bank.userservice.dto.api.DefaultResponse;
 import com.bank.userservice.dto.user.BanUserRequest;
 import com.bank.userservice.dto.user.UserDto;
@@ -35,6 +36,7 @@ public class UserController {
 
     @PostMapping("/ban/{userId}")
     @PreAuthorize("hasRole('EMPLOYEE')")
+    @Idempotent
     @Operation(summary = "Ban a user", description = "Ban a user by providing the user id and the ban reason")
     public ResponseEntity<DefaultResponse<UserDto>> banUser(@PathVariable UUID userId,
                                                             @RequestBody BanUserRequest banUserRequest,
