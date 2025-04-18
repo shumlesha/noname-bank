@@ -1,6 +1,7 @@
 import {logout} from '../auth.js';
 import storageService from '../services/storage-service.js';
 import themeService from '../services/theme-service.js';
+import pushService from "../services/push-service.js";
 
 
 export const initCommonUI = async () => {
@@ -9,6 +10,7 @@ export const initCommonUI = async () => {
     displayUserEmail();
 
     await themeService.init();
+    await pushService.init();
 };
 
 

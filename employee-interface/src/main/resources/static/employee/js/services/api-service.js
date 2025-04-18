@@ -246,6 +246,17 @@ const apiService = {
         return apiService.fetch(`${API_CONFIG.ENDPOINTS.missedPaymentsByClient}/${clientId}`, {
             method: 'GET'
         });
+    },
+
+    registerPushToken: async (token) => {
+        return apiService.fetch(API_CONFIG.ENDPOINTS.registerPushToken, {
+            method: 'POST',
+            body: JSON.stringify({
+                token,
+                deviceType: 'WEB',
+                userRoleOnDevice: 'EMPLOYEE'
+            })
+        })
     }
 };
 
