@@ -70,4 +70,9 @@ object Factory {
                 statusCode = 500
             )
         }
+
+    fun idempotencyError(key: String) = ErrorResponse(
+        message = "Операция с ключом '$key' уже выполнена",
+        statusCode = 400
+    )
 }
