@@ -37,58 +37,54 @@ class MqCreditPaymentListener(
             .headers[IDEMPOTENCY_KEY]
             ?.let { it as String }
 
-        idempotencyKey
-            ?.let {
-                idempotencyService.executeOperation(it) {
-                    Mono.fromCallable {
-                        log.info(
-                            "Получено сообщение с correlationId: {}, тело: {}",
-                            rawMessage.messageProperties.correlationId,
-                            String(rawMessage.body, Charsets.UTF_8)
-                        )
-                        rabbitMqMessageParser.parse(rawMessage.body)
-                    }
-                        .flatMap { creditPaymentCommand -> transactionCommandService.payCredit(creditPaymentCommand) }
-                        .map { creditPaymentResult ->
-                            objectMapper.writeValueAsString(
-                                when (creditPaymentResult) {
-                                    is TransactionCommandService.CreditPaymentResult.Success ->
-                                        CreditPaymentResponseMessage(creditPaymentResult.debt)
+        idempotencyService.executeOperation(idempotencyKey) {
+            Mono.fromCallable {
+                log.info(
+                    "Получено сообщение с correlationId: {}, тело: {}",
+                    rawMessage.messageProperties.correlationId,
+                    String(rawMessage.body, Charsets.UTF_8)
+                )
+                rabbitMqMessageParser.parse(rawMessage.body)
+            }
+                .flatMap { creditPaymentCommand -> transactionCommandService.payCredit(creditPaymentCommand) }
+                .map { creditPaymentResult ->
+                    objectMapper.writeValueAsString(
+                        when (creditPaymentResult) {
+                            is TransactionCommandService.CreditPaymentResult.Success ->
+                                CreditPaymentResponseMessage(creditPaymentResult.debt)
 
-                                    is TransactionCommandService.CreditPaymentResult.Error.AccountNotFound ->
-                                        CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} не найден")
+                            is TransactionCommandService.CreditPaymentResult.Error.AccountNotFound ->
+                                CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} не найден")
 
-                                    is TransactionCommandService.CreditPaymentResult.Error.ZeroBalance ->
-                                        CreditPaymentErrorMessage("На счете недостаточно средств")
+                            is TransactionCommandService.CreditPaymentResult.Error.ZeroBalance ->
+                                CreditPaymentErrorMessage("На счете недостаточно средств")
 
-                                    is TransactionCommandService.CreditPaymentResult.Error.AccountClosedOrBlocked ->
-                                        CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} закрыт или заблокирован")
+                            is TransactionCommandService.CreditPaymentResult.Error.AccountClosedOrBlocked ->
+                                CreditPaymentErrorMessage("Счет ${creditPaymentResult.accountId} закрыт или заблокирован")
 
-                                    is TransactionCommandService.CreditPaymentResult.Error.ZeroPayment ->
-                                        CreditPaymentErrorMessage("Минимальная сумма оплаты кредита равна 1 рублю")
+                            is TransactionCommandService.CreditPaymentResult.Error.ZeroPayment ->
+                                CreditPaymentErrorMessage("Минимальная сумма оплаты кредита равна 1 рублю")
 
-                                    is TransactionCommandService.CreditPaymentResult.Error ->
-                                        CreditPaymentErrorMessage("Во время списания произошла ошибка")
-                                }
-                            )
+                            is TransactionCommandService.CreditPaymentResult.Error ->
+                                CreditPaymentErrorMessage("Во время списания произошла ошибка")
                         }
-                        .doOnSuccess { log.info("Отвечаем в rabbit сообщением: {}", it) }
-                        .map { body ->
-                            rabbitTemplate.sendMessageWithCorrelationData(
-                                mqProperties.exchange,
-                                paymentResponseRoutingKey,
-                                body,
-                                rawMessage.messageProperties.correlationId
-                            )
-                        }
-                        .doOnError { error -> log.error("При обработке сообщения из rabbit произошла ошибка", error) }
-                        .onErrorResume { Unit.toMono() }
-                        .subscribeOn(Schedulers.boundedElastic())
-                        .subscribe()
+                    )
                 }
-            }
-            ?: run {
-                log.info("Ключ $idempotencyKey уже был обработан ")
-            }
+                .doOnSuccess { log.info("Отвечаем в rabbit сообщением: {}", it) }
+                .map { body ->
+                    rabbitTemplate.sendMessageWithCorrelationData(
+                        mqProperties.exchange,
+                        paymentResponseRoutingKey,
+                        body,
+                        rawMessage.messageProperties.correlationId
+                    )
+                }
+                .doOnError { error -> log.error("При обработке сообщения из rabbit произошла ошибка", error) }
+                .onErrorResume { Unit.toMono() }
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe()
+        } ?: run {
+            log.info("Ключ $idempotencyKey уже был обработан ")
+        }
     }
 }
