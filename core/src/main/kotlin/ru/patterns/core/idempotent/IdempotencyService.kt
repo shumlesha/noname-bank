@@ -9,7 +9,11 @@ import java.util.concurrent.TimeUnit
 class IdempotencyService(
     private val redisTemplate: RedisTemplate<String?, String?>
 ) {
-    fun <T> executeOperation(operationId: String, operation: () -> T): T? {
+    fun <T> executeOperation(operationId: String?, operation: () -> T): T? {
+        if (operationId == null) {
+            return operation()
+        }
+
         val idempotencyKey = IDEMPOTENCY_KEY_PREFIX + operationId
 
         if (redisTemplate.hasKey(idempotencyKey)) {

@@ -32,7 +32,10 @@ class MqCreditPaymentListener(
 
     @RabbitListener(queues = ["\${core.credit.mq.credit-payment-request.name}"])
     fun handleCreditPaymentMessage(rawMessage: Message) {
-        val idempotencyKey = rawMessage.messageProperties.headers[IDEMPOTENCY_KEY] as String
+        val idempotencyKey = rawMessage
+            .messageProperties
+            .headers[IDEMPOTENCY_KEY]
+            ?.let { it as String }
 
         idempotencyService.executeOperation(idempotencyKey) {
             Mono.fromCallable {

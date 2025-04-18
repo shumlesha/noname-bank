@@ -32,10 +32,12 @@ class MqCreditAccountListener(
 
     @RabbitListener(queues = ["\${core.credit.mq.credit-create-request.name}"])
     fun handleCreateAccountMessage(rawMessage: Message) {
-        val idempotencyKey = rawMessage.messageProperties.headers[IDEMPOTENCY_KEY] as String
+        val idempotencyKey = rawMessage
+            .messageProperties
+            .headers[IDEMPOTENCY_KEY]
+            ?.let { it as String }
 
         idempotencyService.executeOperation(idempotencyKey) {
-
             Mono.fromCallable {
                 log.info(
                     "Получено сообщение с correlationId: {}, тело: {}",
