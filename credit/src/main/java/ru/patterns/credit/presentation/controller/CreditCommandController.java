@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.command.CreateCreditCommand;
 import ru.patterns.credit.application.command.PayCreditCommand;
+import ru.patterns.credit.configuration.idempotent.Idempotent;
 import ru.patterns.credit.configuration.security.user.CurrentUser;
 import ru.patterns.credit.infrastructure.handler.command.CreditCreateCommandHandler;
 import ru.patterns.credit.infrastructure.handler.command.CreditPayCommandHandler;
@@ -28,6 +29,7 @@ public class CreditCommandController {
 
     @PostMapping
     @Operation(summary = "Взять кредит")
+    @Idempotent
     public ResponseEntity<DefaultResponse<UUID>> createCredit(
             @RequestBody CreateCreditCommand command,
             @AuthenticationPrincipal CurrentUser user
@@ -38,6 +40,7 @@ public class CreditCommandController {
 
     @PostMapping("/pay")
     @Operation(summary = "Заплатить за кредит")
+    @Idempotent
     public ResponseEntity<DefaultResponse<Void>> payCredit(@RequestBody PayCreditCommand command) {
         creditPayCommandHandler.handle(command);
         return ResponseEntity.ok(DefaultResponse.success(null));
