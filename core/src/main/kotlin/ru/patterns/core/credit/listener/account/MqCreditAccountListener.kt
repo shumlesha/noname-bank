@@ -32,48 +32,54 @@ class MqCreditAccountListener(
 
     @RabbitListener(queues = ["\${core.credit.mq.credit-create-request.name}"])
     fun handleCreateAccountMessage(rawMessage: Message) {
-        val idempotencyKey = rawMessage.messageProperties.headers[IDEMPOTENCY_KEY] as String
+        val idempotencyKey = rawMessage
+            .messageProperties
+            .headers[IDEMPOTENCY_KEY]
+            ?.let { it as String }
 
-        idempotencyService.executeOperation(idempotencyKey) {
+        idempotencyKey
+            ?.let {
+                idempotencyService.executeOperation(it) {
+                    Mono.fromCallable {
+                        log.info(
+                            "Получено сообщение с correlationId: {}, тело: {}",
+                            rawMessage.messageProperties.correlationId,
+                            rawMessage.body
+                        )
+                        rabbitMqMessageParser.parse(rawMessage.body)
+                    }
+                        .flatMap { createCreditCommand -> accountCommandService.createCreditAccount(createCreditCommand) }
+                        .map { createAccountResult ->
+                            objectMapper.writeValueAsString(
+                                when (createAccountResult) {
+                                    is AccountCommandService.CreateCreditAccountResult.Success ->
+                                        CreateCreditResponseMessage(createAccountResult.account)
 
-            Mono.fromCallable {
-                log.info(
-                    "Получено сообщение с correlationId: {}, тело: {}",
-                    rawMessage.messageProperties.correlationId,
-                    rawMessage.body
-                )
-                rabbitMqMessageParser.parse(rawMessage.body)
-            }
-                .flatMap { createCreditCommand -> accountCommandService.createCreditAccount(createCreditCommand) }
-                .map { createAccountResult ->
-                    objectMapper.writeValueAsString(
-                        when (createAccountResult) {
-                            is AccountCommandService.CreateCreditAccountResult.Success ->
-                                CreateCreditResponseMessage(createAccountResult.account)
+                                    is AccountCommandService.CreateCreditAccountResult.Error.BankDontHaveSuchMoney ->
+                                        CreateCreditErrorResponse("У банка нет средств для одобрения подобного кредита")
 
-                            is AccountCommandService.CreateCreditAccountResult.Error.BankDontHaveSuchMoney ->
-                                CreateCreditErrorResponse("У банка нет средств для одобрения подобного кредита")
-
-                            is AccountCommandService.CreateCreditAccountResult.Error.Unexpected ->
-                                CreateCreditErrorResponse("Не удалось создать кредитный счет")
+                                    is AccountCommandService.CreateCreditAccountResult.Error.Unexpected ->
+                                        CreateCreditErrorResponse("Не удалось создать кредитный счет")
+                                }
+                            )
                         }
-                    )
+                        .doOnSuccess { log.info("Отвечаем в rabbit сообщением: {}", it) }
+                        .map { body ->
+                            rabbitTemplate.sendMessageWithCorrelationData(
+                                mqProperties.exchange,
+                                accountResponseRoutingKey,
+                                body,
+                                rawMessage.messageProperties.correlationId
+                            )
+                        }
+                        .doOnError { error -> log.error("При обработке сообщения из rabbit произошла ошибка", error) }
+                        .onErrorResume { Unit.toMono() }
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe()
                 }
-                .doOnSuccess { log.info("Отвечаем в rabbit сообщением: {}", it) }
-                .map { body ->
-                    rabbitTemplate.sendMessageWithCorrelationData(
-                        mqProperties.exchange,
-                        accountResponseRoutingKey,
-                        body,
-                        rawMessage.messageProperties.correlationId
-                    )
-                }
-                .doOnError { error -> log.error("При обработке сообщения из rabbit произошла ошибка", error) }
-                .onErrorResume { Unit.toMono() }
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe()
-        } ?: run {
-            log.info("Ключ $idempotencyKey уже был обработан ")
-        }
+            }
+            ?: run {
+                log.info("Ключ $idempotencyKey уже был обработан ")
+            }
     }
 }
