@@ -25,9 +25,6 @@ public class MetricEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "request_id", nullable = false)
-    private String requestId;
-
     @Column(name = "metric_name", nullable = false)
     private String metricName;
 

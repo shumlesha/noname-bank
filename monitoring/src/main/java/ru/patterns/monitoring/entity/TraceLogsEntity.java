@@ -39,4 +39,7 @@ public class TraceLogsEntity {
 
     @Column(name = "timestamp", nullable = false)
     private long timestamp;
+
+    @Column(name = "message")
+    private String message;
 }

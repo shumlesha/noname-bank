@@ -23,6 +23,7 @@ public class MetricService {
                 .endpoint(dto.getEndpoint())
                 .responseTimeMillis(dto.getResponseTimeMillis())
                 .timestamp(dto.getTimestamp())
+                .message(dto.getMessage())
                 .build();
 
         traceMetricRepository.save(entity);
@@ -30,7 +31,7 @@ public class MetricService {
 
     public void saveMetric(MetricDto dto) {
         var entity = MetricEntity.builder()
-                .requestId(dto.getRequestId())
+                .metricName(dto.getMetricName())
                 .timestamp(dto.getTimestamp())
                 .build();
 

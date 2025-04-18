@@ -12,7 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class MetricDto {
-    private String requestId;
     private String metricName;
     private long timestamp;
 }

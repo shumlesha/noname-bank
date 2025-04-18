@@ -17,4 +17,5 @@ public class TraceLogsDto {
     private String endpoint;
     private long responseTimeMillis;
     private long timestamp;
+    private String message;
 }
