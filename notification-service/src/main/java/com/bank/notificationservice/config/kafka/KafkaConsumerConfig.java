@@ -1,6 +1,7 @@
 package com.bank.notificationservice.config.kafka;
 
 import com.bank.notificationservice.dto.transaction.TransactionEntry;
+import com.bank.notificationservice.service.idempotency.IdempotencyRecordInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -63,12 +64,14 @@ public class KafkaConsumerConfig {
 
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, TransactionEntry> transactionKafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, TransactionEntry> transactionKafkaListenerContainerFactory(
+            IdempotencyRecordInterceptor interceptor) {
         ConcurrentKafkaListenerContainerFactory<String, TransactionEntry> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(transactionConsumerFactory());
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         factory.setConcurrency(3);
+        factory.setRecordInterceptor(interceptor);
 
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(
                 new FixedBackOff(1000L, 3));

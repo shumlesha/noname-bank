@@ -43,6 +43,14 @@ spring:
           region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
         use_sql_comments: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      client-type: lettuce
+      timeout: 10s
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml

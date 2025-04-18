@@ -51,6 +51,15 @@ spring:
     default-schema: public
     enabled: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      client-type: lettuce
+      timeout: 10s
+
 
   security:
     oauth2:
