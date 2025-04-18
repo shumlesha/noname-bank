@@ -19,14 +19,6 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function(payload) {
     console.log('Background message received:', payload);
-    const notification = payload.notification;
-
-    if (notification) {
-        self.registration.showNotification(notification.title, {
-            body: notification.body,
-            icon: notification.icon || ''
-        });
-    }
 });
 
 self.addEventListener('activate', event => {

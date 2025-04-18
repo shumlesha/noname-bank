@@ -24,7 +24,9 @@ async function initFirebase() {
 
         const app = firebaseApp.initializeApp(firebaseConfig);
 
-        const swReg = await navigator.serviceWorker.register('/employee/firebase-messaging-sw.js');
+        const swReg = await navigator.serviceWorker.register('/employee/firebase-messaging-sw.js', {
+            updateViaCache: 'none'
+        });
         console.log('SW registered', swReg);
 
         await navigator.serviceWorker.ready;
