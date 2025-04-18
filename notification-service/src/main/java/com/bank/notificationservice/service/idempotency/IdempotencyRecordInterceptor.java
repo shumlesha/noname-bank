@@ -24,7 +24,7 @@ public class IdempotencyRecordInterceptor implements RecordInterceptor<String, T
     public ConsumerRecord<String, TransactionEntry> intercept(ConsumerRecord<String, TransactionEntry> record,
                                                               Consumer<String, TransactionEntry> consumer) {
         String msgId = Optional.ofNullable(
-                        record.headers().lastHeader("messageId"))
+                        record.headers().lastHeader("X-idempotency-key"))
                 .map(header -> new String(header.value(), StandardCharsets.UTF_8))
                 .orElse(record.topic() + "-" + record.partition() + "-" + record.offset());
 
