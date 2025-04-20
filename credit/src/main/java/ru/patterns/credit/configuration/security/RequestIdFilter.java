@@ -18,7 +18,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        var id = Optional.of(request.getHeader("requestId"))
+        var id = Optional.ofNullable(request.getHeader("requestId"))
                 .orElse(UUID.randomUUID().toString());
 
         MDC.put("requestId", id);
