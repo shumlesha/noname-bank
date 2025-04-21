@@ -1,5 +1,8 @@
 import API_CONFIG from '../config/api-config.js';
 
+import { generateIdempotencyKey } from "../utils/idempotency-utils.js";
+
+
 const apiService = {
     fetch: async (url, options = {}) => {
         // const tokenData = storageService.getTokens();
@@ -9,6 +12,8 @@ const apiService = {
                 'Content-Type': 'application/json'
             }
         };
+
+        const WRITE_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
         // if (tokenData && tokenData.accessToken && !options.skipAuth) {
         //     defaultOptions.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
@@ -24,6 +29,12 @@ const apiService = {
         };
 
         if (fetchOptions.skipAuth) delete fetchOptions.skipAuth;
+
+        const method = (fetchOptions.method || 'GET').toUpperCase();
+        const wantIdem = WRITE_METHODS.includes(method) && !fetchOptions.headers['X-idempotency-key'];
+        if (wantIdem) {
+            fetchOptions['X-idempotency-key'] = generateIdempotencyKey();
+        }
 
         try {
             const response = await fetch(url, fetchOptions);
