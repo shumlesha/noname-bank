@@ -111,8 +111,6 @@ firebase:
       roles:
         EMPLOYEE:
           - TRANSACTION
-        CLIENT:
-          -
 
 icons:
   transaction:

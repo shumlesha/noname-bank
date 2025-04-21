@@ -37,6 +37,9 @@ export const config = {
                 updateTheme: '/api/settings/theme',
                 hideAccount: '/api/settings/hide-account',
                 unhideAccount: '/api/settings/unhide-account'
+            },
+            push: {
+                registertoken: '/api/notifications/token'
             }
         }
     },
