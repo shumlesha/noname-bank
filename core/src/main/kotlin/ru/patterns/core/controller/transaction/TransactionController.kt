@@ -28,7 +28,7 @@ class TransactionController(
     fun createTransaction(
         authentication: Mono<BearerTokenAuthentication>,
         @RequestBody @Valid createTransactionCommandRaw: CreateTransactionCommandRaw,
-        @RequestHeader(IDEMPOTENCY_KEY) idempotencyKey: String
+        @RequestHeader(IDEMPOTENCY_KEY, required = false) idempotencyKey: String?
     ) =
         idempotencyService.executeOperation(idempotencyKey) {
             authentication

@@ -29,7 +29,7 @@ class AccountCommandController(
     fun createAccount(
         authentication: Mono<BearerTokenAuthentication>,
         @RequestBody createAccountCommand: CreateAccountCommandRaw,
-        @RequestHeader(IDEMPOTENCY_KEY) idempotencyKey: String
+        @RequestHeader(IDEMPOTENCY_KEY, required = false) idempotencyKey: String?
     ) =
         idempotencyService.executeOperation(idempotencyKey) {
             authentication
@@ -47,7 +47,7 @@ class AccountCommandController(
     fun closeAccount(
         authentication: Mono<BearerTokenAuthentication>,
         @RequestBody closeAccountCommand: CloseAccountCommandRaw,
-        @RequestHeader(IDEMPOTENCY_KEY) idempotencyKey: String
+        @RequestHeader(IDEMPOTENCY_KEY, required = false) idempotencyKey: String?
     ) =
         idempotencyService.executeOperation(idempotencyKey) {
             authentication

@@ -29,7 +29,7 @@ object Factory {
             amount = Balance(createTransactionCommandRaw.amount)
         )
 
-    fun idempotencyError(key: String) = ErrorResponse(
+    fun idempotencyError(key: String?) = ErrorResponse(
         message = "Операция с ключом '$key' уже выполнена",
         statusCode = 400
     )
