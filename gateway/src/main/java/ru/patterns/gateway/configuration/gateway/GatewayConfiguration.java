@@ -22,12 +22,20 @@ public class GatewayConfiguration {
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/users")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://user-service"))
                 .route("core-query-http", r -> r.path("/api/query/account/**", "/api/query/transaction/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/core-query")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://core-query"))
                 .route("core-query-websocket", r -> r
@@ -35,36 +43,60 @@ public class GatewayConfiguration {
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/core-query-websocket")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb:ws://core-query"))
                 .route("core", r -> r.path("/api/account/**", "/api/transaction/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/core")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://core"))
                 .route("atm", r -> r.path("/api/atm/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/atm")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://atm"))
                 .route("credit-service", r -> r.path("/api/credit/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/credit-service")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://credit-service"))
                 .route("interface-control-service", r -> r.path("/api/settings/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/interface-control-service")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://interface-control-service"))
                 .route("notification-service", r -> r.path("/api/notifications/**")
                         .filters(f -> f
                                 .filter(customTokenRelayFactory.apply())
                                 .filter(customRetryFactory.apply(retryConfig()))
+                                .circuitBreaker(c -> c
+                                        .setName("gatewayCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/notification-service")
+                                )
                                 .addRequestHeader("X-Service", "gateway"))
                         .uri("lb://notification-service"))
                 .route("client-root-redirect", r -> r.path("/client", "/client/")
