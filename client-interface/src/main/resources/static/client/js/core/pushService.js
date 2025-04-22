@@ -29,7 +29,7 @@ async function initFirebase() {
         });
         console.log('SW registered', swReg);
 
-        await navigator.serviceWorker.ready;
+        //await navigator.serviceWorker.ready;
         console.log('Service Worker готов');
 
         messaging = firebaseMessaging.getMessaging(app);
