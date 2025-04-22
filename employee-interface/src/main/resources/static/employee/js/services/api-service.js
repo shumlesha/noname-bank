@@ -262,6 +262,9 @@ const apiService = {
     registerPushToken: async (token) => {
         return apiService.fetch(API_CONFIG.ENDPOINTS.registerPushToken, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 token,
                 deviceType: 'WEB',

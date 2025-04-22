@@ -143,6 +143,9 @@ public class CustomExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
 
+        log.error(Arrays.toString(e.getStackTrace()));
+        log.error(e.getCause().getMessage());
+
         return ResponseEntity.status(errorApiResponse.getStatus()).body(errorApiResponse);
     }
 
@@ -185,6 +188,7 @@ public class CustomExceptionHandler {
         log.info("Cannot handle");
         log.error("Exception message: {}", e.getMessage());
         log.error(Arrays.toString(e.getStackTrace()));
+        log.error("Cause: {}", e.getCause().getMessage());
         ErrorApiResponse errorApiResponse = ResponseBuilder.error(
                 "Unexpected error occurred",
                 HttpStatus.INTERNAL_SERVER_ERROR
