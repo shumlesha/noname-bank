@@ -5,53 +5,42 @@ import {apiService} from "./apiService.js";
 
 class CreditService {
     async loadCredits(clientId) {
-        const response = await fetch(`${config.api.endpoints.credit.list}/${clientId}`);
-        const data = await response.json();
+        const response = await apiService.get(`${config.api.endpoints.credit.list}/${clientId}`);
         return {
-            ...data,
-            data: data.data.map(creditData => new Credit(creditData))
+            ...response,
+            data: response.data.map(creditData => new Credit(creditData))
         };
     }
 
     async payCredit(creditId, amount) {
-        return fetch(config.api.endpoints.credit.pay, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ creditId, amount: parseFloat(amount) })
-        }).then(res => res.json());
+        return apiService.post(config.api.endpoints.credit.pay, {
+            creditId,
+            amount: parseFloat(amount)
+        });
     }
 
     async fetchCreditTariffs() {
-        const response = await fetch(config.api.endpoints.credit.tariffs);
-        const data = await response.json();
+        const response = await apiService.get(config.api.endpoints.credit.tariffs);
         return {
-            ...data,
-            data: data.data.map(tariffData => new CreditTariff(tariffData))
+            ...response,
+            data: response.data.map(tariffData => new CreditTariff(tariffData))
         };
     }
 
     async takeCredit(clientId, tariffId, amount) {
-        return fetch(config.api.endpoints.credit.create, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                clientId,
-                amount: parseFloat(amount),
-                tariffId
-            })
-        }).then(res => res.json());
+        return apiService.post(config.api.endpoints.credit.create, {
+            clientId,
+            amount: parseFloat(amount),
+            tariffId
+        });
     }
 
     async getCreditRating(clientId) {
-        return apiService.get(
-            `${config.api.endpoints.credit.rating}/${clientId}`
-        );
+        return apiService.get(`${config.api.endpoints.credit.rating}/${clientId}`);
     }
 
     async getMissedPayments(clientId) {
-        return apiService.get(
-            `${config.api.endpoints.credit.missed}/${clientId}`
-        );
+        return apiService.get(`${config.api.endpoints.credit.missed}/${clientId}`);
     }
 }
 

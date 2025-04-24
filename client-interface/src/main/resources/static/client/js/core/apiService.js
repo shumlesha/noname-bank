@@ -1,4 +1,5 @@
 import {HttpClient} from '../utils/httpClient.js';
+import { generateIdempotencyKey } from "../utils/idempotencyUtils.js";
 
 class ApiService {
     async request(endpoint, options = {}, skipAuth = false, additionalOptions = {}) {
@@ -22,10 +23,20 @@ class ApiService {
     }
 
     async post(endpoint, data, skipAuth = false, additionalOptions = {}) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-idempotency-key': generateIdempotencyKey(),
+            ...(additionalOptions.headers || {})
+        };
+
         return this.request(endpoint, {
             method: 'POST',
-            body: JSON.stringify(data)
-        }, skipAuth, additionalOptions);
+            body: JSON.stringify(data),
+            headers
+        }, skipAuth, {
+            ...additionalOptions,
+            headers
+        });
     }
 
     async get(endpoint, skipAuth = false, additionalOptions = {}) {

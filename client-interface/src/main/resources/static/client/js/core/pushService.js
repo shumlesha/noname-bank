@@ -1,5 +1,6 @@
 import {showPushNotification} from "../utils/modalUtils.js";
 import {config} from "../config/config.js";
+import {apiService} from "./apiService.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyC2h2gIEQpeirXKARFFdD5FQYmxiu0sT0o",
@@ -29,7 +30,6 @@ async function initFirebase() {
         });
         console.log('SW registered', swReg);
 
-        //await navigator.serviceWorker.ready;
         console.log('Service Worker готов');
 
         messaging = firebaseMessaging.getMessaging(app);
@@ -84,14 +84,10 @@ async function initFirebase() {
 }
 
 async function registerPushToken(token) {
-    return fetch(config.api.endpoints.push.registertoken, {
-        method: 'POST',
-        body: JSON.stringify({
-            token,
-            deviceType: 'WEB',
-            userRoleOnDevice: 'CLIENT'
-        }),
-        headers: { 'Content-Type': 'application/json' }
+    return apiService.post(config.api.endpoints.push.registertoken, {
+        token,
+        deviceType: 'WEB',
+        userRoleOnDevice: 'CLIENT'
     });
 }
 
@@ -107,4 +103,4 @@ export default {
             return false;
         }
     }
-}
+};
