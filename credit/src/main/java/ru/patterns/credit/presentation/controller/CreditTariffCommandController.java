@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.patterns.credit.application.command.CreateCreditTariffCommand;
 import ru.patterns.credit.application.command.DeleteCreditTariffCommand;
 import ru.patterns.credit.application.command.UpdateCreditTariffCommand;
+import ru.patterns.credit.configuration.idempotent.Idempotent;
 import ru.patterns.credit.infrastructure.handler.command.CreditTariffCommandHandler;
 import ru.patterns.credit.shared.common.DefaultResponse;
 
@@ -28,6 +29,7 @@ public class CreditTariffCommandController {
 
     @PostMapping("/create")
     @Operation(summary = "Создать кредитный тариф")
+    @Idempotent
     public ResponseEntity<DefaultResponse<UUID>> createTariff(@RequestBody CreateCreditTariffCommand command) {
         var tariffId = creditTariffCommandHandler.handle(command);
         return ResponseEntity.ok(DefaultResponse.success(tariffId));
@@ -35,6 +37,7 @@ public class CreditTariffCommandController {
 
     @PutMapping("/update")
     @Operation(summary = "Редактировать кредитный тариф")
+    @Idempotent
     public ResponseEntity<DefaultResponse<Void>> updateTariff(@RequestBody UpdateCreditTariffCommand command) {
         creditTariffCommandHandler.handle(command);
         return ResponseEntity.ok(DefaultResponse.success(null));
@@ -42,6 +45,7 @@ public class CreditTariffCommandController {
 
     @DeleteMapping("/delete/{tariffId}")
     @Operation(summary = "Удалить кредитный тариф")
+    @Idempotent
     public ResponseEntity<DefaultResponse<Void>> deleteTariff(@PathVariable UUID tariffId) {
         var command = new DeleteCreditTariffCommand(tariffId);
         creditTariffCommandHandler.handle(command);
