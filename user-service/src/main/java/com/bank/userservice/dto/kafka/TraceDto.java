@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class TraceDto {
     private String requestId;
-    private String serviceName = "notification";
+    private String serviceName = "user-service";
     private String endpoint;
     private long responseTimeMillis;
     private final long timestamp = Instant.now().toEpochMilli();

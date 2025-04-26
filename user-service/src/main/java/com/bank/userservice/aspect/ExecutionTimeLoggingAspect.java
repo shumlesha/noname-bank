@@ -22,6 +22,7 @@ public class ExecutionTimeLoggingAspect {
         long duration = System.currentTimeMillis() - start;
 
         TraceDto dto = TraceDto.builder()
+                .serviceName("user-service")
                 .requestId(MDC.get("requestId"))
                 .endpoint(pjp.getSignature().toShortString())
                 .responseTimeMillis(duration)
