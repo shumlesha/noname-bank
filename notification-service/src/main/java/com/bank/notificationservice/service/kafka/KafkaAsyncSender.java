@@ -9,7 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaAsyncSender<T> {
-    private final KafkaTemplate<String, String> template;
+    private final KafkaTemplate<String, Object> template;
     private final ObjectMapper objectMapper;
     private final String topic;
 

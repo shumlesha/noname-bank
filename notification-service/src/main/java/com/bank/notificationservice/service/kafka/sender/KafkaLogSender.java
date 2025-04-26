@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaLogSender extends KafkaAsyncSender<TraceDto> {
-    public KafkaLogSender(KafkaTemplate<String, String> template,
+    public KafkaLogSender(KafkaTemplate<String, Object> template,
                           ObjectMapper objectMapper) {
         super(template, objectMapper, "trace-logs-topic");
     }

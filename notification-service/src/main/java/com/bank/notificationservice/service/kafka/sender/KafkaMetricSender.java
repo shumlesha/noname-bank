@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaMetricSender extends KafkaAsyncSender<MetricDto> {
 
-    public KafkaMetricSender(KafkaTemplate<String, String> template,
+    public KafkaMetricSender(KafkaTemplate<String, Object> template,
                              ObjectMapper objectMapper) {
         super(template, objectMapper, "metrics-topic");
     }
