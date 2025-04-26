@@ -62,7 +62,6 @@ public class RandomErrorAspect {
         logger.error(message);
 
         TraceDto traceDto = TraceDto.builder()
-                .serviceName("user-service")
                 .requestId(MDC.get("requestId"))
                 .endpoint(methodName)
                 .build();
