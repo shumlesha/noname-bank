@@ -110,3 +110,7 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+.env
+.env.*
+!.env.example
+*firebase-adminsdk*.json
